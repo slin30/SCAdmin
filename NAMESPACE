@@ -2,6 +2,7 @@
 
 export(call.Get_Group)
 export(restr.Get_Group)
+export(restr_permissions)
 import(data.table)
 importFrom(RSiteCatalyst,ApiRequest)
 importFrom(jsonlite,toJSON)
