@@ -2,9 +2,9 @@
 
 In progress.
 
-## Example
 
-This is a basic example which shows you how to solve a common problem:
+Much to be added as this gets built out. Nothing much to see yet, though. 
+
 
 ```R
 ...

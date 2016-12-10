@@ -1,7 +1,7 @@
 Package: SCAdmin
 Title: Functions for Adobe Site Catalyst Admin API
 Version: 0.0.0.9000
-Authors@R: person("Wen", "Zhang", email = "slin30@gmail.com", role = c("aut", "cre"))
+Authors@R: person("Wen", "Zhang", email = "w.zhang.1@elsevier.com", role = c("aut", "cre"))
 Description: Internal (Elsevier) package for Adobe Analytics administration
 Depends:
     R (>= 3.3.1),
