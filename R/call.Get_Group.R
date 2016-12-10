@@ -1,6 +1,9 @@
-#' call.Get_Group
+#' Permissions.GetGroup call with error handling
 #'
-#' Base call to Permissions.GetGroup
+#' Get group information via group name or ID, optionally get permissions as well
+#' 
+#' @importFrom RSiteCatalyst ApiRequest
+#' @importFrom jsonlite unbox toJSON
 #'
 #' @param x a group name or group id of length 1
 #' @param include_permissions denote whether to also include permissions data for each group
@@ -8,10 +11,9 @@
 #'
 #' @return json
 #'
-#' @importFrom RSiteCatalyst ApiRequest
-#' @importFrom jsonlite unbox toJSON
-#'
 #' @export
+#' @examples 
+#' #TBD
 
 call.Get_Group <- function(x, include_permissions = NULL, ...) {
   if(any(duplicated(x))) {
@@ -37,14 +39,14 @@ call.Get_Group <- function(x, include_permissions = NULL, ...) {
 }
 
 
-#Base internal function
+#Base internal function for call.Get_Group
 .Get_Group <- purrr::safely(
   function(x, include_permissions = NULL, ...) {
     if(is.null(include_permissions)) {
       include_permissions <- FALSE
     }
     #Auto-detect if passing in id or name
-    xkey <- .helper_name_or_id(x)
+    xkey <- .l_helper_name_or_id(x)
     
     body <- list(unbox(x), 
                  include_permissions = unbox(include_permissions))
@@ -58,7 +60,7 @@ call.Get_Group <- function(x, include_permissions = NULL, ...) {
 
 
 #Auto-detect if passing in name or ID for Group methods
-.helper_name_or_id <- function(x) {
+.l_helper_name_or_id <- function(x) {
   x_isID <- grepl("^\\d\\d+", x)
   if(x_isID) {
     return("group_id")

@@ -2,26 +2,14 @@
 
 #' @importFrom magrittr "%>%"
 
-.helper_fix_blank <- function(x) {
+.g_helper_fix_blank <- function(x) {
   x[x==""] <- NA
   x
 }
 
-#Auto-detect if passing in name or ID for Group methods
-.helper_name_or_id <- function(x) {
-  x_isID <- grepl("^\\d\\d+", x)
-  if(x_isID) {
-    return("group_id")
-  } else {
-    return("group_name")
-  }
-}
-
 
 #error to DT restr helper FUN
-#REFACTOR the tmp part of this-- either enforce input name of 'error' or
-# try rmatch (below)
-.helper_makeErrTbl <- function(x, idname) {
+.g_helper_makeErrTbl <- function(x, idname) {
   if(length(idname) != 1 || !is.character(idname)) {
     stop("A length 1 character vector must be provided for output tbl id name")
   }
@@ -62,8 +50,8 @@
 }
 
 
-#helper for err.ret handling in .helper_makeErrTbl refactoring
-.errMsgChk <- function(x) {
+#helper for err.ret handling in .g_helper_makeErrTbl refactoring
+.g_helper_errMsgChk <- function(x) {
   
   chkList <- list(
     errMsg = c("error", "message"), 
@@ -85,16 +73,15 @@
     x
 }
 
-#empty list error handler; if both empty list result and error, 
-# prefer to keep the error and make empty list NULL
+
 
 #empty list base helper
-.helper_is_emptyList <- function(x) {
+.g_helper_is_emptyList <- function(x) {
   ref_str <- structure(list())
   identical(x, ref_str)
 }
 #empty list message generator
-.helper_emptyList_toMsg <- function(x) {
+.g_helper_emptyList_toMsg <- function(x) {
   chk <- .helper_is_emptyList(x)
   if(chk) {
     x <- "Call returned no value"
@@ -103,22 +90,24 @@
   }
 }
 
+#empty list error handler; if both empty list result and error, 
+# prefer to keep the error and make empty list NULL
 #If result empty list, if error NULL, then 
 # error <- empty list message for result (.helper_emptyList_toMsg)
 #If result empty list, then
 # result <- NULL
-.helper_emptyResultHandler <- function(x) {
+.g_helper_emptyResultHandler <- function(x) {
   xname <- names(x)
   if(!all(xname %in% c("result", "error"))) {
     stop("input requires both 'result' and 'error' as named elements of x")
   }
   
-  zeroChk <- .helper_is_emptyList(x[["result"]])
+  zeroChk <- .g_helper_is_emptyList(x[["result"]])
   nullChk <- is.null(x[["error"]])
   
   if(zeroChk) {
     if(nullChk) {
-      x[["error"]] <- .helper_emptyList_toMsg(x[["result"]])
+      x[["error"]] <- .g_helper_emptyList_toMsg(x[["result"]])
     }
     x["result"]  <- list(NULL)
   }

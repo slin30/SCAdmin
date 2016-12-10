@@ -1,6 +1,7 @@
-#Restructuring FUN; pass in call.Get_Group output
+#' Create user-friendly output from call.Get_Group return
 #' 
-#' Restructure json return from call.Get_Group
+#' Handle all return possibilities from call.Get_Group, with or without permissions
+#' 
 #' @import data.table
 #' @importFrom magrittr "%>%"
 #' 
@@ -16,7 +17,7 @@ restr.Get_Group <- function(call_ret) {
   idname <- "group_name_or_id" #set for error DT id col name
   
   #Empty list return to message
-  call_ret <- lapply(call_ret, .helper_emptyResultHandler)
+  call_ret <- lapply(call_ret, .g_helper_emptyResultHandler)
   
   #check for all null results
   res_check <- Map("[[", call_ret, "result") %>%
@@ -28,7 +29,7 @@ restr.Get_Group <- function(call_ret) {
     warning("There were no valid results, returning error message(s)")
     return(list(
       result = "No valid results; see errors", 
-      errors = .helper_makeErrTbl(x = call_ret, idname = idname)
+      errors = .g_helper_makeErrTbl(x = call_ret, idname = idname)
       
     )
     )
@@ -44,8 +45,8 @@ restr.Get_Group <- function(call_ret) {
   if(length(to_drop) == 0) { 
     err <- "No errors triggered by any group_name or group_id values"
   } else {
-    err.tmp <- lapply(to_drop[["error"]], .helper_GroupError)
-    err <- .helper_makeErrTbl(x = err.tmp, idname = idname)
+    err.tmp <- lapply(to_drop[["error"]], .l_helper_GroupError)
+    err <- .g_helper_makeErrTbl(x = err.tmp, idname = idname)
     
   }
   
@@ -71,7 +72,7 @@ restr.Get_Group <- function(call_ret) {
       Map(as.data.table, .) %>%
       lapply(X = ., function(f) setnames(f, to_extract)) %>%
       rbindlist(use.names = FALSE) %>%
-      .[, lapply(.SD, .helper_fix_blank)]
+      .[, lapply(.SD, .g_helper_fix_blank)]
     
     usr_dt   <- full_dt[, .(group_name, group_id, user_list)]
     group_dt <- dcast.data.table(full_dt, ... ~ ., value.var = "user_list", 
@@ -95,8 +96,8 @@ restr.Get_Group <- function(call_ret) {
 
 
 #Handle error to DT output for restr
-.helper_GroupError <- function(x) {
-  xname <- names(x)
+.l_helper_GroupError <- function(x) {
+  # xname <- names(x)
   if(is.null(x[["message"]])) {
     x <- "group_name or group_id did not return any users"
   } else
@@ -107,7 +108,7 @@ restr.Get_Group <- function(call_ret) {
 
 #Restructure permissions if present
 #expect dt of 4 with specific names, with data.table (i.e. nested list)
-.helper_restr_permissions <- function(x) {
+.l_helper_restr_permissions <- function(x) {
   if(!(is.data.table(x) | is.data.frame(x))) {
     stop("Required input structure is a data.table or data.frame", 
          " with additional dependencies\n", 
@@ -167,7 +168,7 @@ restr.Get_Group <- function(call_ret) {
   #index category_permissions DT out, unnest one level
   x_targ <- x[[targ]] #do here, else need to handle scope for
   # helper FUN
-  outdt <- .helper_restr_permissions(x_targ)
+  outdt <- .l_helper_restr_permissions(x_targ)
   outdt[, ":="(group_name = grp_name, group_id = grp_id)]
   
 }

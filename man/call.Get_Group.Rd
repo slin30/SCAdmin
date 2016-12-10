@@ -2,7 +2,7 @@
 % Please edit documentation in R/call.Get_Group.R
 \name{call.Get_Group}
 \alias{call.Get_Group}
-\title{call.Get_Group}
+\title{Permissions.GetGroup call with error handling}
 \usage{
 call.Get_Group(x, include_permissions = NULL, ...)
 }
@@ -17,6 +17,9 @@ call.Get_Group(x, include_permissions = NULL, ...)
 json
 }
 \description{
-Base call to Permissions.GetGroup
+Get group information via group name or ID, optionally get permissions as well
+}
+\examples{
+#TBD
 }
 

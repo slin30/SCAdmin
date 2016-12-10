@@ -2,7 +2,7 @@
 % Please edit documentation in R/restr.Get_Group.R
 \name{restr.Get_Group}
 \alias{restr.Get_Group}
-\title{Restructure json return from call.Get_Group}
+\title{Create user-friendly output from call.Get_Group return}
 \usage{
 restr.Get_Group(call_ret)
 }
@@ -13,7 +13,7 @@ restr.Get_Group(call_ret)
 list of data.tables
 }
 \description{
-Restructure json return from call.Get_Group
+Handle all return possibilities from call.Get_Group, with or without permissions
 }
 \examples{
 #TBD
