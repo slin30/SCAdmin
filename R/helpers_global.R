@@ -1,5 +1,6 @@
 #Global helpers
 
+#' @importFrom magrittr "%>%"
 
 .helper_fix_blank <- function(x) {
   x[x==""] <- NA
@@ -86,6 +87,21 @@
 
 #empty list error handler; if both empty list result and error, 
 # prefer to keep the error and make empty list NULL
+
+#empty list base helper
+.helper_is_emptyList <- function(x) {
+  ref_str <- structure(list())
+  identical(x, ref_str)
+}
+#empty list message generator
+.helper_emptyList_toMsg <- function(x) {
+  chk <- .helper_is_emptyList(x)
+  if(chk) {
+    x <- "Call returned no value"
+  } else {
+    x
+  }
+}
 
 #If result empty list, if error NULL, then 
 # error <- empty list message for result (.helper_emptyList_toMsg)

@@ -1,11 +1,12 @@
 #Restructuring FUN; pass in call.Get_Group output
 #' 
 #' Restructure json return from call.Get_Group
-#'
+#' @import data.table
+#' @importFrom magrittr "%>%"
+#' 
 #' @param call_ret result from call.Get_Group
 #'
 #' @return list of data.tables
-#' @import data.table
 #' @export
 #'
 #' @examples
