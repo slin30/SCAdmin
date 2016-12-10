@@ -1,0 +1,20 @@
+Package: SCAdmin
+Title: Functions for Adobe Site Catalyst Admin API
+Version: 0.0.0.9000
+Authors@R: person("Wen", "Zhang", email = "slin30@gmail.com", role = c("aut", "cre"))
+Description: Internal (Elsevier) package for Adobe Analytics administration
+Depends:
+    R (>= 3.3.1),
+    data.table (>= 1.9.8)
+Imports:
+    RSiteCatalyst (>= 1.4.9),
+    stringr,
+    magrittr,
+    jsonlite (>= 1.0),
+    purrr (>= 0.2.2)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Suggests:
+    testthat
+RoxygenNote: 5.0.1
