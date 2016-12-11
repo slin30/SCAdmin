@@ -50,28 +50,28 @@
 }
 
 
-#helper for err.ret handling in .g_helper_makeErrTbl refactoring
-.g_helper_errMsgChk <- function(x) {
-  
-  chkList <- list(
-    errMsg = c("error", "message"), 
-    errOnly = "error", 
-    msgOnly = "message")
-  
-  xnames <- list_names(x)
-  if(all(is.null(xnames)) || length(xnames) == 0) {
-    return(x)
-  }
-  
-  if(all(chkList$errMsg %in% xnames)) {
-    Map(function(f) f[[chkList$errMsg]], x)
-  } else if (chkList$errOnly %in% xnames) {
-    Map(function(f) f[[chkList$errOnly]], x)
-  } else if (chkList$msgOnly %in% xnames) {
-    Map(function(f) f[[chkList$msgOnly]], x)
-  } else
-    x
-}
+# #helper for err.ret handling in .g_helper_makeErrTbl refactoring
+# .g_helper_errMsgChk <- function(x) {
+#   
+#   chkList <- list(
+#     errMsg = c("error", "message"), 
+#     errOnly = "error", 
+#     msgOnly = "message")
+#   
+#   xnames <- list_names(x)
+#   if(all(is.null(xnames)) || length(xnames) == 0) {
+#     return(x)
+#   }
+#   
+#   if(all(chkList$errMsg %in% xnames)) {
+#     Map(function(f) f[[chkList$errMsg]], x)
+#   } else if (chkList$errOnly %in% xnames) {
+#     Map(function(f) f[[chkList$errOnly]], x)
+#   } else if (chkList$msgOnly %in% xnames) {
+#     Map(function(f) f[[chkList$msgOnly]], x)
+#   } else
+#     x
+# }
 
 
 
@@ -82,7 +82,7 @@
 }
 #empty list message generator
 .g_helper_emptyList_toMsg <- function(x) {
-  chk <- .helper_is_emptyList(x)
+  chk <- .g_helper_is_emptyList(x)
   if(chk) {
     x <- "Call returned no value"
   } else {

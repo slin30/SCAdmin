@@ -18,10 +18,10 @@ Defaults to \code{FALSE}.}
 A nested list of length (unique) \code{x}. Each first-level list element is a named (using the corresponding call value) 
 nested list of length two consisting of the named elements \emph{result} and \emph{error}. 
 
-It is possible for either (but not both) \emph{result} or \emph{error} to be \code{NULL}. Because this method returns
-errors for invalid values, this function simply returns the server error message. In other words, a call value either 
-throws an error (and the error message is captured in \emph{error}) or does not (and the returned data is captured 
-in \emph{result}). 
+It is possible for either (but not both) \emph{result} or \emph{error} to be \code{NULL}. Because the 
+\emph{Permissions.GetGroup} method returns errors for invalid call (query) values, this function simply returns the 
+server error message. In other words, a call value either throws an error (and the error message is captured in \emph{error}) 
+or succeeds (and the returned data is captured in \emph{result}). 
 
 The actual contents within each of \emph{result} or \emph{error} may vary as follows:
 
@@ -33,31 +33,31 @@ The actual contents within each of \emph{result} or \emph{error} may vary as fol
     }
 \item \emph{result}:
     \itemize{
-    \item If no errors and \code{include_permissions = FALSE} a list of length 6; in order:
-        \itemize{
-        \item group_id (\code{integer} vector of length 1)
-        \item group_name (\code{character} vector of length 1)
-        \item group_description (\code{character} vector of length 1)
-        \item all_report_suite_access (\code{logical} vector of length 1)
-        \item rsid_list (\code{character} vector of length 1)
-        \item user_list (\code{character} vector)
-        }
-     \item If no errors and \code{include_permissions = TRUE}, a 7th element of 
-           \emph{category_permissions}, a nested \code{data.frame} with 4 fields:
+        \item If no errors and \code{include_permissions = FALSE} a list of length 6; in order:
             \itemize{
-            \item category (\code{character} vector of length 4)
-            \item name (\code{character} vector of length 4)
-            \item access (\code{character} vector of length 4)
-            \item permissions (\code{list} of length 4, each element a \code{data.frame} with 3 fields)
-                \itemize{
-                \item id (\code{integer} vector)
-                \item name (\code{character} vector)
-                \item access (\code{logical} vector)
-                }
+            \item group_id (\code{integer} vector of length 1)
+            \item group_name (\code{character} vector of length 1)
+            \item group_description (\code{character} vector of length 1)
+            \item all_report_suite_access (\code{logical} vector of length 1)
+            \item rsid_list (\code{character} vector of length 1)
+            \item user_list (\code{character} vector)
             }
-        }
-     \item If errors, \code{NULL}
+       \item If no errors and \code{include_permissions = TRUE}, a the above 6 plus a 7th element of 
+             \emph{category_permissions}, a nested \code{data.frame} with 4 fields:
+                \itemize{
+                \item category (\code{character} vector of length 4)
+                \item name (\code{character} vector of length 4)
+                \item access (\code{character} vector of length 4)
+                \item permissions (\code{list} of length 4, each element a \code{data.frame} with 3 fields)
+                    \itemize{
+                    \item id (\code{integer} vector)
+                    \item name (\code{character} vector)
+                    \item access (\code{logical} vector)
+                    }
+                }
+      \item If errors, \code{NULL}
     }
+}
 }
 \description{
 Get group information via group name or ID, optionally get permissions as well
@@ -79,8 +79,8 @@ Like all functions in this package that interact with the Adobe Analytics API di
 still authenticate through the RSiteCatalyst API, and any fundamental changes to \code{RSiteCatalyst::ApiRequest} have the 
 potential to change all dependent functions in this package. 
 
-This function should not be confused with \link[RSiteCatalyst]{GetGroups}, which calls a different Adobe Analytics method
-altogether.
+This function should not be confused with RSiteCatalyst::\link[RSiteCatalyst]{GetGroups}, which calls a different 
+Adobe Analytics method altogether.
 }
 \examples{
 \dontrun{

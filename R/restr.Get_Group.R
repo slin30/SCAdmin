@@ -76,7 +76,7 @@ restr.Get_Group <- function(call_ret) {
       rbindlist(use.names = FALSE) %>%
       .[, lapply(.SD, .g_helper_fix_blank)]
     
-    usr_dt   <- full_dt[, .(group_name, group_id, user_list)]
+    usr_dt   <- full_dt[, c("group_name", "group_id", "user_list")]
     group_dt <- dcast.data.table(full_dt, ... ~ ., value.var = "user_list", 
                                  fun.aggregate = uniqueN) %>%
       setnames(".", "n_users")
