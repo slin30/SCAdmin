@@ -1,6 +1,8 @@
 #' Restructure permissions from call.Get_Group
 #' 
-#' Internal function to handle permissions call return from call.Get_Group, permission = TRUE
+#' Function to handle permissions call return from call.Get_Group, permission = TRUE
+#' 
+#' @family get group functions
 #'
 #' @param x non-recursively unlisted result from call.Get_Group; see details
 #' 
@@ -42,8 +44,8 @@ restr_permissions <- function(x) {
   outdt[, ":="(group_name = grp_name, group_id = grp_id)]
   
 }
-
-
+NULL
+#' @keywords internal
 #expect dt of 4 with specific names, with data.table (i.e. nested list)
 .l_helper_restr_permissions <- function(x) {
   if(!(is.data.table(x) | is.data.frame(x))) {

@@ -5,6 +5,8 @@
 #' @import data.table
 #' @importFrom magrittr "%>%"
 #' 
+#' @family get group functions
+#' 
 #' @param call_ret result from call.Get_Group
 #'
 #' @return list of data.tables
@@ -93,16 +95,15 @@ restr.Get_Group <- function(call_ret) {
   
 }
 
+NULL
 
-
-#Handle error to DT output for restr
+#' @keywords internal
 .l_helper_GroupError <- function(x) {
   # xname <- names(x)
   if(is.null(x[["message"]])) {
     x <- "group_name or group_id did not return any users"
   } else
     x <- x[["message"]]
-  names(x) <- "error" #needed for .helper_makeErrTbl
+  names(x) <- "error" #needed for .g_helper_makeErrTbl
   x
 }
-

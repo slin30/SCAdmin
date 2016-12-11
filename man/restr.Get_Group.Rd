@@ -18,4 +18,8 @@ Handle all return possibilities from call.Get_Group, with or without permissions
 \examples{
 #TBD
 }
+\seealso{
+Other get.group.functions: \code{\link{call.Get_Group}},
+  \code{\link{restr_permissions}}
+}
 

@@ -13,12 +13,16 @@ restr_permissions(x)
 a data.table or NULL
 }
 \description{
-Internal function to handle permissions call return from call.Get_Group, permission = TRUE
+Function to handle permissions call return from call.Get_Group, permission = TRUE
 }
 \details{
 Normally used in the context of restr.Get_Group. Exported for flexibility.
 }
 \examples{
 #TBD
+}
+\seealso{
+Other get.group.functions: \code{\link{call.Get_Group}},
+  \code{\link{restr.Get_Group}}
 }
 
