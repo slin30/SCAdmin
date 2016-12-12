@@ -62,7 +62,10 @@
 #'     \item \code{group_description}: The description of the group, if available, else \code{NA} (\code{character})
 #'     \item \code{all_report_suite_access}: (\code{logical})
 #'     \item \code{n_users}: A custom field denoting number of unique items in \code{user_list} from \code{user_table}, 
-#'           by group (name or ID). The sum of this column should equal the number of rows in \code{user_table} (\code{integer})
+#'           by group (name or ID). The sum of this column should equal the number of rows in \code{user_table} 
+#'           UNLESS you query for a \emph{group_name} and its corresponding \emph{group_id}. In such cases, the
+#'           \code{call.Get_Group} function treats each value as individual, and will return identical information 
+#'           for the two values, since they describe the same core entity (\code{integer})
 #'     }
 #' \item \code{permission}: If not requested, a message \emph{No permissions requested, none returned}; else, an 
 #'       eight-column \code{data.table}:
@@ -95,8 +98,10 @@
 #' data_err <- restr.Get_Group(call_err)
 #' 
 #' # Scenario B, with permissions
-#' call_no_err.P <- call.Get_Group(c(136031L, "RAP-Mendeley Admin Access"))
-#' data_no_err.P <- restr.Get_Group(call_no_err.P)
+#' # Note that these two values describe the same thing, which is an unusual scenario, but intentionally
+#' # shown here. This is intentionally not handled, although it's easy to address downstream via unique().
+#' call_no_err.P <- call.Get_Group(c(136031L, "RAP-Mendeley Admin Access"), include_permissions = TRUE)
+#' data_no_err.P <- restr.Get_Group(call_no_err.P) #call unique() on result to de-duplicate, if you wish
 #' }
 restr.Get_Group <- function(call_ret) {
   
