@@ -15,6 +15,12 @@ list of data.tables
 \description{
 Handle all return possibilities from call.Get_Group, with or without permissions
 }
+\details{
+This function
+}
+\note{
+TBD
+}
 \examples{
 #TBD
 }

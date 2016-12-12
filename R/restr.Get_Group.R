@@ -8,10 +8,17 @@
 #' @family get group functions
 #' 
 #' @param call_ret result from call.Get_Group
+#' 
+#' @details 
+#' This function 
+#' 
+#' @note 
+#' TBD
 #'
-#' @return list of data.tables
+#' @return 
+#' list of data.tables
+#' 
 #' @export
-#'
 #' @examples
 #' #TBD
 restr.Get_Group <- function(call_ret) {
@@ -81,8 +88,8 @@ restr.Get_Group <- function(call_ret) {
                                  fun.aggregate = uniqueN) %>%
       setnames(".", "n_users")
   } else {
-    user_table <- "No valid results"
-    group_table <- "No valid results"
+    usr_dt <- "No valid results"
+    group_dt <- "No valid results"
     permissions <- NULL
   }
   
