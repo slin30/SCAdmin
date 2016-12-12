@@ -6,8 +6,13 @@ Version 0.0.0.9000 (in dev)
 
 ### How to install
 
-There is almost certainly a mechanism to directly install R packages from a private gitlab repo. I have not 
-had time to look into this yet, so for now, please use the manual approach:
+There are several ways to get and install this package:
+
+####From source
+
+This is the most manual approach, but does not require actual access to the repository. All you 
+need is the tarball (tar.gz; see below). Getting said tarball does require repository access, but
+this method does allow anyone with the tarball to pass the file to others.
 
 1. Navigate to the master branch (https://git.cm-elsevier.com/zhang1/SCAdmin/tree/master)
 2. Download the tar.gz (even if you are running Windows)
@@ -24,6 +29,25 @@ Modify the following code chunk:
 #                  type="source")
 # }
 ```
+
+####Clone
+
+This requires access to the repository, and you will need to either provide credentials, or pre-configure your
+git environment to authenticate. 
+
+```{r}
+# In a git bash shell, type:
+# dontrun{
+# git clone https://git.cm-elsevier.com/zhang1/SCAdmin.git
+# }
+```
+
+####Direct pull
+
+This is the easiest method, as it can be performed within R itself. Instructions forthcoming once I've figured out
+how to do this without passing credentials via clear text. 
+
+
 
 ### Key dependencies
 
