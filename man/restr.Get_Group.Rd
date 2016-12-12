@@ -10,16 +10,69 @@ restr.Get_Group(call_ret)
 \item{call_ret}{result from call.Get_Group}
 }
 \value{
-list of data.tables
+A \code{list} of length 2 or 4:  
+
+If ALL values in \code{call_ret} throw errors, prints a warning message and returns a
+\code{list} of length 2 with the following elements:
+\itemize{
+\item \code{result}: A custom message, \emph{No valid results; see errors}
+\item \code{errors}: A two-column \code{data.table}, \code{nrow == length(call_ret)}:
+    \itemize{
+    \item \code{group_name_or_id}: Values that resulted in errors (\code{character})
+    \item \code{msg}: Error message, possibly custom depending on error type (\code{character})
+    }
+}
+If ANY value in \code{call_ret} succeeds AND returns a non-empty \code{user_list}, 
+a \code{list} of length 4 with the following elements:
+\itemize{
+\item \code{user_table}: A three-column \code{data.table}:
+    \itemize{
+    \item \code{group_name}: The name of the group. If a \emph{group_name} was passed to 
+          \code{call.Get_Group}, these values will match (\code{character})
+    \item \code{group_id}: The ID of the group. If a \emph{group_id} was passed to 
+          \code{call.Get_Group}, these values will match (\code{integer})
+    \item \code{user_list}: The user corresponding to the \code{group_name} and \code{group_id}. 
+          For groups with >1 user, there will be one row per unique user per group (\code{character})
+    }
+\item \code{group_table}: A five-column \code{data.table}:
+    \itemize{
+    \item \code{group_name}: As described in \code{user_table} above (\code{character})
+    \item \code{group_id}: As described in \code{user_table} above (\code{integer})
+    \item \code{group_description}: The description of the group, if available, else \code{NA} (\code{character})
+    \item \code{all_report_suite_access}: (\code{logical})
+    \item \code{n_users}: A custom field denoting number of unique items in \code{user_list} from \code{user_table}, 
+          by group (name or ID). The sum of this column should equal the number of rows in \code{user_table} (\code{integer})
+    }
+\item \code{permission}: If NOT requested, a message \emph{No permissions requested, none returned}; else, an 
+      eight-column \code{data.table}:
+    \itemize{
+    \item \code{id}: 
+    }
+}
 }
 \description{
 Handle all return possibilities from call.Get_Group, with or without permissions
 }
 \details{
-This function
+This function is not normally needed by itself, but is exported to support future feature requests, 
+troubleshooting, and bug fixes. This also serves as the primary documentation resource for
+the restructuring function for \code{\link{call.Get_Group}}.
+
+Restructuring functions in this package all perform the same basic tasks:
+
+\enumerate{
+  \item Output user-friendly data structures
+      \itemize{
+      \item Generic where possible
+      \item Stakeholder-specific where necessary
+      }
+  \item Handle empty results as errors, with custom messaging
+}
 }
 \note{
-TBD
+Like all restructuring functions, this only restructures outputs from the upstream \code{call.} 
+function, and therefore does not require access (or authentication) to the API. Practically, this
+is only helpful if for some reason a set of call return values is written out for later restructuring.
 }
 \examples{
 #TBD
