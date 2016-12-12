@@ -8,7 +8,7 @@ Version 0.0.0.9000 (in dev)
 
 There are several ways to get and install this package:
 
-####From source
+#### From source
 
 This is the most manual approach, but does not require actual access to the repository. All you 
 need is the tarball (tar.gz; see below). Getting said tarball does require repository access, but
@@ -30,7 +30,7 @@ Modify the following code chunk:
 # }
 ```
 
-####Clone
+#### Clone
 
 This requires access to the repository, and you will need to either provide credentials, or pre-configure your
 git environment to authenticate. 
@@ -42,7 +42,7 @@ git environment to authenticate.
 # }
 ```
 
-####Direct pull
+#### Direct pull
 
 This is the easiest method, as it can be performed within R itself. Instructions forthcoming once I've figured out
 how to do this without passing credentials via clear text. 
