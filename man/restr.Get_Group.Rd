@@ -10,9 +10,9 @@ restr.Get_Group(call_ret)
 \item{call_ret}{result from call.Get_Group}
 }
 \value{
-A \code{list} of length 2 or 4:  
+\code{list} of length 2 (Scenario A) or 4 (Scenario B):  
 
-If ALL values in \code{call_ret} throw errors, prints a warning message and returns a
+A) If all values in \code{call_ret} throw errors, prints a warning message and returns a
 \code{list} of length 2 with the following elements:
 \itemize{
 \item \code{result}: A custom message, \emph{No valid results; see errors}
@@ -22,7 +22,7 @@ If ALL values in \code{call_ret} throw errors, prints a warning message and retu
     \item \code{msg}: Error message, possibly custom depending on error type (\code{character})
     }
 }
-If ANY value in \code{call_ret} succeeds AND returns a non-empty \code{user_list}, 
+B) If any value in \code{call_ret} succeeds and returns a non-empty \code{user_list}, 
 a \code{list} of length 4 with the following elements:
 \itemize{
 \item \code{user_table}: A three-column \code{data.table}:
@@ -43,11 +43,26 @@ a \code{list} of length 4 with the following elements:
     \item \code{n_users}: A custom field denoting number of unique items in \code{user_list} from \code{user_table}, 
           by group (name or ID). The sum of this column should equal the number of rows in \code{user_table} (\code{integer})
     }
-\item \code{permission}: If NOT requested, a message \emph{No permissions requested, none returned}; else, an 
+\item \code{permission}: If not requested, a message \emph{No permissions requested, none returned}; else, an 
       eight-column \code{data.table}:
     \itemize{
-    \item \code{id}: 
+    \item \code{id}: ID for the permission \emph{name} (\code{integer})
+    \item \code{name}: Name of the permission. Within the entire table, there can be identical \emph{name}s, but 
+          each \emph{name} is unique in the context of its respective \code{parent_name} (\code{character})
+    \item \code{access} (\code{logical})
+    \item \code{parent_name}: Custom-named field; derives from the \code{category_permissions data.frame}, which
+          has a default name of \emph{name}. Restructured within \code{\link{restr_permissions}} to maintain 
+          hierarchical relationship between top-level and nested \code{data.frame} outputs from the return value, and
+          renamed to \code{parent_name} to avoid name conflict with \emph{name} (above) (\code{character})
+    \item \code{parent_category}: Custom-named field; see \code{parent_name} documentation (above). Originally called
+          \emph{category} (\code{character})
+    \item \code{parent_access}: Custom-named field; see \code{parent_name} documentation (above). Originally called 
+           \emph{access} (\code{character})
+    \item \code{group_name}: Custom field added to denote group scoping, here via \emph{group_name} (\code{character})
+    \item \code{group_id}: Custom field added to denote group scoping, here via \emph{group_id} (\code{integer})
     }
+\item \code{errors}: If no errors, a message \emph{No errors triggered by any group_name or group_id values}; else, a
+      two-column \code{data.table}; see \code{errors} in \emph{Scenario A} (above) for details. 
 }
 }
 \description{
@@ -75,7 +90,15 @@ function, and therefore does not require access (or authentication) to the API. 
 is only helpful if for some reason a set of call return values is written out for later restructuring.
 }
 \examples{
-#TBD
+\dontrun{
+# Scenario A
+call_err <- call.Get_Group(c("a", "b"))
+data_err <- restr.Get_Group(call_err)
+
+# Scenario B, with permissions
+call_no_err.P <- call.Get_Group(c(136031L, "RAP-Mendeley Admin Access"))
+data_no_err.P <- restr.Get_Group(call_no_err.P)
+}
 }
 \seealso{
 Other get.group.functions: \code{\link{call.Get_Group}},
