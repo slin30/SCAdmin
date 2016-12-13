@@ -72,9 +72,8 @@ git pull origin master
 
 This is the easiest method, as it can be performed within R itself. This method requires you to supply
 your gitlab user name and password, which can be done in any number of ways. In the example, I've stored
-my personal gitlab credentials in a .Renviron file; see 
-[relevant instructions in Authentication](#a-bit-more-difficult-but-recommended-renviron)) for 
-instructions on how to do this.
+my personal gitlab credentials in a `.Renviron` file; see 
+[relevant instructions in Authentication](#a-bit-more-difficult-but-recommended-renviron).
 
 ```{r}
 ##Open a fresh RStudio session (anywhere)
@@ -95,11 +94,9 @@ library(git2r)
 ## names you use with your .Renviron file.
 my_gl_cred <- cred_user_pass(Sys.getenv("wz_gl_id"), password = Sys.getenv("wz_gl_pw"))
 
-
 ##Then, call install via devtools; pass through the 'my_gl_cred' variable to authenticate
 devtools::install_git("https://git.cm-elsevier.com/zhang1/SCAdmin.git", 
                       credentials = my_gl_cred)
-
 ```
 ### Key dependencies
 
@@ -152,8 +149,10 @@ A better method is to use a `.Renviron` file. Don't be scared-- it's much less d
         names (keys) to populate parameters (values) in the call to `SCAuth()`
 
 3. Then, save the file as `.Renviron` in the location denoted by Step #1. 
+    - Your OS may complain/warn about file extensions. Ingore these and proceed. 
+    - Your final file must be literlly named `.Renviron`.
 
-4. Restart your R session `<CTRL + SHIFT + F10>`
+4. Restart your R session; the default keyboard shortcut is `<CTRL + SHIFT + F10>` 
 
 5. You can now access the credentials in key-value fashion using `Sys.getenv()`, 
     - e.g. if you have saved your USER_NAME in a variable called "sc_id", with a value of "f.lastname:Elsevier Inc.",
