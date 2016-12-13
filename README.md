@@ -10,9 +10,9 @@ There are several ways to get and install this package:
 
 #### From source
 
-This is the most manual approach, but does not require actual access to the repository. All you 
-need is the tarball (tar.gz; see below). Getting said tarball requires repository access, but
-this method does allow anyone with the tarball to pass the file to others, and install the package.
+This is the most manual approach, but does not require persistent access to the repository. All you 
+need is the tarball (tar.gz; see below). While obtaining said tarball requires repository access, 
+anyone with the tarball can install the package using the instructions in the code chunk thereafter.
 
 1. Navigate to the master branch (https://git.cm-elsevier.com/zhang1/SCAdmin/tree/master)
 2. Download the tar.gz (even if you are running Windows)
@@ -23,11 +23,9 @@ Modify the following code chunk:
 ```{r}
 ##The basic pattern is: 'install.packages(path_to_file, repos = NULL, type="source")'
 ##For example:
-# dontrun{
 # install.packages("C:/Users/zhang2/Downloads/SCAdmin-master-37c6596be1b7afb2d65e0ecabcca9f87aa8812e6.tar.gz", 
 #                  repos = NULL, 
 #                  type="source") #Modify the path for your local system
-# }
 ```
 
 #### Clone
@@ -49,10 +47,8 @@ Once you've cloned the repo, you can install it using devtools:
 ##Uncomment the lines below if necessary to install the required packages
 # install.packages("devtools") #if you do not have it already
 
-
 ##Then use devtools::install() to install the package, e.g:
 ##devtools::install("path_to_cloned_project")
-
 # devtools::install("C:/Users/zhang2/Desktop/zhang1GitLab/SCAdmin") #modify the path for your system
 
 ##NOTE: Do not include the trailing slash at the end of the package dir, i.e. do "SCAdmin" and NOT "SCAdmin/"
@@ -75,8 +71,8 @@ git pull origin master
 #### Direct pull
 
 This is the easiest method, as it can be performed within R itself. This method requires you to supply
-your gitlab user name and password, which can be done in any number of ways. The examples stores
-my personal gitlab credentials in the .Renviron file; see 
+your gitlab user name and password, which can be done in any number of ways. In the example, I've stored
+my personal gitlab credentials in a .Renviron file; see 
 [relevant instructions in Authentication](#a-bit-more-difficult-but-recommended-renviron)) for 
 instructions on how to do this.
 
