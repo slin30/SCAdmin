@@ -24,19 +24,17 @@
 #' @examples
 #' # Forthcoming
 Get_Segments <- function(accessLevel = NULL, fields = NULL, 
-                               selected = NULL, sort = NULL, 
-                               filters = NULL, handle_tagsCol = FALSE,
-                               ...) {
+                         selected = NULL, sort = NULL, 
+                         filters = NULL, handle_tagsCol = FALSE,
+                         ...) {
   
   # accessLevel, must be vetor of length 1
-  # Note that accessLevel is overriden if 'selected' has value
   validAccessLevel <- c("all", "shared", "owned")
   if(!is.null(accessLevel)) {
     # check input length, must be length 1
     if(length(accessLevel) > 1L) {
       stop("accessLevel must be a vector of length 1")
     }
-    # check input value validity
     accessLevel <- .l_helper_inputCheck(nm = "accessLevel", 
                                         input = accessLevel, 
                                         ref = validAccessLevel, 
@@ -47,7 +45,6 @@ Get_Segments <- function(accessLevel = NULL, fields = NULL,
   }
   
   # fields, will always include id and name
-  # valid fields
   validFields <- c("tags", "shares",
                    "description", "owner",
                    "modified", "compatibility",
@@ -55,17 +52,6 @@ Get_Segments <- function(accessLevel = NULL, fields = NULL,
                    "definition"
   )
   if(!is.null(fields)) {
-    # make sure all fields are valid
-    # tmp_fields <- unique(
-    #   c(fields, recursive=TRUE, use.names=FALSE)
-    # )
-    # diff_fieldCheck <- setdiff(tmp_fields, validFields)
-    # if(length(diff_fieldCheck) > 0L) {
-    #   stop("The following illegal values were found in fields:\n\t", 
-    #        diff_fieldCheck)
-    # } else {
-    #   fields <- tmp_fields
-    # }
     fields <- .l_helper_inputCheck(nm = "fields", 
                                    input = fields, 
                                    ref = validFields, 
@@ -90,11 +76,10 @@ Get_Segments <- function(accessLevel = NULL, fields = NULL,
     sort <- unbox("id")
   }
   
-  # filters; this is the most complicated
-  # must provide a named list to arg if using
+  # filters; has own helper, as must provide a named list to arg
   if(!is.null(filters)) {
-    filters <- .process_filters(filters)
-    filters <- lapply(filters, function(f) jsonlite::unbox(f))
+    filters <- .l_helper_process_filters(filters)
+    filters <- lapply(filters, function(f) unbox(f))
   }
   
   body <- list(accessLevel = accessLevel, 
@@ -106,23 +91,22 @@ Get_Segments <- function(accessLevel = NULL, fields = NULL,
   
   body <- Filter(function(x) !is.null(x), body)
   
-  #query <- jsonlite::toJSON(body)
-  #fun <- "Segments.Get"
-  #out <- ApiRequest(body = query, func.name = fun, ...)
+  query <- jsonlite::toJSON(body)
+  fun <- "Segments.Get"
+  out <- ApiRequest(body = query, func.name = fun, ...)
   
   # handle tags here, since it is a simple list colum
   # if("tags" %in% names(out) & handle_tagsCol) {
   #   out <- tidyr::unnest_(out, "tags")
   # }
-  # return(out)
+  return(out)
 }
 
 NULL
 # helper to validate, optionally preprocess, and return values or error msg
 .l_helper_inputCheck <- function(nm, input, ref, 
                                  collapse_lst = TRUE, dedupe = TRUE, unbox = FALSE, 
-                                 single_value = FALSE
-) {
+                                 single_value = FALSE) {
   if(collapse_lst & is.list(input)) {
     input <- c(input, recursive = TRUE)
   }
@@ -135,17 +119,19 @@ NULL
   if(length(delta) > 0L) {
     if(length(delta) == 1L)
       msg <- paste(
-      "The following illegal value was found in ", nm,  
-      "\n\t", delta, 
-      sep = " "
-    )
+        "The following illegal value was found in ", nm,  
+        "\n\t", paste(delta, collapse = ", "),
+        "\nValid values are: ", paste(ref, collapse = ", "), 
+        sep = ""
+      )
     if(length(delta) > 1L)
       msg <- paste(
-        "The following illegal values were found in ", nm, 
-        "\n\t", delta,
-        sep = " "
+        "The following illegal values were found in ", nm,  
+        "\n\t", paste(delta, collapse = ", "),
+        "\nValid values are: ", paste(ref, collapse = ", "), 
+        sep = ""
       )
-    stop(msg, call. = FALSE)
+    stop(message = msg, call. = FALSE)
   } else {
     if(unbox) {
       return(unbox(input))
@@ -159,7 +145,8 @@ NULL
 # helper to validate and preprocess filters arg
 .l_helper_process_filters <- function(arglst) {
   if(!is.list(arglst)) {
-    stop("argLst must be a list")
+    stop("The class of the filters arg must be a list, but is currently ", 
+         class(arglst), call. = FALSE)
   }
   argNms <- names(arglst)
   validNms <- c("approved", "favorite",
@@ -169,7 +156,7 @@ NULL
   if(! all(argNms %in% validNms)) {
     diff <- setdiff(argNms, validNms)
     stop("The following invalid names were found in arglst:\n\t", 
-         diff)
+         diff, call. = FALSE)
   }
   
   # process args for certain names
@@ -190,6 +177,5 @@ NULL
     chr_out < NULL
   }
   
-  # append and output
   c(chr_out, logi_out)
 }
