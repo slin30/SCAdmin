@@ -8,20 +8,23 @@ Get_Segments(accessLevel = NULL, fields = NULL, selected = NULL,
   sort = NULL, filters = NULL, handle_tagsCol = FALSE, ...)
 }
 \arguments{
-\item{accessLevel}{A character vector of length 1. Must be one of \code{all}, \code{shared}, or 
-\code{owned}. If not specified, defaults to \code{owned}.}
+\item{accessLevel}{(optional) A character vector of length 1. Must be one of \code{all, shared, owned}. 
+If not specified, defaults to \code{owned}.}
 
-\item{fields}{A character vector denoting the quantity, depth, and general detail of information desired. 
-See details for permissible values. The API always includes \code{id} and \code{name}, by default.}
+\item{fields}{(optional) A character vector denoting the quantity, depth, and general detail of information desired. 
+Must be one of 
+\code{tags, shares, description, owner, modified, compatibility, favorite, reportSuiteID, definition}. 
+The API always includes \code{id} and \code{name}, by default.}
 
-\item{selected}{A character vector of segment ID(s) you wish to query for. If both \code{selected} and 
+\item{selected}{(optional) A character vector of segment ID(s) you wish to query for. If both \code{selected} and 
 \code{accessLevel} are provided, \code{selected} take precedence.}
 
-\item{sort}{A character vector}
+\item{sort}{(optional) A character vector of length 1. Must be one of \code{id, name, description, reportSuiteID,
+owner, modified, favorite}. If not specified, defaults to \code{id}.}
 
-\item{filters}{A character vector}
+\item{filters}{(optional) A named \code{list}.}
 
-\item{handle_tagsCol}{A logical vector of length 1}
+\item{handle_tagsCol}{(optional) A logical vector of length 1}
 
 \item{...}{Additional args to pass to \code{ApiRequest}}
 }

@@ -6,15 +6,18 @@
 #' @importFrom RSiteCatalyst ApiRequest
 #' @importFrom jsonlite unbox toJSON
 #'
-#' @param accessLevel A character vector of length 1. Must be one of \code{all}, \code{shared}, or 
-#' \code{owned}. If not specified, defaults to \code{owned}. 
-#' @param fields A character vector denoting the quantity, depth, and general detail of information desired. 
-#' See details for permissible values. The API always includes \code{id} and \code{name}, by default.
-#' @param selected A character vector of segment ID(s) you wish to query for. If both \code{selected} and 
+#' @param accessLevel (optional) A character vector of length 1. Must be one of \code{all, shared, owned}. 
+#' If not specified, defaults to \code{owned}. 
+#' @param fields (optional) A character vector denoting the quantity, depth, and general detail of information desired. 
+#' Must be one of 
+#' \code{tags, shares, description, owner, modified, compatibility, favorite, reportSuiteID, definition}. 
+#' The API always includes \code{id} and \code{name}, by default.
+#' @param selected (optional) A character vector of segment ID(s) you wish to query for. If both \code{selected} and 
 #' \code{accessLevel} are provided, \code{selected} take precedence.
-#' @param sort A character vector 
-#' @param filters A character vector
-#' @param handle_tagsCol A logical vector of length 1
+#' @param sort (optional) A character vector of length 1. Must be one of \code{id, name, description, reportSuiteID,
+#' owner, modified, favorite}. If not specified, defaults to \code{id}.
+#' @param filters (optional) A named \code{list}. 
+#' @param handle_tagsCol (optional) A logical vector of length 1
 #' @param ... Additional args to pass to \code{ApiRequest}
 #'
 #' @return
@@ -33,7 +36,7 @@ Get_Segments <- function(accessLevel = NULL, fields = NULL,
   if(!is.null(accessLevel)) {
     # check input length, must be length 1
     if(length(accessLevel) > 1L) {
-      stop("accessLevel must be a vector of length 1")
+      stop("'accessLevel' must be a vector of length 1")
     }
     accessLevel <- .l_helper_inputCheck(nm = "accessLevel", 
                                         input = accessLevel, 
@@ -68,6 +71,10 @@ Get_Segments <- function(accessLevel = NULL, fields = NULL,
                  "owner", "modified", "favorite"
   )
   if(!is.null(sort)) {
+    # check input length, must be length 1
+    if(length(sort) > 1L) {
+      stop("'sort' must be a vector of length 1")
+    }
     sort <- .l_helper_inputCheck(nm = "sort", 
                                  input = sort, 
                                  ref = validSort, 
@@ -103,63 +110,30 @@ Get_Segments <- function(accessLevel = NULL, fields = NULL,
 }
 
 NULL
-# helper to validate, optionally preprocess, and return values or error msg
-.l_helper_inputCheck <- function(nm, input, ref, 
-                                 collapse_lst = TRUE, dedupe = TRUE, unbox = FALSE, 
-                                 single_value = FALSE) {
-  if(collapse_lst & is.list(input)) {
-    input <- c(input, recursive = TRUE)
-  }
-  
-  if(dedupe) {
-    input <- unique(input)
-  }
-  
-  delta <- setdiff(input, ref)
-  if(length(delta) > 0L) {
-    if(length(delta) == 1L)
-      msg <- paste(
-        "The following illegal value was found in ", nm,  
-        "\n\t", paste(delta, collapse = ", "),
-        "\nValid values are: ", paste(ref, collapse = ", "), 
-        sep = ""
-      )
-    if(length(delta) > 1L)
-      msg <- paste(
-        "The following illegal values were found in ", nm,  
-        "\n\t", paste(delta, collapse = ", "),
-        "\nValid values are: ", paste(ref, collapse = ", "), 
-        sep = ""
-      )
-    stop(message = msg, call. = FALSE)
-  } else {
-    if(unbox) {
-      return(unbox(input))
-    } else {
-      return(input)
-    }
-  }
-}
 
-NULL
 # helper to validate and preprocess filters arg
 .l_helper_process_filters <- function(arglst) {
   if(!is.list(arglst)) {
-    stop("The class of the filters arg must be a list, but is currently ", 
+    stop("Class of 'filters' must be a list, but is currently ", 
          class(arglst), call. = FALSE)
   }
   argNms <- names(arglst)
+  if(any(argNms %in% c("")) | all(is.null(argNms))) {
+    stop("One or more names missing in 'filters'; all elements of 'filters' must be named", 
+         call. = FALSE)
+  }
   validNms <- c("approved", "favorite",
                 "owner", "name", 
                 "reportSuiteID", "tags"
   )
   if(! all(argNms %in% validNms)) {
-    diff <- setdiff(argNms, validNms)
-    stop("The following invalid names were found in arglst:\n\t", 
-         diff, call. = FALSE)
+    .l_helper_inputCheck(nm = "filters", 
+                         input = argNms, 
+                         ref = validNms, 
+                         chk_names_instead = TRUE)
   }
   
-  # process args for certain names
+  # process args for certain names by data type req
   logi_nms <- c("approved", "favorite")
   chr_nms  <- setdiff(validNms, logi_nms)
   
@@ -178,4 +152,49 @@ NULL
   }
   
   c(chr_out, logi_out)
+}
+
+NULL
+
+# helper to validate, optionally preprocess, and return values or error msg
+.l_helper_inputCheck <- function(nm, input, ref, 
+                                 collapse_lst = TRUE, dedupe = TRUE, unbox = FALSE, 
+                                 msgOnly = FALSE, 
+                                 chk_names_instead = FALSE) {
+  # allow input to be vector of mode atomic and 'list'
+  if(collapse_lst & is.list(input)) {
+    input <- c(input, recursive = TRUE)
+  }
+  # pretty sure default of TRUE is the right call here
+  if(dedupe) {
+    input <- unique(input)
+  }
+  # Handle messaging for errors, or valid returns, assuming msgOnly is FALSE (default)
+  # chk_names_instead to ensure sensible message in case of filters, where checking is at
+  #  element names level
+  delta <- setdiff(input, ref)
+  if(chk_names_instead) {
+    msg_base = "name(s)"
+  } else {
+    msg_base = "values(s)"
+  }
+  # if errors, stop with message, else depends on unbox and msgOnly vals
+  if(length(delta) > 0L) {
+    msg <- paste(
+      "Invalid input ", msg_base, " detected in '", nm, "':",
+      "\n\t", paste(delta, collapse = ", "),
+      "\nValid ", msg_base, " are: ", paste(sort(ref), collapse = ", "), 
+      sep = ""
+    )
+    stop(message = msg, call. = FALSE)
+  } else {
+    if(msgOnly) {
+      return(invisible(N))
+    }
+    if(unbox) {
+      return(unbox(input))
+    } else {
+      return(input)
+    }
+  }
 }
