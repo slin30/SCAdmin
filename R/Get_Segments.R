@@ -44,7 +44,7 @@ Get_Segments <- function(accessLevel = NULL, fields = NULL,
                                         unbox = TRUE
     )
   } else {
-    accessLevel <- jsonlite::unbox("owned") # default
+    accessLevel <- unbox("owned") # default
   }
   
   # fields, will always include id and name
@@ -98,7 +98,7 @@ Get_Segments <- function(accessLevel = NULL, fields = NULL,
   
   body <- Filter(function(x) !is.null(x), body)
   
-  query <- jsonlite::toJSON(body)
+  query <- toJSON(body)
   fun <- "Segments.Get"
   out <- ApiRequest(body = query, func.name = fun, ...)
   
@@ -189,7 +189,7 @@ NULL
     stop(message = msg, call. = FALSE)
   } else {
     if(msgOnly) {
-      return(invisible(N))
+      return(invisible(NULL))
     }
     if(unbox) {
       return(unbox(input))
