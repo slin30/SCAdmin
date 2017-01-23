@@ -81,10 +81,58 @@ recur_get_names <- function(x, i = 0L, nm =NULL) {
     return(nm)
   } else {
     print(i)
-    ulnames(x = unlist(x, recursive = FALSE), i = i+1, nm = c(nm))
+    recur_get_names(x = unlist(x, recursive = FALSE), i = i+1, nm = c(nm))
   }
   
 }
+
+
+.parse_container <- function(x) {
+  # if none of the expected names are present, stop
+  possible_names <- c("definition", "type", "operator", "rules")
+  
+  if(is.null(names(unlist(x)))) {
+    stop("No names detected in input")
+  }
+  
+  flat_nms <- names(unlist(x)) %>%
+    gsub("\\d", "", .) %>%
+    unique
+  
+  nms_chk <- lapply(possible_names, function(f) grepl(f, flat_nms)) %>%
+    unlist %>%
+    Reduce("|", .)
+  
+  if(!nms_chk || is.null(nms_chk)) {
+    stop("No expected names detected in input")
+  }
+  
+  # Need to normalize input structure to df called "container" with rules nested df
+    # handle input of df with container nested within definition
+  if("definition" %in% names(x) & is.data.frame(x)) {
+    cont <- x[["definition"]]
+    return(cont)
+  }
+    # pass thru
+  if(length(names(x)) == 1L && names(x) == "container") {
+    return(x)
+  }
+    # However, if someone passed in rules , need to nest it a level as df
+  if(all(c("type", "operator", "rules") %in% names(x))) {
+    cont <- data.frame(container = x)
+    return(cont)
+  }
+  
+}
+
+a <- full_multi[["definition"]]
+b <- a$container
+
+
+.parse_container(full_multi)
+.parse_container(a)
+.parse_container(b)
+
 
 
 # Testing -----------------------------------------------------------------
@@ -126,17 +174,7 @@ out_cast <- dcast(out, hierarchy + field + subfield + subidx~ idx, value.var = "
 setorder(out_cast, hierarchy, subidx)
 ####
 
-recur_get_names <- function(x, i = 0L, nm = NULL) {
 
-  if(!is.list(x)) {
-    nm <- c(names(x), nm)
-    return(nm)
-  } else {
-    print(i)
-    ulnames(x = unlist(x, recursive = FALSE), i = i+1, nm = c(nm))
-  }
-
-}
 
 
 
