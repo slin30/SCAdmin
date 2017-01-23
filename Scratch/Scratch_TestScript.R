@@ -5,6 +5,7 @@ library(jsonlite)
 
 SCAuth(key = Sys.getenv("wz_sc_id"), Sys.getenv("wz_sc_pw"))
 
+source("./Scratch/Scratch_TestFUNS.R")
 fix_blank <- function(x) {
   x[x==""] <- NA
   x
