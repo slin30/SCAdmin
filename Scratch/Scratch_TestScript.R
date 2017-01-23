@@ -74,6 +74,21 @@ full_multi <- Get_Segments(filters = list(name = "aarti"),
 }
 
 
+recur_get_names <- function(x, i = 0L, nm =NULL) {
+  
+  if(!is.list(x)) {
+    nm <- c(names(x), nm)
+    return(nm)
+  } else {
+    print(i)
+    ulnames(x = unlist(x, recursive = FALSE), i = i+1, nm = c(nm))
+  }
+  
+}
+
+
+# Testing -----------------------------------------------------------------
+
 
 x <- full_multi
 
@@ -111,7 +126,26 @@ out_cast <- dcast(out, hierarchy + field + subfield + subidx~ idx, value.var = "
 setorder(out_cast, hierarchy, subidx)
 ####
 
+recur_get_names <- function(x, i = 0L, nm = NULL) {
 
+  if(!is.list(x)) {
+    nm <- c(names(x), nm)
+    return(nm)
+  } else {
+    print(i)
+    ulnames(x = unlist(x, recursive = FALSE), i = i+1, nm = c(nm))
+  }
+
+}
+
+
+
+# Testing output space ----------------------------------------------------
+
+
+lapply(full_multi, ulnames) %>% unlist(., use.names = TRUE)
+ulnames(full_multi) %>% print
+ulnames(full_multi$definition)
 
 
 all_single <- GS_ALL(filters = list(name = "aarti"), 
