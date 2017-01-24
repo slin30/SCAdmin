@@ -1,198 +1,109 @@
-Get_Segments <- function(accessLevel = NULL, fields = NULL, 
-                         selected = NULL, sort = NULL, 
-                         filters = NULL, handle_tagsCol = FALSE,
-                         ...) {
-  
-  # accessLevel, must be vetor of length 1
-  validAccessLevel <- c("all", "shared", "owned")
-  if(!is.null(accessLevel)) {
-    # check input length, must be length 1
-    if(length(accessLevel) > 1L) {
-      stop("'accessLevel' must be a vector of length 1")
-    }
-    accessLevel <- .l_helper_inputCheck(nm = "accessLevel", 
-                                        input = accessLevel, 
-                                        ref = validAccessLevel, 
-                                        unbox = TRUE
-    )
-  } else {
-    accessLevel <- unbox("owned") # default
-  }
-  
-  # fields, will always include id and name
-  validFields <- c("tags", "shares",
-                   "description", "owner",
-                   "modified", "compatibility",
-                   "favorite", "reportSuiteID",
-                   "definition"
-  )
-  if(!is.null(fields)) {
-    fields <- .l_helper_inputCheck(nm = "fields", 
-                                   input = fields, 
-                                   ref = validFields, 
-                                   unbox = FALSE)
-  }
-  
-  # selected, will override accessLevel if present
-  if(!is.null(selected)) {
-    selected <- c(selected, recursive=TRUE)
-  }
-  
-  # sort, must be vector of length 1
-  validSort <- c("id", "name", "description", "reportSuiteID",
-                 "owner", "modified", "favorite"
-  )
-  if(!is.null(sort)) {
-    # check input length, must be length 1
-    if(length(sort) > 1L) {
-      stop("'sort' must be a vector of length 1")
-    }
-    sort <- .l_helper_inputCheck(nm = "sort", 
-                                 input = sort, 
-                                 ref = validSort, 
-                                 unbox = TRUE)
-  } else {
-    sort <- unbox("id")
-  }
-  
-  # filters; has own helper, as must provide a named list to arg
-  if(!is.null(filters)) {
-    filters <- .l_helper_process_filters(filters)
-    filters <- lapply(filters, function(f) unbox(f))
-  }
-  
-  body <- list(accessLevel = accessLevel, 
-               fields = fields, 
-               selected = selected, 
-               sort = sort, 
-               filters = filters
-  )
-  
-  body <- Filter(function(x) !is.null(x), body)
-  
-  query <- toJSON(body)
-  fun <- "Segments.Get"
-  out <- ApiRequest(body = query, func.name = fun, ...)
-  
-  # handle tags here, since it is a simple list colum
-  # if("tags" %in% names(out) & handle_tagsCol) {
-  #   out <- tidyr::unnest_(out, "tags")
-  # }
-  return(out)
-}
-
-NULL
-
-# helper to validate and preprocess filters arg
-.l_helper_process_filters <- function(arglst) {
-  if(!is.list(arglst)) {
-    stop("Class of 'filters' must be a list, but is currently ", 
-         class(arglst), call. = FALSE)
-  }
-  argNms <- names(arglst)
-  if(any(argNms %in% c("")) | all(is.null(argNms))) {
-    stop("One or more names missing in 'filters'; all elements of 'filters' must be named", 
-         call. = FALSE)
-  }
-  validNms <- c("approved", "favorite",
-                "owner", "name", 
-                "reportSuiteID", "tags"
-  )
-  if(! all(argNms %in% validNms)) {
-    .l_helper_inputCheck(nm = "filters", 
-                         input = argNms, 
-                         ref = validNms, 
-                         chk_names_instead = TRUE)
-  }
-  
-  # process args for certain names by data type req
-  logi_nms <- c("approved", "favorite")
-  chr_nms  <- setdiff(validNms, logi_nms)
-  
-  logi_elems <- Filter(function(x) !is.null(x), arglst[logi_nms])
-  chr_elems  <- Filter(function(x) !is.null(x), arglst[chr_nms])
-  
-  if(length(logi_elems) > 0L) {
-    logi_out <- lapply(logi_elems, function(f) as.logical(f))
-  } else {
-    logi_out <- NULL
-  }
-  if(length(chr_elems) > 0L) {
-    chr_out <- lapply(chr_elems, function(f) paste(f, collapse = ",", sep = ","))
-  } else {
-    chr_out < NULL
-  }
-  
-  c(chr_out, logi_out)
-}
-
-NULL
-
-# helper to validate, optionally preprocess, and return values or error msg
-.l_helper_inputCheck <- function(nm, input, ref, 
-                                 collapse_lst = TRUE, dedupe = TRUE, unbox = FALSE, 
-                                 msgOnly = FALSE, 
-                                 chk_names_instead = FALSE) {
-  # allow input to be vector of mode atomic and 'list'
-  if(collapse_lst & is.list(input)) {
-    input <- c(input, recursive = TRUE)
-  }
-  # pretty sure default of TRUE is the right call here
-  if(dedupe) {
-    input <- unique(input)
-  }
-  # Handle messaging for errors, or valid returns, assuming msgOnly is FALSE (default)
-  # chk_names_instead to ensure sensible message in case of filters, where checking is at
-  #  element names level
-  delta <- setdiff(input, ref)
-  if(chk_names_instead) {
-    msg_base = "name(s)"
-  } else {
-    msg_base = "values(s)"
-  }
-  # if errors, stop with message, else depends on unbox and msgOnly vals
-  if(length(delta) > 0L) {
-    msg <- paste(
-      "Invalid input ", msg_base, " detected in '", nm, "':",
-      "\n\t", paste(delta, collapse = ", "),
-      "\nValid ", msg_base, " are: ", paste(sort(ref), collapse = ", "), 
-      sep = ""
-    )
-    stop(message = msg, call. = FALSE)
-  } else {
-    if(msgOnly) {
-      return(invisible(NULL))
-    }
-    if(unbox) {
-      return(unbox(input))
-    } else {
-      return(input)
-    }
-  }
-}
-
-
-# restructure definition return from Segments.Get with definition pull
+# draft restructuring fun
 restr_segRules <- function(x) {
   
   x_filt <- lapply(x, class)
   
   # capture vector, pass on data.frame
   x_vec       <- x[x_filt != "data.frame"]
-  x_container <- as.list(x[[c("definition", "container")]])
+  # handle x_vec, will always have values unless error
+  dt.x_vec <- do.call(cbind, x_vec) %>% t %>% as.data.table(., keep.rownames = "field")
+  
+  out_dt.x_vec <- melt(dt.x_vec, id.vars = "field", variable.factor = FALSE)
+  out_dt.x_vec[, value := fix_blank(value)]
+  
+  out_x_container <- .parse_container(x)
+  
+  c(list(meta = out_dt.x_vec), out_x_container)
+}
+
+NULL
+# helper one, extract container out of different structures
+.extract_container <- function(x) {
+  # if none of the expected names are present, stop
+  possible_names <- c("definition", "type", "operator", "rules")
+  
+  if(is.null(names(unlist(x)))) {
+    stop("No names detected in input")
+  }
+  
+  flat_nms <- names(unlist(x)) %>%
+    gsub("\\d", "", .) %>%
+    unique
+  
+  nms_chk <- lapply(possible_names, function(f) grepl(f, flat_nms)) %>%
+    unlist %>%
+    Reduce("|", .)
+  
+  if(!nms_chk || is.null(nms_chk)) {
+    stop("No expected names detected in input")
+  }
+  
+  # Need to normalize input structure to df called "container" with rules nested df
+  # handle input of df with container nested within definition
+  if("definition" %in% names(x) & is.data.frame(x)) {
+    cont <- x[["definition"]]
+    return(cont)
+  }
+  # pass thru
+  if(length(names(x)) == 1L && names(x) == "container") {
+    return(x)
+  }
+  # However, if someone passed in rules , need to nest it a level as df
+  if(all(c("type", "operator", "rules") %in% names(x))) {
+    cont <- data.frame(container = seq_len(nrow(x)))
+    cont$container <- data.frame(type = x[["type"]])
+    
+    x_class <- vapply(x, class, FUN.VALUE = character(1))
+    x_flat <- x[, which(x_class != "list")]
+    
+    cont$container <- x_flat
+    cont$container$rules <- x[["rules"]]
+    return(cont)
+  }
+  
+}
+
+# need parsers for shares, compatibility, and tags
+NULL
+# parse container, calls .extract_container
+.parse_container <- function(x) {
+  # first extract or verify required data structure
+  x_container <- .extract_container(x)
   
   
-  x_rules <- x_container[[c("rules")]] %>%
-    Map(as.data.table, .)
+  # handle non-rules metadata
+  x_container_only <- t(do.call(cbind, 
+                                x_container$container[, c("type", "operator")]
+  )
+  ) %>%
+    as.data.table(., keep.rownames = "subfield")
+  # append field, which is container
+  x_container_only$field <- "container"
+  # output
+  out_x_container_only <- melt(x_container_only, 
+                               id.vars = c("field","subfield"), 
+                               variable.factor = FALSE
+  )
+  out_x_container_only[, value := fix_blank(value)]
   
-  new_rulenames <- lapply(x_rules, function(f) paste0("rule_", names(f)))
-  Map(setnames, x_rules, new_rulenames)
+  # handle rules
+  x_rules <- x_container[[c("container", "rules")]] %>%
+    Map(as.data.table, .) %>%
+    lapply(X=., function(f) 
+      f[, ":="(field = "container", subfield = "rules")]
+    )
   
-  cont_meta <- x_container[!names(x_container) %in% "rules"]
+  x_rules_melt <- lapply(x_rules, function(f)
+    melt(f, id.vars = c("field", "subfield"),
+         variable.name = "subfield_name",
+         variable.factor = FALSE)
+  )
   
-  out <- lapply(x_rules, function(f) f[, c(names(cont_meta)) := cont_meta])
-  out <- lapply(x_rules, function(f) f[, c(names(x_vec)) := x_vec])
+  out_x_rules <- rbindlist(x_rules_melt, use.names = TRUE, idcol = "variable")
+  out_x_rules[, "variable" := paste0("V", get("variable"))]
   
-  rbindlist(out)
+  # out
+  list(container = out_x_container_only, 
+       rules = out_x_rules)
   
 }
