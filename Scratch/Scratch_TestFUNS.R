@@ -1,25 +1,20 @@
 # draft restructuring fun
-restr_segRules <- function(x) {
+restr_segRules <- function(x, ...) {
   
-  x_filt <- lapply(x, class)
+  x_meta <- .parse_segMeta(x)
+  x_cont <- .parse_container(x, ...)
   
-  # capture vector, pass on data.frame
-  #x_vec       <- x[x_filt != "data.frame"]
-  x_vec <- x[!x_filt %in% c("data.frame", "list")]
-  # handle x_vec, will always have values unless error
-  dt.x_vec <- do.call(cbind, x_vec) %>% t %>% as.data.table(., keep.rownames = "field")
-  
-  out_dt.x_vec <- melt(dt.x_vec, id.vars = "field", variable.factor = FALSE)
-  out_dt.x_vec[, value := fix_blank(value)]
-  
-  out_x_container <- .parse_container(x)
-  
-  c(list(meta = out_dt.x_vec), out_x_container)
-}
+  list(segment_meta = x_meta, 
+       defn = x_cont)
 
+}
 NULL
-# helper one, extract container out of different structures
-.extract_container <- function(x) {
+
+# Extractors --------------------------------------------------------------
+# need extractors for shares, compatibility, and tags
+
+# extract definition out of different structures
+.extract_defn <- function(x) {
   # if none of the expected names are present, stop
   possible_names <- c("definition", "type", "operator", "rules")
   
@@ -51,107 +46,108 @@ NULL
   }
   # However, if someone passed in rules , need to nest it a level as df
   if(all(c("type", "operator", "rules") %in% names(x))) {
-    cont <- data.frame(container = seq_len(nrow(x)))
-    cont$container <- data.frame(type = x[["type"]])
+    defn <- data.frame(container = seq_len(nrow(x)))
+    defn$container <- data.frame(type = x[["type"]])
     
     x_class <- vapply(x, class, FUN.VALUE = character(1))
     x_flat <- x[, which(x_class != "list")]
     
-    cont$container <- x_flat
-    cont$container$rules <- x[["rules"]]
-    return(cont)
+    defn$container <- x_flat
+    defn$container$rules <- x[["rules"]]
+    return(defn)
   }
   
 }
 
-# need parsers for shares, compatibility, and tags
 NULL
-# parse container, calls .extract_container
-.parse_container <- function(x) {
-  # first extract or verify required data structure
-  x_container <- .extract_container(x)
+# Parsers -----------------------------------------------------------------
+NULL
+# parse top-level segment metadata
+.parse_segMeta <- function(x) {
+  targs_meta <- vapply(x, class, FUN.VALUE = character(1))
   
+  x_meta <- x[, names(targs_meta)[
+    !targs_meta %in% c("list", "data.frame")]
+    ] %>%
+    as.data.table
   
-  # handle non-rules metadata
-  x_container_only <- t(do.call(cbind, 
-                                x_container$container[, c("type", "operator")]
-  )
-  ) %>%
-    as.data.table(., keep.rownames = "subfield")
-  # append field, which is container
-  x_container_only$field <- "container"
-  # output
-  out_x_container_only <- melt(x_container_only, 
-                               id.vars = c("field","subfield"), 
-                               variable.factor = FALSE
-  )
-  out_x_container_only[, value := fix_blank(value)]
+  setnames(x_meta, paste0("segment_", names(x_meta)))
   
-  # handle rules
-  x_rules <- x_container[[c("container", "rules")]] %>%
-    Map(as.data.table, .) %>%
-    lapply(X=., function(f) 
-      f[, ":="(field = "container", subfield = "rules")]
-    )
-  
-  x_rules_melt <- lapply(x_rules, function(f)
-    melt(f, id.vars = c("field", "subfield"),
-         variable.name = "subfield_name",
-         variable.factor = FALSE)
-  )
-  
-  out_x_rules <- rbindlist(x_rules_melt, use.names = TRUE, idcol = "variable")
-  out_x_rules[, "variable" := paste0("V", get("variable"))]
-  
-  # out
-  list(container = out_x_container_only, 
-       rules = out_x_rules)
+  return(x_meta)
   
 }
+NULL
+# parse container, calls .extract_defn
+.parse_container <- function(x, collapse_rules = TRUE, bind_rules = TRUE,
+                             field = "definition", subfield = "container", subfield_type = "rules") {
+  
+  # first extract or verify required data structure
+  defn <- .extract_defn(x)
+  
+  # Then get ID
+  id <- x[["id"]]
+  if(is.null(id)) {
+    stop("id is missing in x")
+  }
+  
+  
+  # only extract non-list elements from cont$container
+  targs_container <- vapply(defn$container, function(f) 
+    class(f), FUN.VALUE = character(1)
+  )
+  container_meta <- defn$container[, names(targs_container)[
+    !targs_container %in% c("list", "data.frame")]
+    ]
+  # append field, subfield
+  container_meta[["field"]] <- field
+  container_meta[["subfield"]] <- subfield
+  # set to DT, fix names
+  container_meta <- as.data.table(container_meta)
+  # operator needs to be identified...should not hard-code this
+  container_meta[["segment_id"]] <- id
+  
+  
+  # Now handle rules
+  container_rules <- defn$container[["rules"]] %>%
+    lapply(X=., as.data.table) %>%
+    lapply(X=., function(f) f[, ":="(field = field, 
+                                     subfield = subfield, 
+                                     subfield_type = subfield_type)])
+  names(container_rules) <- id # to be safe
+  for(i in seq_along(id)) {
+    container_rules[[i]][, c("segment_id") := id[[i]]]
+  }
+  
+  # identify overlapping names between meta and rules
+  # but make sure you exclude standard names
+  exclude_nms <- c(quote(field), quote(subfield), "segment_id")
+  nms_overlap <- intersect(names(container_meta), 
+                           names(container_rules[[1]])
+  ) %>%
+    setdiff(., exclude_nms)
+  
+  # if any overlapping names, handle them, for container_meta
+  if(length(nms_overlap) > 0L) {
+    setnames(container_meta, nms_overlap, paste0("container_", nms_overlap))
+  }
 
-## Alternative, more elegant I think
-id <- MG_all[["id"]]
-cont <- .extract_container(MG_all)
-cont$container[["id"]] <- id # add segment ID
-
-# only extract non-list elements
-targs <- vapply(cont$container, function(f) class(f), FUN.VALUE = character(1))
-
-# split out to handle non-rules vs. rules
-x_container_only <- cont$container[, names(targs)[!targs %in% c("list", "data.frame")]]
-x_container_only[["field"]] <- "definition"
-x_container_only[["subfield"]] <- "container"
-
-x_rules          <- cont$container$rules
-names(x_rules) <- id # tag with segment ID here as well
-x_rules <- lapply(x_rules, as.data.table)
-x_rules <- lapply(x_rules, function(f) f[, ":="(field = "definition", 
-                                                subfield = "container", 
-                                                subfield_type = "rules")
-                                         ]
-)
-
-colord <- c("id", "field", "subfield", "subfield_type")
-x_rules_DT <- rbindlist(x_rules, use.names = TRUE, idcol = "id") %>%
-  setcolorder(., c(colord, setdiff(names(.), colord)))
-x_rules_DT_splt <- split(x_rules_DT, f = x_rules_DT$id) # splitted...not sure if needed
-# or cast first?
-x_rules_DT.cast <- dcast(x_rules_DT, 
-                         ... ~ subfield_type, 
-                         value.var = "value", 
-                         fun.aggregate = function(x) paste(unique(x[!is.na(x)]), collapse = ", ")
-) # this is much nicer...
-
-# And then grab the other non-list and non-DT, bind in, 
-#  write parsers for other list and DT fields, 
-#  bind all together, using id as the pk
-
-targs_all <- vapply(MG_all, function(f) class(f), FUN.VALUE = character(1))
-MG_all_meta <- MG_all[, names(targs_all)[!targs_all %in% c("list", "data.frame")]]
-
-
-
-
-
+  if(collapse_rules) {
+    rules <- lapply(container_rules, function(f) dcast(
+      f, ... ~ subfield_type, 
+          value.var = "value", 
+          fun.aggregate = function(x) paste(unique(x[!is.na(x)]), collapse = ", "))
+    ) 
+  } else {
+    rules <- container_rules
+  }
+  
+  if(bind_rules) {
+    rules <- rbindlist(rules, use.names = TRUE, fill = TRUE)
+  }
+  
+  list(container_meta = container_meta, 
+       rules = rules
+       )
+}
 
 
