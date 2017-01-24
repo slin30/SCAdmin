@@ -108,3 +108,50 @@ NULL
        rules = out_x_rules)
   
 }
+
+## Alternative, more elegant I think
+id <- MG_all[["id"]]
+cont <- .extract_container(MG_all)
+cont$container[["id"]] <- id # add segment ID
+
+# only extract non-list elements
+targs <- vapply(cont$container, function(f) class(f), FUN.VALUE = character(1))
+
+# split out to handle non-rules vs. rules
+x_container_only <- cont$container[, names(targs)[!targs %in% c("list", "data.frame")]]
+x_container_only[["field"]] <- "definition"
+x_container_only[["subfield"]] <- "container"
+
+x_rules          <- cont$container$rules
+names(x_rules) <- id # tag with segment ID here as well
+x_rules <- lapply(x_rules, as.data.table)
+x_rules <- lapply(x_rules, function(f) f[, ":="(field = "definition", 
+                                                subfield = "container", 
+                                                subfield_type = "rules")
+                                         ]
+)
+
+colord <- c("id", "field", "subfield", "subfield_type")
+x_rules_DT <- rbindlist(x_rules, use.names = TRUE, idcol = "id") %>%
+  setcolorder(., c(colord, setdiff(names(.), colord)))
+x_rules_DT_splt <- split(x_rules_DT, f = x_rules_DT$id) # splitted...not sure if needed
+# or cast first?
+x_rules_DT.cast <- dcast(x_rules_DT, 
+                         ... ~ subfield_type, 
+                         value.var = "value", 
+                         fun.aggregate = function(x) paste(unique(x[!is.na(x)]), collapse = ", ")
+) # this is much nicer...
+
+# And then grab the other non-list and non-DT, bind in, 
+#  write parsers for other list and DT fields, 
+#  bind all together, using id as the pk
+
+targs_all <- vapply(MG_all, function(f) class(f), FUN.VALUE = character(1))
+MG_all_meta <- MG_all[, names(targs_all)[!targs_all %in% c("list", "data.frame")]]
+
+
+
+
+
+
+
