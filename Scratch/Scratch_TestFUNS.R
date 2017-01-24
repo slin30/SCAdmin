@@ -4,7 +4,8 @@ restr_segRules <- function(x) {
   x_filt <- lapply(x, class)
   
   # capture vector, pass on data.frame
-  x_vec       <- x[x_filt != "data.frame"]
+  #x_vec       <- x[x_filt != "data.frame"]
+  x_vec <- x[!x_filt %in% c("data.frame", "list")]
   # handle x_vec, will always have values unless error
   dt.x_vec <- do.call(cbind, x_vec) %>% t %>% as.data.table(., keep.rownames = "field")
   

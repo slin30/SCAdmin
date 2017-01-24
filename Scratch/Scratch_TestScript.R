@@ -52,5 +52,6 @@ a <- rbindlist(p.full_single, use.names = TRUE, fill = TRUE)
 b <- rbindlist(p.full_multi, use.names = TRUE, fill = TRUE)
 
 
-
+MG_all <- GS_ALL(filters = list(name = "Knovel"))
+MG_pars <- restr_segRules(MG_all)
 
