@@ -44,14 +44,18 @@ full_single <- Get_Segments(filters = list(name = "aarti"),
 full_multi <- Get_Segments(filters = list(name = "aarti"), 
                            fields = c("definition", "description", "owner", "modified", "reportSuiteID"), 
                            accessLevel = "all")
+MG_all <- GS_ALL(filters = list(name = "Knovel"))
+
 
 p.full_single <- restr_segRules(full_single)
 p.full_multi  <- restr_segRules(full_multi)
+p.MG_all      <- restr_segRules(MG_all)
 
-a <- rbindlist(p.full_single, use.names = TRUE, fill = TRUE)
-b <- rbindlist(p.full_multi, use.names = TRUE, fill = TRUE)
+bind.full_single <- rbindlist(p.full_single, use.names = TRUE, fill = TRUE)
+bind.full_multi  <- rbindlist(p.full_multi, use.names = TRUE, fill = TRUE)
+bind.MG_all      <- rbindlist(p.MG_all, use.names = TRUE, fill = TRUE)
 
-
-MG_all <- GS_ALL(filters = list(name = "Knovel"))
-MG_pars <- restr_segRules(MG_all)
+cast.MG_all <- dcast(bind.MG_all, ... ~ variable, value.var = "value", 
+                     fun.aggregate = function(x) paste(unique(x[!is.na(x)]), collapse = ", ")
+) %>% setorderv(., c("field"), order = -1L)
 
