@@ -3,6 +3,7 @@
 export(Get_Segments)
 export(call.Get_Group)
 export(restr.Get_Group)
+export(restr.Get_Segments)
 export(restr_permissions)
 import(data.table)
 importFrom(RSiteCatalyst,ApiRequest)

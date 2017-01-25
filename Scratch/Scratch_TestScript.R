@@ -9,7 +9,7 @@ SCAuth(key = Sys.getenv("wz_sc_id"), Sys.getenv("wz_sc_pw"))
 
 # FUNS --------------------------------------------------------------------
 
-source("./Scratch/Scratch_TestFUNS.R")
+#source("./Scratch/Scratch_TestFUNS.R")
 source("./Scratch/Scratch_TestFUNS_nested.R")
 
 fix_blank <- function(x) {
@@ -61,10 +61,10 @@ invalids_idx <- setdiff(seq_len(nrow(WZ_all)), valids_idx) # for testing  purpos
 
 ######
 
-p.full_single <- restr_segRules(full_single, collapse_rules = TRUE, bind_rules = TRUE)
-p.full_multi  <- restr_segRules(full_multi, collapse_rules = FALSE, bind_rules = TRUE)
-p.MG_all      <- restr_segRules(MG_all)
-p.WZ_all      <- restr_segRules(WZ_all, collapse_rules = FALSE, bind_rules = FALSE) # at least this works...
+p.full_single <- restr.Get_Segments(full_single, collapse_rules = TRUE, bind_rules = TRUE)
+p.full_multi  <- restr.Get_Segments(full_multi, collapse_rules = FALSE, bind_rules = TRUE)
+p.MG_all      <- restr.Get_Segments(MG_all)
+p.WZ_all      <- restr.Get_Segments(WZ_all, collapse_rules = FALSE, bind_rules = FALSE) # at least this works...
 
 
 ###
@@ -77,114 +77,124 @@ valid_seg <- WZ_meta[valids_idx, segment_id]
 invalid_seg <- WZ_meta[invalids_idx, segment_id]
 
 WZ_all_clean <- GS_ALL(selected = valid_seg)
-WZ_all_dirty <- GS_ALL(selected = invalid_seg[[2]]) # just one for now
+WZ_all_dirty <- GS_ALL(selected = invalid_seg[[3]]) # just one for now; recursive extraction may require
+# only one segment at a time for now
 
-p.WZ_all_clean <- restr_segRules(WZ_all_clean, collapse_rules = TRUE, bind_rules = TRUE)
-#p.WZ_all_dirty <- restr_segRules(WZ_all_dirty, collapse_rules = TRUE, bind_rules = TRUE) #error
+p.WZ_all_clean <- restr.Get_Segments(WZ_all_clean, collapse_rules = TRUE, bind_rules = TRUE)
+#p.WZ_all_dirty <- restr.Get_Segments(WZ_all_dirty, collapse_rules = TRUE, bind_rules = TRUE) #error
 
 
 # Dirty return parsing ----------------------------------------------------
 
-def_0 <- .extract_defn(WZ_all_dirty)
-def_1 <- def_0$container$rules # 
-def_2 <- def_1[[1]] # need to get all the way to this point, identify it
-
-
-def_0$container %>% str # 3 fields, type,operator,rules; 1 row
-#rules is a list of 1 with a nested DF
-def_0$container$rules %>% str # a list of 1, with a df, so need to tunnel down one more level
-def_0$container$rules[[1]] %>% str # 2 fields, since the first level is another df, container
-def_0$container$rules[[1]]$container %>% str # 4 fields, name,type,operator,rules; 2 rows
-
-# which means the next repetition if present should be:
-#                                   _ <- right here
-def_0$container$rules[[1]]$container$rules[[1]]$container %>% str # and there it is
-# 2 fields, type,rules; 11 rows
-# and this is as deep as this one goes-- you know this because 
-#  1. Number of rows in df equals length of rules list-- this is necessary but not sufficient
-#  2. if you tunnel down to rules[[1]]$container, result is NULL: see for yourself
-def_0$container$rules[[1]]$container$rules[[1]]$container$rules[[1]]$container #NULL
-
-extract_nested <- function(x) {
+extract_nested <- function(x, d = 0L, out = vector("list", 0L)) {
   # keep it simple for testing for now
   # assume you get the right input
+  message("In iter ", d, " input form of x is", str(x))
   
-  tunnel <- c("container", "rules")
-  x[[tunnel]][[1]]
-}
+  # check if container is present
+  if("definition" %in% names(x)) {
+    x <- x[["definition"]]
+  }
+  
+  if("container" %in% names(x)) {
+    x <- x[["container"]]
+  }
+  
+  if(is.data.frame(x)) {
+    x <- as.list(x)
+  }
 
-tst <- extract_nested(def_0)
-tst1 <- extract_nested(tst)
-tst2 <- extract_nested(tst1) # NULL
-
-#ok, now test recursive version
-
-recur_extract <- function(x, d = 0L, out = vector("list", 0L)) {
-  print(d)
-  x <- x[[c("container", "rules")]][[1]]
+  message("In iter ", d, " intermediate form of x is", str(x))
+  
+  
+  chk_lst <- is.list(x)
+  chk_nm <- "rules" %in% names(x)
+  
+  if(chk_lst & chk_nm) {
+    x <- Filter(function(x) !is.null(x), x[["rules"]])
+  }
+  
+  message("In iter ", d, " Filtered structure of x is", str(x))
   
   if(is.null(x)) {
     return(out)
+  }
+  
+  chk_L1 <- is.data.frame(x[[1]])
+  chk_L1_nm <- "container" %in% names(x[[1]])
+  
+
+  if(all(chk_lst, chk_nm, chk_L1, chk_L1_nm) && !is.null(x)) {
+    extract_nested(x = x[[1]], d = d + 1L, out = append(list(x[[1]]), out) )
   } else {
-    recur_extract(x = x, d = d + 1L, out = append(out, x))
+    return(out)
   }
   
 }
 
-tst_recur <- recur_extract(def_0)
-tst_recur_orig <- recur_extract(WZ_all_dirty$definition)
+tst <- extract_nested(WZ_all_dirty)
+lapply(tst, wzMisc::depth)
 
-recur_extract2 <- function(x, d = 0L, out = vector("list", 0L)) {
-  print(d)
-  x <- x[[c("rules")]][[1]][["container"]]
+# or a simple way to get atomic stuff
+recur_get_what <- function(x, what = "value") {
+  ul <- unlist(x)
+  filt <- grepl(what, names(ul))
   
-  if(is.null(x)) {
-    return(out)
-  } else {
-    recur_extract2(x = x, d = d + 1L, out = append(out, x))
-  }
-  
+  out <- unlist(unname(ul[filt]))
+  unique(out[!is.na(out)])
 }
 
-tst_recur2 <- recur_extract2(def_0) # not quite what you want, but kinda on the right path?
 
-##The issue is you need to detect a data.frame, which 
+vals <- recur_get_what(WZ_all_dirty, what = "value")
+whats <- list("id", "operator", "value", "type", "element", "name")
+names(whats) <- whats
 
+my_whats <- lapply(whats, function(f) recur_get_what(WZ_all, f))
 
-str(tst_recur)
-lapply(tst_recur, depth)
-# so there are 2 containers; can we parse each individually?
-names(tst_recur) <- make.unique(names(tst_recur))
-names(tst_recur)
-
-tr_cont1 <- .extract_defn(tst_recur$container)
-tr_cont2 <- .extract_defn(tst_recur$container.1) # not quite...
-
-# then need to recursive handle rules? or can we just Map and rbindlist, 
-# handling NULLs with new funs?
-
-
-wtf <- WZ_all_dirty
-
-library(wzMisc)
-depth(wtf) # NA
-depth_while(wtf) # 14
-depth(wtf$definition) # 13
-depth_while(wtf$definition) # 13
-
-depth(def_0)
-depth(def_1)
-depth(def_2)
-
-# look for data.frame without a name
-# extract_df <- function(x, lst = vector("list")) {
-#   if(is.data.frame(x)[1] && names(x)[1] == "container") {
-#     
-#     lst <- append(lst, .extract_defn(x))
+# x <- WZ_all_dirty
+# "definition" %in% names(x)
+# x <- x[["definition"]]
+# "container" %in% names(x)
+# x <- x[["container"]]
+# 
+# chk_lst <- is.list(x)
+# chk_lst_nm <- "rules" %in% names(x)
+# is.data.frame(x[["rules"]][[1]])
+# 
+# a <- x[[c("rules")]][[1]][["container"]]
+# 
+# 
+# 
+# recur_extract <- function(x, d = 0L, out = vector("list", 0L)) {
+#   print(d)
+#   x <- x[[c("container", "rules")]][[1]]
+#   
+#   if(is.null(x)) {
+#     return(out)
+#   } else {
+#     recur_extract(x = x, d = d + 1L, out = append(out, x))
 #   }
-#   extract_df()
-#     
+#   
 # }
+# 
+# 
+# 
+# tst_recur <- recur_extract(WZ_all_dirty$definition)
+# 
+# 
+# 
+# recur_extract2 <- function(x, d = 0L, out = vector("list", 0L)) {
+#   print(d)
+#   x <- x[[c("rules")]][[1]][["container"]]
+#   
+#   if(is.null(x)) {
+#     return(out)
+#   } else {
+#     recur_extract2(x = x, d = d + 1L, out = append(out, x))
+#   }
+#   
+# }
+
 
 #####
 
