@@ -9,8 +9,8 @@ SCAuth(key = Sys.getenv("wz_sc_id"), Sys.getenv("wz_sc_pw"))
 
 # FUNS --------------------------------------------------------------------
 
-#source("./Scratch/Scratch_TestFUNS.R")
-source("./Scratch/Scratch_TestFUNS_nested.R")
+source("./Scratch/Scratch_TestFUNS.R") # temporarily pull in .extract_defn for testing
+#source("./Scratch/Scratch_TestFUNS_nested.R")
 
 fix_blank <- function(x) {
   x[x==""] <- NA
@@ -62,22 +62,20 @@ invalids_idx <- setdiff(seq_len(nrow(WZ_all)), valids_idx) # for testing  purpos
 ######
 
 p.full_single <- restr.Get_Segments(full_single, collapse_rules = TRUE, bind_rules = TRUE)
-p.full_multi  <- restr.Get_Segments(full_multi, collapse_rules = FALSE, bind_rules = TRUE)
-p.MG_all      <- restr.Get_Segments(MG_all)
+p.full_multi  <- restr.Get_Segments(full_multi, collapse_rules = TRUE, bind_rules = TRUE)
+p.MG_all      <- restr.Get_Segments(MG_all, collapse_rules = TRUE, bind_rules = FALSE)
 p.WZ_all      <- restr.Get_Segments(WZ_all, collapse_rules = FALSE, bind_rules = FALSE) # at least this works...
 
 
 ###
 WZ_meta <- p.WZ_all$segment_meta
-# WZ_cmeta <- p.WZ_all$defn$container_meta
-# WZ_cdata <- p.WZ_all$defn$rules
 
 ### Address invalids by re-querying with clean ID
 valid_seg <- WZ_meta[valids_idx, segment_id]
 invalid_seg <- WZ_meta[invalids_idx, segment_id]
 
 WZ_all_clean <- GS_ALL(selected = valid_seg)
-WZ_all_dirty <- GS_ALL(selected = invalid_seg[[3]]) # just one for now; recursive extraction may require
+# WZ_all_dirty <- GS_ALL(selected = invalid_seg[[3]]) # just one for now; recursive extraction may require
 # only one segment at a time for now
 
 p.WZ_all_clean <- restr.Get_Segments(WZ_all_clean, collapse_rules = TRUE, bind_rules = TRUE)
@@ -205,4 +203,26 @@ dt_def_dat  <- p.WZ_all_clean$defn$rules %>% setkey(., segment_id)
 def_mrg <- merge(dt_def_meta, dt_def_dat, by = c("segment_id", "field", "subfield"))
 
 def_mrg[, dupe := duplicated(.SD),  .SDcols = -c("segment_id")]
+
+# and append other meta
+def_out <- merge(dt_seg, def_mrg, by = "segment_id")
+
+
+# Delete dupe in progress -------------------------------------------------
+
+dupe_ID <- def_out[dupe == TRUE, segment_id]
+
+double_check <- GS_ALL(selected = dupe_ID) %>%
+  restr.Get_Segments(., collapse_rules = TRUE, bind_rules = TRUE)
+
+
+# WARNING
+qstring <- list(
+  segmentID = unbox(dupe_ID)
+)
+
+# #ApiRequest(toJSON(qstring), "Segments.Delete")
+
+Get_Segments(selected = dupe_ID) # should be NULL, but not found returns list(), so handle
+# this in the core FUN later!
 
