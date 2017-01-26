@@ -75,7 +75,7 @@ valid_seg <- WZ_meta[valids_idx, segment_id]
 invalid_seg <- WZ_meta[invalids_idx, segment_id]
 
 WZ_all_clean <- GS_ALL(selected = valid_seg)
-# WZ_all_dirty <- GS_ALL(selected = invalid_seg[[3]]) # just one for now; recursive extraction may require
+WZ_all_dirty <- GS_ALL(selected = invalid_seg[[1]]) # just one for now; recursive extraction may require
 # only one segment at a time for now
 
 p.WZ_all_clean <- restr.Get_Segments(WZ_all_clean, collapse_rules = TRUE, bind_rules = TRUE)
@@ -84,6 +84,10 @@ p.WZ_all_clean <- restr.Get_Segments(WZ_all_clean, collapse_rules = TRUE, bind_r
 
 # Dirty return parsing ----------------------------------------------------
 
+# This currently works for nested elements, but not stacked segments, 
+#  and need to figure out the logic for > 1 segment in a single call where one or more
+#  is nested (but NOT stacked)
+# Which means I need to identify stacked segments and filter them out
 extract_nested <- function(x, d = 0L, out = vector("list", 0L)) {
   # keep it simple for testing for now
   # assume you get the right input
@@ -91,7 +95,9 @@ extract_nested <- function(x, d = 0L, out = vector("list", 0L)) {
   
   # check if container is present
   if("definition" %in% names(x)) {
-    x <- x[["definition"]]
+    x <- x[["definition"]][["container"]][["rules"]][[1]]
+    out[[paste0("iter_", d)]] <- list(x)
+    d <- d+1L
   }
   
   if("container" %in% names(x)) {
@@ -121,17 +127,36 @@ extract_nested <- function(x, d = 0L, out = vector("list", 0L)) {
   chk_L1 <- is.data.frame(x[[1]])
   chk_L1_nm <- "container" %in% names(x[[1]])
   
-
-  if(all(chk_lst, chk_nm, chk_L1, chk_L1_nm) && !is.null(x)) {
-    extract_nested(x = x[[1]], d = d + 1L, out = append(list(x[[1]]), out) )
-  } else {
+  # if(all(chk_lst, chk_nm, chk_L1, chk_L1_nm) && !is.null(x)) {
+  if(all(chk_L1, chk_L1_nm) && !is.null(x)) {
+    
+    out[[paste0("iter_", d)]] <- x
+    # out <- lapply(out, function(f) Filter(function(x) !is.null(x), f))
+    # extract_nested(x = x[[1]][["container"]], d = d + 1L, out)
+    extract_nested(x = x[[1]][["container"]], d = d + 1L, out)
+  } else { # we are at the lowest level; still needs to tweaking 
+    x <- x
+    if(length(x) > 1L) {
+      x <- do.call(rbind, x)
+    }
+    new_nm <- paste0("iter_", d+1L)
+    if(is.list(x) && ! is.data.frame(x)) {
+      out[[new_nm]] <- x
+    } else {
+      out[[new_nm]] <- list(x)
+    }
     return(out)
   }
   
 }
 
 tst <- extract_nested(WZ_all_dirty)
-lapply(tst, wzMisc::depth)
+lapply(tst, function(f) wzMisc::depth(f))
+
+# For things that come out as multiple DF, need to handle
+tst1 <- lapply(tst, function(f) f[[1]][c("name", "element", "operator", "value")])
+# tst1_alt <- lapply(tst, function(f) f[[1]][["container"]][c("name", "element", "operator", "value")])
+
 
 # or a simple way to get atomic stuff
 recur_get_what <- function(x, what = "value") {
@@ -144,6 +169,7 @@ recur_get_what <- function(x, what = "value") {
 
 
 vals <- recur_get_what(WZ_all_dirty, what = "value")
+alt_vals <- recur_get_what(tst1, what = "value")
 whats <- list("id", "operator", "value", "type", "element", "name")
 names(whats) <- whats
 
