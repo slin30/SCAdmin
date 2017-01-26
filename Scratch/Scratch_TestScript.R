@@ -149,7 +149,9 @@ extract_nested <- function(x, d = 0L, out = vector("list", 0L)) {
   }
   
 }
-
+# could make this the FUN, which calls extract_nested
+# although potentially more elegant if you can stop within extract_nested?
+# Either way, want to error, so you can handle it 
 out_recur <- extract_nested(WZ_all_dirty) %>%
   lapply(X=., function(f) f[[1]][c("name", "element", "operator", "value")]) %>%
   rbindlist %>%
@@ -234,4 +236,5 @@ pars_wz_all <- lapply(split_wz_all, function(f) possible_restr(f, collapse_rules
 bad <- pars_wz_all$error %>% Filter(function(x) !is.null(x), .)
 good <- pars_wz_all$result %>% Filter(function(x) !is.null(x), .)
 
-
+to_fix <- split_wz_all[names(bad)]
+# address the extract_nested function to error on fail rather than returning something?
