@@ -150,12 +150,12 @@ extract_nested <- function(x, d = 0L, out = vector("list", 0L)) {
   
 }
 
-tst <- extract_nested(WZ_all_dirty)
-lapply(tst, function(f) wzMisc::depth(f))
+out_recur <- extract_nested(WZ_all_dirty) %>%
+  lapply(X=., function(f) f[[1]][c("name", "element", "operator", "value")]) %>%
+  rbindlist %>%
+  .[!is.na(name)] %>%
+  .[, ":="(field = "definition", subfield = "container")]
 
-# For things that come out as multiple DF, need to handle
-tst1 <- lapply(tst, function(f) f[[1]][c("name", "element", "operator", "value")])
-# tst1_alt <- lapply(tst, function(f) f[[1]][["container"]][c("name", "element", "operator", "value")])
 
 
 # or a simple way to get atomic stuff
@@ -175,20 +175,7 @@ names(whats) <- whats
 
 my_whats <- lapply(whats, function(f) recur_get_what(WZ_all, f))
 
-# x <- WZ_all_dirty
-# "definition" %in% names(x)
-# x <- x[["definition"]]
-# "container" %in% names(x)
-# x <- x[["container"]]
-# 
-# chk_lst <- is.list(x)
-# chk_lst_nm <- "rules" %in% names(x)
-# is.data.frame(x[["rules"]][[1]])
-# 
-# a <- x[[c("rules")]][[1]][["container"]]
-# 
-# 
-# 
+
 # recur_extract <- function(x, d = 0L, out = vector("list", 0L)) {
 #   print(d)
 #   x <- x[[c("container", "rules")]][[1]]
@@ -200,25 +187,6 @@ my_whats <- lapply(whats, function(f) recur_get_what(WZ_all, f))
 #   }
 #   
 # }
-# 
-# 
-# 
-# tst_recur <- recur_extract(WZ_all_dirty$definition)
-# 
-# 
-# 
-# recur_extract2 <- function(x, d = 0L, out = vector("list", 0L)) {
-#   print(d)
-#   x <- x[[c("rules")]][[1]][["container"]]
-#   
-#   if(is.null(x)) {
-#     return(out)
-#   } else {
-#     recur_extract2(x = x, d = d + 1L, out = append(out, x))
-#   }
-#   
-# }
-
 
 #####
 
@@ -251,4 +219,19 @@ qstring <- list(
 
 Get_Segments(selected = dupe_ID) # should be NULL, but not found returns list(), so handle
 # this in the core FUN later!
+
+
+# Can we split a multi segment call up? -----------------------------------
+
+split_wz_all <- lapply(seq_len(nrow(WZ_all)), function(f) WZ_all[f, ])
+names(split_wz_all) <- WZ_all$id
+
+
+possible_restr <- purrr::safely(restr.Get_Segments)
+pars_wz_all <- lapply(split_wz_all, function(f) possible_restr(f, collapse_rules = TRUE, bind_rules = TRUE)) %>%
+  purrr::transpose(.)
+
+bad <- pars_wz_all$error %>% Filter(function(x) !is.null(x), .)
+good <- pars_wz_all$result %>% Filter(function(x) !is.null(x), .)
+
 
