@@ -10,28 +10,53 @@
 #' @importFrom magrittr "%>%"
 #' 
 #' @param x A call return from \code{Get_Segments}
-#' @param collapse_rules logi. Should the output collapse multi-ruled into comma-delimited format? 
-#' Defaults to \code{FALSE}
-#' @param bind_rules logi. Should the output return rules as individual lists of \code{data.table}s or 
-#' attempt to glue them together via \code{rbindlist}? Defaults to \code{FALSE}
+#' @param merge_rules logi. Should the function return a tidy \code{data.table}? Defaults to \code{TRUE}
+#' @param ... Additional named args to pass to parse functions. Should not normally be needed.
 #' @return
 #' Depending on the values passed to \emph{collapse_rules} and \emph{bind_rules}, a list of outputs of
-#' varying lengths
+#' varying lengths. With default settings, \code{list} of two \code{data.tables}:
+#' \enumerate{
+#'     \item{\emph{segment_meta}: Segment-level metadata}
+#'     \item{\emph{defn}: Rule-level data}
+#' }
+#' Records across both list elements are uniquely identified by the \emph{segment_id} field, for 
+#' easy joining, if desired. 
+#' @details 
+#' This function is still in progress; to properly utilize this function, each row of the return from
+#' \code{Get_Segments} must be handled individually. The splitting function is ready, but not yet
+#' integrated. 
 #' @note 
-#' Default args for \emph{collapse_rules} and \emph{bind_rules} are not the most useful by far, but
-#' are the safest in the sense that they will work for nested containers and stacked segments, although
-#' the restructured output for these kinds of segments is hardly ideal. 
+#' At the moment, \code{...} can be used to pass \emph{collapse_rules} and \emph{bind_rules} (logi) 
+#' args to the helper \code{.parse_container} function. This is primarily useful for debugging purposes. 
+#' 
+#' This function still does not properly parse rules for nested containers, nor stacked segments. A 
+#' workaround is in progress for nested containers, but support for parsing stacked segments will take
+#' some time, and there is no guarantee that this will be possible.
+#' 
+#' At the moment, segments that cannot be successfully parsed are passed through, and an error is logged. 
+#' This is reflected in the \emph{defn} table, in the field \emph{error}.
 #' 
 #' This is definitely not a complete function yet; you have been warned. 
 #' @export
 #'
 #' @examples
 #' #Forthcoming
-restr.Get_Segments <- function(x, collapse_rules = FALSE, bind_rules = FALSE) {
+restr.Get_Segments <- function(x, merge_rules = TRUE, ...) {
   
   x_meta <- .parse_segMeta(x)
-  x_cont <- .parse_container(x, collapse_rules = collapse_rules, bind_rules = bind_rules)
-  
+  x_cont <- tryCatch(
+    {
+      .parse_container(x, merge_rules = merge_rules, ...)
+    }, 
+    error = function(e) {
+      invisible(e)
+      message("error in: ", x[["id"]])
+      data.table(segment_id = x[["id"]], error = e[[1]])
+    }, 
+    finally = 
+      NULL
+  )
+
   list(segment_meta = x_meta, 
        defn = x_cont)
   
@@ -105,7 +130,7 @@ NULL
 }
 NULL
 # parse container, calls .extract_defn
-.parse_container <- function(x, collapse_rules = TRUE, bind_rules = TRUE,
+.parse_container <- function(x, collapse_rules = FALSE, bind_rules = FALSE, merge_rules = FALSE,
                              field = "definition", subfield = "container", subfield_type = "rules") {
   
   # first extract or verify required data structure
@@ -158,7 +183,7 @@ NULL
     setnames(container_meta, nms_overlap, paste0("container_", nms_overlap))
   }
   
-  if(collapse_rules) {
+  if(collapse_rules || merge_rules) {
     rules <- lapply(container_rules, function(f) dcast(
       f, ... ~ subfield_type, 
       value.var = "value", 
@@ -168,11 +193,60 @@ NULL
     rules <- container_rules
   }
   
-  if(bind_rules) {
+  if(bind_rules || merge_rules) {
     rules <- rbindlist(rules, use.names = TRUE, fill = TRUE)
   }
   
-  list(container_meta = container_meta, 
-       rules = rules
-  )
+  if(merge_rules) {
+    out <- merge(container_meta, rules, by = c("segment_id", "field", "subfield"))
+    
+  } else {
+    out <- list(container_meta = container_meta, 
+                rules = rules)
+  }
+  return(out)
 }
+
+
+
+# To be integrated --------------------------------------------------------
+
+.split_segment_ret <- function(seg_ret) {
+  # check class
+  if(!is.list(seg_ret)) {
+    stop("seg_ret is of class ",
+         class(seg_ret), " but expected a data.frame"
+    )
+  }
+  # get id
+  id <- seg_ret[["id"]]
+  # check row and id match
+  if(nrow(seg_ret) != length(id)) {
+    stop("There are ", nrow(seg_ret),
+         " but only ", length(id), " ids"
+    )
+  }
+
+  out <- lapply(seq_along(id), function(f)
+    seg_ret[f, ])
+  names(out) <- id
+
+  return(out)
+}
+
+
+# easy-mode get all; template of sorts, before packaging
+# easy.Get_Segments <- function(..., fun = NULL) {
+#   
+#   if(is.null(fun)) {
+#     fun <- "GS_ALL"
+#   }
+#   
+#   seg_call  <- match.fun(fun)(...)
+#   restr_call <- .split_segment_ret(seg_call) %>%
+#     Map(restr.Get_Segments, ., merge_rules = TRUE) %>%
+#     purrr::transpose(.)
+#   
+#   lapply(restr_call, function(f) 
+#     rbindlist(f, use.names = TRUE, fill = TRUE))
+# }

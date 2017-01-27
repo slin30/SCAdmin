@@ -26,6 +26,47 @@ GS_ALL <- function(...) {
                ...)
 }
 
+# splitter for get_segments return
+.split_segment_ret <- function(seg_ret) {
+  # check class
+  if(!is.list(seg_ret)) {
+    stop("seg_ret is of class ", 
+         class(seg_ret), " but expected a data.frame"
+    )
+  }
+  # get id
+  id <- seg_ret[["id"]]
+  # check row and id match
+  if(nrow(seg_ret) != length(id)) {
+    stop("There are ", nrow(seg_ret), 
+         " but only ", length(id), " ids"
+    )
+  }
+  
+  out <- lapply(seq_along(id), function(f) 
+    seg_ret[f, ])  
+  names(out) <- id
+  
+  return(out)
+}
+
+
+# easy-mode get all; template of sorts, before packaging
+easy.Get_Segments <- function(..., fun = NULL) {
+  
+  if(is.null(fun)) {
+    fun <- "GS_ALL"
+  }
+
+  seg_call  <- match.fun(fun)(...)
+  restr_call <- split.segment_ret(seg_call) %>%
+    Map(restr.Get_Segments, ., merge_rules = TRUE) %>%
+    purrr::transpose(.)
+  
+  lapply(restr_call, function(f) 
+    rbindlist(f, use.names = TRUE, fill = TRUE))
+}
+
 # Errors in input testing -------------------------------------------------
 
 Get_Segments(filters = c("A", "a"))
@@ -40,46 +81,24 @@ Get_Segments(filters = list(name = "A", alt="B"))
 
 # Working -----------------------------------------------------------------
 
-full_single <- Get_Segments(filters = list(name = "aarti"), 
-                            fields = c("definition", "description", "owner", "modified", "reportSuiteID"), 
-                            accessLevel = "owned")
-full_multi <- Get_Segments(filters = list(name = "aarti"), 
-                           fields = c("definition", "description", "owner", "modified", "reportSuiteID"), 
-                           accessLevel = "all")
-MG_all <- GS_ALL(filters = list(name = "Knovel"))
-WZ_all <- GS_ALL() # test all mine; there are 34, 3 are problematic
+full_single <- easy.Get_Segments(filters = list(name = "aarti"), 
+                                 fields = c("definition", "description", 
+                                            "owner", "modified", 
+                                            "reportSuiteID"), 
+                                 accessLevel = "owned", 
+                                 fun = "Get_Segments"
+)
+full_multi <- easy.Get_Segments(filters = list(name = "aarti"), 
+                                fields = c("definition", "description",
+                                           "owner", "modified", 
+                                           "reportSuiteID"), 
+                                accessLevel = "all", 
+                                fun = "Get_Segments"
+)
+MG_all <- easy.Get_Segments(filters = list(name = "Knovel"))
+WZ_all <- easy.Get_Segments() # test all mine; there are 34, 3 are problematic
 
-#final invalid indices; hack for now
-cont_WZ <- .extract_defn(WZ_all) # right now, have to handle problematic via hack
-valids <- lapply(cont_WZ$container$rules, function(f) f[["name"]])
-valids_filt_null <- lapply(valids, function(f) !is.null(f))
-valids_filt_NA   <- lapply(valids, function(f) all(!is.na(f)))
-
-valids_filt_out <- Map("&", valids_filt_null,valids_filt_NA)
-valids_idx <- which(unlist(valids_filt_out))
-invalids_idx <- setdiff(seq_len(nrow(WZ_all)), valids_idx) # for testing  purposes
-
-######
-
-p.full_single <- restr.Get_Segments(full_single, collapse_rules = TRUE, bind_rules = TRUE)
-p.full_multi  <- restr.Get_Segments(full_multi, collapse_rules = TRUE, bind_rules = TRUE)
-p.MG_all      <- restr.Get_Segments(MG_all, collapse_rules = TRUE, bind_rules = FALSE)
-p.WZ_all      <- restr.Get_Segments(WZ_all, collapse_rules = FALSE, bind_rules = FALSE) # at least this works...
-
-
-###
-WZ_meta <- p.WZ_all$segment_meta
-
-### Address invalids by re-querying with clean ID
-valid_seg <- WZ_meta[valids_idx, segment_id]
-invalid_seg <- WZ_meta[invalids_idx, segment_id]
-
-WZ_all_clean <- GS_ALL(selected = valid_seg)
-WZ_all_dirty <- GS_ALL(selected = invalid_seg[[1]]) # just one for now; recursive extraction may require
-# only one segment at a time for now
-
-p.WZ_all_clean <- restr.Get_Segments(WZ_all_clean, collapse_rules = TRUE, bind_rules = TRUE)
-#p.WZ_all_dirty <- restr.Get_Segments(WZ_all_dirty, collapse_rules = TRUE, bind_rules = TRUE) #error
+WZ_out <- merge(WZ_all$segment_meta, WZ_all$defn, by = c("segment_id"))
 
 
 # Dirty return parsing ----------------------------------------------------
@@ -160,22 +179,22 @@ out_recur <- extract_nested(WZ_all_dirty) %>%
 
 
 
-# or a simple way to get atomic stuff
-recur_get_what <- function(x, what = "value") {
-  ul <- unlist(x)
-  filt <- grepl(what, names(ul))
-  
-  out <- unlist(unname(ul[filt]))
-  unique(out[!is.na(out)])
-}
-
-
-vals <- recur_get_what(WZ_all_dirty, what = "value")
-alt_vals <- recur_get_what(tst1, what = "value")
-whats <- list("id", "operator", "value", "type", "element", "name")
-names(whats) <- whats
-
-my_whats <- lapply(whats, function(f) recur_get_what(WZ_all, f))
+# # or a simple way to get atomic stuff
+# recur_get_what <- function(x, what = "value") {
+#   ul <- unlist(x)
+#   filt <- grepl(what, names(ul))
+#   
+#   out <- unlist(unname(ul[filt]))
+#   unique(out[!is.na(out)])
+# }
+# 
+# 
+# vals <- recur_get_what(WZ_all_dirty, what = "value")
+# alt_vals <- recur_get_what(tst1, what = "value")
+# whats <- list("id", "operator", "value", "type", "element", "name")
+# names(whats) <- whats
+# 
+# my_whats <- lapply(whats, function(f) recur_get_what(WZ_all, f))
 
 
 # recur_extract <- function(x, d = 0L, out = vector("list", 0L)) {
@@ -192,49 +211,20 @@ my_whats <- lapply(whats, function(f) recur_get_what(WZ_all, f))
 
 #####
 
-## In process
-dt_seg <- p.WZ_all_clean$segment_meta %>% setkey(., segment_id)
-dt_def_meta <- p.WZ_all_clean$defn$container_meta %>% setkey(., segment_id)
-dt_def_dat  <- p.WZ_all_clean$defn$rules %>% setkey(., segment_id)
-def_mrg <- merge(dt_def_meta, dt_def_dat, by = c("segment_id", "field", "subfield"))
-
-def_mrg[, dupe := duplicated(.SD),  .SDcols = -c("segment_id")]
-
-# and append other meta
-def_out <- merge(dt_seg, def_mrg, by = "segment_id")
-
-
 # Delete dupe in progress -------------------------------------------------
-
-dupe_ID <- def_out[dupe == TRUE, segment_id]
-
-double_check <- GS_ALL(selected = dupe_ID) %>%
-  restr.Get_Segments(., collapse_rules = TRUE, bind_rules = TRUE)
-
-
-# WARNING
-qstring <- list(
-  segmentID = unbox(dupe_ID)
-)
-
-# #ApiRequest(toJSON(qstring), "Segments.Delete")
-
-Get_Segments(selected = dupe_ID) # should be NULL, but not found returns list(), so handle
-# this in the core FUN later!
-
-
-# Can we split a multi segment call up? -----------------------------------
-
-split_wz_all <- lapply(seq_len(nrow(WZ_all)), function(f) WZ_all[f, ])
-names(split_wz_all) <- WZ_all$id
-
-
-possible_restr <- purrr::safely(restr.Get_Segments)
-pars_wz_all <- lapply(split_wz_all, function(f) possible_restr(f, collapse_rules = TRUE, bind_rules = TRUE)) %>%
-  purrr::transpose(.)
-
-bad <- pars_wz_all$error %>% Filter(function(x) !is.null(x), .)
-good <- pars_wz_all$result %>% Filter(function(x) !is.null(x), .)
-
-to_fix <- split_wz_all[names(bad)]
-# address the extract_nested function to error on fail rather than returning something?
+# 
+# dupe_ID <- def_out[dupe == TRUE, segment_id]
+# 
+# double_check <- GS_ALL(selected = dupe_ID) %>%
+#   restr.Get_Segments(., collapse_rules = TRUE, bind_rules = TRUE)
+# 
+# 
+# # WARNING
+# qstring <- list(
+#   segmentID = unbox(dupe_ID)
+# )
+# 
+# # #ApiRequest(toJSON(qstring), "Segments.Delete")
+# 
+# Get_Segments(selected = dupe_ID) # should be NULL, but not found returns list(), so handle
+# # this in the core FUN later!

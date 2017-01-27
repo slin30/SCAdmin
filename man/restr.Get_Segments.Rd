@@ -4,30 +4,45 @@
 \alias{restr.Get_Segments}
 \title{restr.Get_Segments}
 \usage{
-restr.Get_Segments(x, collapse_rules = FALSE, bind_rules = FALSE)
+restr.Get_Segments(x, merge_rules = TRUE, ...)
 }
 \arguments{
 \item{x}{A call return from \code{Get_Segments}}
 
-\item{collapse_rules}{logi. Should the output collapse multi-ruled into comma-delimited format? 
-Defaults to \code{FALSE}}
+\item{merge_rules}{logi. Should the function return a tidy \code{data.table}? Defaults to \code{TRUE}}
 
-\item{bind_rules}{logi. Should the output return rules as individual lists of \code{data.table}s or 
-attempt to glue them together via \code{rbindlist}? Defaults to \code{FALSE}}
+\item{...}{Additional named args to pass to parse functions. Should not normally be needed.}
 }
 \value{
 Depending on the values passed to \emph{collapse_rules} and \emph{bind_rules}, a list of outputs of
-varying lengths
+varying lengths. With default settings, \code{list} of two \code{data.tables}:
+\enumerate{
+    \item{\emph{segment_meta}: Segment-level metadata}
+    \item{\emph{defn}: Rule-level data}
+}
+Records across both list elements are uniquely identified by the \emph{segment_id} field, for 
+easy joining, if desired.
 }
 \description{
 Restructure the return from a call to Segments.Get, via Get_Segments. Currently does NOT work
 properly for nested containers or stacked segments! Much more work required, but this works 
 for the most basic cases.
 }
+\details{
+This function is still in progress; to properly utilize this function, each row of the return from
+\code{Get_Segments} must be handled individually. The splitting function is ready, but not yet
+integrated.
+}
 \note{
-Default args for \emph{collapse_rules} and \emph{bind_rules} are not the most useful by far, but
-are the safest in the sense that they will work for nested containers and stacked segments, although
-the restructured output for these kinds of segments is hardly ideal. 
+At the moment, \code{...} can be used to pass \emph{collapse_rules} and \emph{bind_rules} (logi) 
+args to the helper \code{.parse_container} function. This is primarily useful for debugging purposes. 
+
+This function still does not properly parse rules for nested containers, nor stacked segments. A 
+workaround is in progress for nested containers, but support for parsing stacked segments will take
+some time, and there is no guarantee that this will be possible.
+
+At the moment, segments that cannot be successfully parsed are passed through, and an error is logged. 
+This is reflected in the \emph{defn} table, in the field \emph{error}.
 
 This is definitely not a complete function yet; you have been warned.
 }
