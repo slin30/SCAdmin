@@ -59,7 +59,7 @@ easy.Get_Segments <- function(..., fun = NULL) {
   }
 
   seg_call  <- match.fun(fun)(...)
-  restr_call <- split.segment_ret(seg_call) %>%
+  restr_call <- .split_segment_ret(seg_call) %>%
     Map(restr.Get_Segments, ., merge_rules = TRUE) %>%
     purrr::transpose(.)
   
@@ -100,6 +100,14 @@ WZ_all <- easy.Get_Segments() # test all mine; there are 34, 3 are problematic
 
 WZ_out <- merge(WZ_all$segment_meta, WZ_all$defn, by = c("segment_id"))
 
+WZ_call <- GS_ALL()
+WZ_call_split <- .split_segment_ret(WZ_call)
+
+type_1 <- WZ_call_split$s300000520_57e0327ae4b007430cbdcdc0 # this one part of the stacked segment. Not created properly
+# since is unnecessarily nested, but perhaps a good test case
+type_2 <- WZ_call_split$s300000520_57e0343be4b007430cbdcdc3 # this is the stacked segment
+type_3 <- WZ_call_split$s300000520_582ca0d2e4b0a4d9dc2936ac # this is a pretty terribly created (TLV) nested
+# unnecessarily as well.
 
 # Dirty return parsing ----------------------------------------------------
 
