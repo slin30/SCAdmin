@@ -116,7 +116,7 @@ length(test_null_mix)
 }
 }
 \seealso{
-Other get.group.functions: \code{\link{restr.Get_Group}},
+Other get group functions: \code{\link{restr.Get_Group}},
   \code{\link{restr_permissions}}
 }
 

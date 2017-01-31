@@ -5,7 +5,7 @@
 \title{Get Adobe Analytics Segments information}
 \usage{
 call.Get_Segments(accessLevel = NULL, fields = NULL, selected = NULL,
-  sort = NULL, filters = NULL, handle_tagsCol = FALSE, ...)
+  sort = NULL, filters = NULL, ...)
 }
 \arguments{
 \item{accessLevel}{(optional) A character vector of length 1. Must be one of \code{all, shared, owned}. 
@@ -24,18 +24,34 @@ owner, modified, favorite}. If not specified, defaults to \code{id}.}
 
 \item{filters}{(optional) A named \code{list}.}
 
-\item{handle_tagsCol}{(optional) A logical vector of length 1}
-
 \item{...}{Additional args to pass to \code{ApiRequest}}
 }
 \value{
-A data.frame if successful.
+A data.frame, possibly with nested columns depending on requested parameters within \emph{fields}. Notably, 
+the following values in \emph{fields} return list-columns of varying complexity:
+
+\itemize{
+\item{tags}
+\item{shares}
+\item{compatibility}
+\item{definition}
+}
+
+The number of rows corresponds to the number of unique segments, identified by the \code{id} field. With default
+settings, a successful return will contain two fields, \code{id} and \code{name}.
 }
 \description{
 Query the AA segments API to return segment information based on different criteria, at 
 the level of desired detail
 }
+\note{
+It is expected that once the full method is completed, this function will no longer be required by itself, 
+although likely will still be exported for flexibility and debugging.
+}
 \examples{
 # Forthcoming
+}
+\seealso{
+Other get segments functions: \code{\link{restr.Get_Segments}}
 }
 

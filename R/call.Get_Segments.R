@@ -5,6 +5,8 @@
 #' 
 #' @importFrom RSiteCatalyst ApiRequest
 #' @importFrom jsonlite unbox toJSON
+#' 
+#' @family get segments functions
 #'
 #' @param accessLevel (optional) A character vector of length 1. Must be one of \code{all, shared, owned}. 
 #' If not specified, defaults to \code{owned}. 
@@ -17,19 +19,33 @@
 #' @param sort (optional) A character vector of length 1. Must be one of \code{id, name, description, reportSuiteID,
 #' owner, modified, favorite}. If not specified, defaults to \code{id}.
 #' @param filters (optional) A named \code{list}. 
-#' @param handle_tagsCol (optional) A logical vector of length 1
 #' @param ... Additional args to pass to \code{ApiRequest}
 #'
 #' @return
-#' A data.frame if successful. 
+#' A data.frame, possibly with nested columns depending on requested parameters within \emph{fields}. Notably, 
+#' the following values in \emph{fields} return list-columns of varying complexity:
+#' 
+#' \itemize{
+#' \item{tags}
+#' \item{shares}
+#' \item{compatibility}
+#' \item{definition}
+#' }
+#' 
+#' The number of rows corresponds to the number of unique segments, identified by the \code{id} field. With default
+#' settings, a successful return will contain two fields, \code{id} and \code{name}. 
+#' 
+#' @note 
+#' It is expected that once the full method is completed, this function will no longer be required by itself, 
+#' although likely will still be exported for flexibility and debugging. 
+#' 
 #' @export
 #'
 #' @examples
 #' # Forthcoming
 call.Get_Segments <- function(accessLevel = NULL, fields = NULL, 
                          selected = NULL, sort = NULL, 
-                         filters = NULL, handle_tagsCol = FALSE,
-                         ...) {
+                         filters = NULL, ...) {
   
   # accessLevel, must be vetor of length 1
   validAccessLevel <- c("all", "shared", "owned")
@@ -101,11 +117,7 @@ call.Get_Segments <- function(accessLevel = NULL, fields = NULL,
   query <- toJSON(body)
   fun <- "Segments.Get"
   out <- ApiRequest(body = query, func.name = fun, ...)
-  
-  # handle tags here, since it is a simple list colum
-  # if("tags" %in% names(out) & handle_tagsCol) {
-  #   out <- tidyr::unnest_(out, "tags")
-  # }
+
   return(out)
 }
 

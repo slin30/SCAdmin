@@ -98,10 +98,13 @@
 #' data_err <- restr.Get_Group(call_err)
 #' 
 #' # Scenario B, with permissions
-#' # Note that these two values describe the same thing, which is an unusual scenario, but intentionally
-#' # shown here. This is intentionally not handled, although it's easy to address downstream via unique().
+#' # Note that these two values describe the same thing, 
+#' # which is an unusual scenario, but intentionally
+#' # shown here. This is intentionally not handled, although 
+#' # it's easy to address downstream via unique().
 #' call_no_err.P <- call.Get_Group(c(136031L, "RAP-Mendeley Admin Access"), include_permissions = TRUE)
-#' data_no_err.P <- restr.Get_Group(call_no_err.P) #call unique() on result to de-duplicate, if you wish
+#' data_no_err.P <- restr.Get_Group(call_no_err.P) 
+#' # call unique() on result to de-duplicate, if you wish
 #' }
 restr.Get_Group <- function(call_ret) {
   
