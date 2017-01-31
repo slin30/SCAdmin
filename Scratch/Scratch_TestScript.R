@@ -18,7 +18,7 @@ fix_blank <- function(x) {
 }
 
 GS_ALL <- function(...) {
-  Get_Segments(fields = c("tags", "shares",
+  call.Get_Segments(fields = c("tags", "shares",
                           "description", "owner",
                           "modified", "compatibility",
                           "favorite", "reportSuiteID",
@@ -69,14 +69,14 @@ easy.Get_Segments <- function(..., fun = NULL) {
 
 # Errors in input testing -------------------------------------------------
 
-Get_Segments(filters = c("A", "a"))
-Get_Segments(filters = list("A", "B"))
+call.Get_Segments(filters = c("A", "a"))
+call.Get_Segments(filters = list("A", "B"))
 
-Get_Segments(fields = "All")
-Get_Segments(accessLevel = "A")
-Get_Segments(sort = 1:2)
-Get_Segments(sort = "A")
-Get_Segments(filters = list(name = "A", alt="B"))
+call.Get_Segments(fields = "All")
+call.Get_Segments(accessLevel = "A")
+call.Get_Segments(sort = 1:2)
+call.Get_Segments(sort = "A")
+call.Get_Segments(filters = list(name = "A", alt="B"))
 
 
 # Working -----------------------------------------------------------------
@@ -86,14 +86,14 @@ full_single <- easy.Get_Segments(filters = list(name = "aarti"),
                                             "owner", "modified", 
                                             "reportSuiteID"), 
                                  accessLevel = "owned", 
-                                 fun = "Get_Segments"
+                                 fun = "call.Get_Segments"
 )
 full_multi <- easy.Get_Segments(filters = list(name = "aarti"), 
                                 fields = c("definition", "description",
                                            "owner", "modified", 
                                            "reportSuiteID"), 
                                 accessLevel = "all", 
-                                fun = "Get_Segments"
+                                fun = "call.Get_Segments"
 )
 MG_all <- easy.Get_Segments(filters = list(name = "Knovel"))
 WZ_all <- easy.Get_Segments() # test all mine; there are 34, 3 are problematic
@@ -179,11 +179,11 @@ extract_nested <- function(x, d = 0L, out = vector("list", 0L)) {
 # could make this the FUN, which calls extract_nested
 # although potentially more elegant if you can stop within extract_nested?
 # Either way, want to error, so you can handle it 
-out_recur <- extract_nested(WZ_all_dirty) %>%
-  lapply(X=., function(f) f[[1]][c("name", "element", "operator", "value")]) %>%
-  rbindlist %>%
-  .[!is.na(name)] %>%
-  .[, ":="(field = "definition", subfield = "container")]
+# out_recur <- extract_nested(WZ_all_dirty) %>%
+#   lapply(X=., function(f) f[[1]][c("name", "element", "operator", "value")]) %>%
+#   rbindlist %>%
+#   .[!is.na(name)] %>%
+#   .[, ":="(field = "definition", subfield = "container")]
 
 
 

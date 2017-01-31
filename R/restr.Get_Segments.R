@@ -235,6 +235,18 @@ NULL
 }
 
 
+# Not for integration, but consideration ----------------------------------
+
+# This is an ugly hack to pull all the possible fields
+
+# GS_ALL <- function(...) {
+#   call.Get_Segments(fields = c("tags", "shares",
+#                                "description", "owner",
+#                                "modified", "compatibility",
+#                                "favorite", "reportSuiteID",
+#                                "definition"),  
+#                     ...)
+# }
 # easy-mode get all; template of sorts, before packaging
 # easy.Get_Segments <- function(..., fun = NULL) {
 #   
