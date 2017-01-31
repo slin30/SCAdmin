@@ -26,7 +26,7 @@
 #'
 #' @examples
 #' # Forthcoming
-Get_Segments <- function(accessLevel = NULL, fields = NULL, 
+call.Get_Segments <- function(accessLevel = NULL, fields = NULL, 
                          selected = NULL, sort = NULL, 
                          filters = NULL, handle_tagsCol = FALSE,
                          ...) {
