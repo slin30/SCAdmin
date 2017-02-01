@@ -26,6 +26,8 @@ For the most common single element, single operator, many rules use case
 #TBD
 }
 \seealso{
-Other make_segment functions: \code{\link{make_segment_meta}}
+Other make_segment functions: \code{\link{make_segment_body}},
+  \code{\link{make_segment_container}},
+  \code{\link{make_segment_meta}}
 }
 

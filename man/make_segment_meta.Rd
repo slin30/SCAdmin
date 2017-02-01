@@ -48,6 +48,8 @@ exported in the public release.
 # Forthcoming
 }
 \seealso{
-Other make_segment functions: \code{\link{make_element_rules}}
+Other make_segment functions: \code{\link{make_element_rules}},
+  \code{\link{make_segment_body}},
+  \code{\link{make_segment_container}}
 }
 
