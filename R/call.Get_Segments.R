@@ -42,10 +42,60 @@
 #' @export
 #'
 #' @examples
-#' # Forthcoming
+#' # These should be thrown into tests; being lazy for now
+#' \dontrun{
+#' # Get your segments, with id and name; no restructuring required
+#' my_own_simple <- call.Get_Segments()
+#' 
+#' # filters must be a list
+#' call.Get_Segments(filters = c("A", "a"))
+#' # filters must be a named list
+#' call.Get_Segments(filters = list("A", "B"))
+#' # filters must be a named list, and all names must be valid
+#' call.Get_Segments(filters = list(name = "A", alt="B"))
+#'  
+#' # accessLevel must be vector of length 1
+#' call.Get_Segments(accessLevel = c("all", "owned"))
+#' # accessLevel cannot contain invalid values
+#' call.Get_Segments(accessLevel = "A")
+#' # although if you pass in a list, helper will coerce to vector
+#' ## this works:
+#' call.Get_Segments(accessLevel = list("owned")) 
+#' 
+#' # sort must be a vector of length 1
+#' call.Get_Segments(sort = 1:2)
+#' # sort cannot contain invalid values
+#' call.Get_Segments(sort = 1)
+#' # although if you pass in a list, helper will coerce to vector
+#' ## this works:
+#' call.Get_Segments(sort = list("name")) 
+#' 
+#' # fields must contain valid values
+#' ## error; always get `id`, but not allowed value:
+#' call.Get_Segments(fields = c("id"))
+#' # fields must contain ALL valid values
+#' ## 'reportSuiteID' is valid, 'id' is not
+#' call.Get_Segments(fields = c("id", "reportSuiteID")) 
+#' ## this works:
+#' call.Get_Segments(fields = c("owner", "reportSuiteID"))
+#' # if you pass in a list, helper will coerce to vector
+#' call.Get_Segments(fields = list("owner", "reportSuiteID"))
+#' 
+#' # Parsing is needed for certain fields, in particular 'definition'
+#' # This returns some nested fields
+#' needs_parsing_1 <- call.Get_Segments(fields = c("tags", "shares", "compatibility"))
+#' # `definition` is the most complex
+#' needs_parsing_2 <- call.Get_Segments(fields = c("definition"))
+#' # Here's what it looks like if we ask for all fields
+#' needs_parsing_3 <- call.Get_Segments(fields = c("compatibility", "definition", 
+#'                                                 "favorite", "modified", 
+#'                                                 "owner", "reportSuiteID", 
+#'                                                 "shares", "tags")
+#'                                      )
+#' }
 call.Get_Segments <- function(accessLevel = NULL, fields = NULL, 
-                         selected = NULL, sort = NULL, 
-                         filters = NULL, ...) {
+                              selected = NULL, sort = NULL, 
+                              filters = NULL, ...) {
   
   # accessLevel, must be vetor of length 1
   validAccessLevel <- c("all", "shared", "owned")
@@ -80,7 +130,7 @@ call.Get_Segments <- function(accessLevel = NULL, fields = NULL,
   # selected, will override accessLevel if present
   if(!is.null(selected)) {
     selected <- c(selected, recursive=TRUE)
-  }
+  } 
   
   # sort, must be vector of length 1
   validSort <- c("id", "name", "description", "reportSuiteID",
@@ -117,7 +167,7 @@ call.Get_Segments <- function(accessLevel = NULL, fields = NULL,
   query <- toJSON(body)
   fun <- "Segments.Get"
   out <- ApiRequest(body = query, func.name = fun, ...)
-
+  
   return(out)
 }
 
