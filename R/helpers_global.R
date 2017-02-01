@@ -1,6 +1,9 @@
-#Global helpers
+# Global helpers
+# These are, or can be used across >1 function
+
 
 #' @importFrom magrittr "%>%"
+
 
 .g_helper_fix_blank <- function(x) {
   x[x==""] <- NA
@@ -48,31 +51,6 @@
   setnames(err.dt, err_tbl_nms)
   
 }
-
-
-# #helper for err.ret handling in .g_helper_makeErrTbl refactoring
-# .g_helper_errMsgChk <- function(x) {
-#   
-#   chkList <- list(
-#     errMsg = c("error", "message"), 
-#     errOnly = "error", 
-#     msgOnly = "message")
-#   
-#   xnames <- list_names(x)
-#   if(all(is.null(xnames)) || length(xnames) == 0) {
-#     return(x)
-#   }
-#   
-#   if(all(chkList$errMsg %in% xnames)) {
-#     Map(function(f) f[[chkList$errMsg]], x)
-#   } else if (chkList$errOnly %in% xnames) {
-#     Map(function(f) f[[chkList$errOnly]], x)
-#   } else if (chkList$msgOnly %in% xnames) {
-#     Map(function(f) f[[chkList$msgOnly]], x)
-#   } else
-#     x
-# }
-
 
 
 #empty list base helper

@@ -4,6 +4,13 @@
 
 Version 0.0.0.9000 (in dev)
 
+**Quick Nav**  
+
+[How to install](#how-to-install)  
+[Key dependencies](#key-dependencies)  
+[Package structure](#package-structure)  
+
+
 ### How to install
 
 There are several ways to get and install this package:
@@ -179,6 +186,67 @@ investigated yet. It's on my to-do list and a pull request would be welcome if y
 
 
 ### Package structure
+
+#### High-level organization
+
+Functions are ultimately designed to interact with an Admin or Segments API method. To understand the 
+rationale for how this package is organized, it is perhaps helpful to consider the following real example:
+
+The `Permissions.GetGroup` method within the Admin API is (obviously) a `GET` method. To provide a 
+*useful* implementation of this method, we must:  
+
+1. Craft a call to the method, with input checks and error handling
+    - This is handled by `call.Get_Group()`
+2. Restructure the call return, taking into account the various possible returns, depending on
+   supplied parameters. 
+    - This is handled by `restr.Get_Group()`
+3. Create a simple wrapper function that strings the above together
+    - This would be handled by a end user-facing function called e.g. `Get_Group()`
+
+This is quite straightforward, but as expected, things are never quite so simple, and so we end up having 
+to break down each of step 1 and 2 into smaller problems, so that we can still easily roll up items 1 and 2 into
+item 3. 
+
+- In (but not limited to) this specific example, there are quite a few possible input combinations, 
+and corresponding output combinations. 
+ - Furthermore, the API methods sometimes returns an empty `list` that 
+should really be handled as a `NULL` result, i.e. an error.
+
+
+
+
+
+
+#### General organization
+
+With the single exception of `helpers_global.R`, every file within `\R` describes a single function that is 
+suitable for export. This does not mean that they *must* be exported, although this is presently the case.
+
+These functions are referred to as `core functions` henceforth, for convenience and clarity. 
+
+#### Helper functions
+
+Helper functions are never exported; *helpers* are classified as such on the basis of their specificity and/or
+their trivial nature. In other words, they are either poorly generalizable and/or they perform trivial tasks.  
+
+There are two types of helper functions:
+
+- Those within `helpers_global.R`
+    - Always prefixed with `.g_helper_`
+    - Generally applicable (across core functions)
+- Those within core functions
+    - Always prefixed with `.l_helper_`
+    - Applicable only within the context of the respective core function
+
+
+
+
+### Internal functions
+
+At the moment, there is only a single function with with the `@internal` keyword. The anticipated use
+case is for Admin API methods
+
+
 
 
 

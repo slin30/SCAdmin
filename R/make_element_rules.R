@@ -23,11 +23,11 @@ make_element_rules <- function(element, operator, rules, how = NULL) {
     how <- "expand"
   }
   
-  rules <- .prep_rules(x = rules)
+  rules <- .l_helper_prep_rules(x = rules)
   
   if(how == "expand") {
     out <- lapply(rules, function(f) 
-      .make_rule_elem(element = element, operator = operator, value = f)
+      .l_helper_make_rule_elem(element = element, operator = operator, value = f)
     )
   }
   return(out)
@@ -35,7 +35,7 @@ make_element_rules <- function(element, operator, rules, how = NULL) {
 
 NULL
 
-.prep_rules <- function(x, trim = TRUE, dedupe = TRUE) {
+.l_helper_prep_rules <- function(x, trim = TRUE, dedupe = TRUE) {
   if(!is.atomic(x)) {
     stop("x must be an atomic vector")
   }
@@ -69,7 +69,7 @@ NULL
 NULL
 
 # helper to create and check elements-based segments base list
-.make_rule_elem <- function(element, operator, value) {
+.l_helper_make_rule_elem <- function(element, operator, value) {
   
   baselst <- list(
     element = element, 

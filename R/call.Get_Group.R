@@ -158,7 +158,6 @@ NULL
 
 NULL
 
-#' @keywords internal
 #Auto-detect if passing in name or ID for Group methods
 .l_helper_name_or_id <- function(x) {
   x_isID <- grepl("^\\d\\d+", x)

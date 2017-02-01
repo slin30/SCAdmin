@@ -39,15 +39,14 @@ restr_permissions <- function(x) {
   
   #index category_permissions DT out, unnest one level
   x_targ <- x[[targ]] #do here, else need to handle scope for
-  # helper FUN
-  outdt <- .l_helper_restr_permissions(x_targ)
+  # internal check FUN
+  outdt <- .l_helper_check_permissions(x_targ)
   outdt[, ":="(group_name = grp_name, group_id = grp_id)]
   
 }
 NULL
-#' @keywords internal
 #expect dt of 4 with specific names, with data.table (i.e. nested list)
-.l_helper_restr_permissions <- function(x) {
+.l_helper_check_permissions <- function(x) {
   if(!(is.data.table(x) | is.data.frame(x))) {
     stop("Required input structure is a data.table or data.frame", 
          " with additional dependencies\n", 

@@ -189,7 +189,6 @@ restr.Get_Group <- function(call_ret) {
 
 NULL
 
-#' @keywords internal
 .l_helper_GroupError <- function(x) {
   # xname <- names(x)
   if(is.null(x[["message"]])) {
