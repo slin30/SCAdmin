@@ -189,37 +189,70 @@ investigated yet. It's on my to-do list and a pull request would be welcome if y
 
 #### High-level organization
 
-Functions are ultimately designed to interact with an Admin or Segments API method. To understand the 
-rationale for how this package is organized, it is perhaps helpful to consider the following real example:
+When complete, this package should provide, at minimum, the following functions for end-users:
 
-The `Permissions.GetGroup` method within the Admin API is (obviously) a `GET` method. To provide a 
-*useful* implementation of this method, we must:  
+**Admin API Methods**
+
+- [ ] Get_Group (`Permissions.GetGroup`)
+- [ ] Get_Logins (`Permissions.GetLogins`)
+- [ ] Get_Login (`Permissions.GetLogin`)
+- [ ] Get_ReportSuiteGroups (`Permissions.GetReportSuiteGroups`)
+
+*Additional Admin API methods e.g. `PUT/EDIT/DELETE` are being considered, but not prioritized.*
+
+**Segments API Methods**
+
+- [ ] Get_Segments (`Segments.Get`)
+- [ ] Save_Segment (`Segments.Save`)
+- [ ] Edit_Segment (`Segments.Save`)
+- [ ] Delete_Segment (`Segments.Delete`)
+
+Please note additionally:
+
+- For both Admin and Segments API methods, `GET` methods are being prioritized for development. 
+- Additional functions will also be provided for `PUT/EDIT/DELETE` methods. These will e.g. assist in 
+  creation of appropriate data structures. The nomenclature of such functions will be different from 
+  what is outlined below.
+  
+#### General naming conventions
+
+**GET functions**
+
+All `GET` functions are broken into two primary parts. In all cases, this means at least two `R` script files
+within the `/R` directory:
+
+- A `call.<some_name>.R` function (makes the call)
+- A `restr.<some_name>.R` function (restructures/parses the return)
+
+For particularly complex `restr.` requirements, there may be an additional standalone `R` script named as 
+follows (*This is a temporary organization decision during development;*
+*will have a single .restr per complete function for release*):
+
+> `restr_` (underscore rather than dot delimiter)
+
+Ultimately, each pair of `call.` and `restr.` functions will be combined in a simple wrapper to create the 
+final end-user facing function. At minimum, it is expected that the underlying `call.` function will 
+be exported, along with the end-user facing function. This provides an escape hatch for unanticipated
+scenarios where a call return cannot be parsed by the package `restr.` function, so that users are not 
+stuck with a completely ineffective function, and makes debugging easier.
+
+Using the `Permissions.GetGroup` method within the Admin API as an example:
 
 1. Craft a call to the method, with input checks and error handling
     - This is handled by `call.Get_Group()`
 2. Restructure the call return, taking into account the various possible returns, depending on
    supplied parameters. 
     - This is handled by `restr.Get_Group()`
+    - Additionally, the return if a user requests `permissions` is handled
+      by `restr_permissions.R`, as such returns are a bit more complex.
 3. Create a simple wrapper function that strings the above together
     - This would be handled by a end user-facing function called e.g. `Get_Group()`
+    - As of 2017-02-01, `Get_Group()` does not exist; writing tests for 
+      underlying call and restr functions first.
 
-This is quite straightforward, but as expected, things are never quite so simple, and so we end up having 
-to break down each of step 1 and 2 into smaller problems, so that we can still easily roll up items 1 and 2 into
-item 3. 
+#### R File organization
 
-- In (but not limited to) this specific example, there are quite a few possible input combinations, 
-and corresponding output combinations. 
- - Furthermore, the API methods sometimes returns an empty `list` that 
-should really be handled as a `NULL` result, i.e. an error.
-
-
-
-
-
-
-#### General organization
-
-With the single exception of `helpers_global.R`, every file within `\R` describes a single function that is 
+With the single exception of `helpers_global.R`, every file within `/R` describes a single function that is 
 suitable for export. This does not mean that they *must* be exported, although this is presently the case.
 
 These functions are referred to as `core functions` henceforth, for convenience and clarity. 
@@ -239,14 +272,10 @@ There are two types of helper functions:
     - Applicable only within the context of the respective core function
 
 
-
-
 ### Internal functions
 
 At the moment, there is only a single function with with the `@internal` keyword. The anticipated use
 case is for Admin API methods
-
-
 
 
 
