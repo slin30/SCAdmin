@@ -5,6 +5,8 @@
 #' @importFrom jsonlite unbox toJSON
 #' @importFrom magrittr "%>%"
 #' 
+#' @family make_segment functions
+#' 
 #' @param element A character vector of length 1. Must be a valid element (id) within access rights of your account
 #' @param operator A character vector of length 1. For elements-based rules, the API defines allowable values. See details.
 #' @param rules A character vector; if not, will be coerced via \code{as.character}

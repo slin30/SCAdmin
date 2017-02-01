@@ -25,4 +25,7 @@ For the most common single element, single operator, many rules use case
 \examples{
 #TBD
 }
+\seealso{
+Other make_segment functions: \code{\link{make_segment_meta}}
+}
 
