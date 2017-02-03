@@ -176,63 +176,38 @@ extract_nested <- function(x, d = 0L, out = vector("list", 0L)) {
   }
   
 }
-# could make this the FUN, which calls extract_nested
-# although potentially more elegant if you can stop within extract_nested?
-# Either way, want to error, so you can handle it 
-# out_recur <- extract_nested(WZ_all_dirty) %>%
-#   lapply(X=., function(f) f[[1]][c("name", "element", "operator", "value")]) %>%
-#   rbindlist %>%
-#   .[!is.na(name)] %>%
-#   .[, ":="(field = "definition", subfield = "container")]
+
+# Make segments testing ---------------------------------------------------
+
+# this is a segment that contains two rules with exclude
+
+mg_exclude <- call.Get_Segments(filters = list(name = "Knovel exclude toc"),
+                                fields = c("description", "definition", "owner", "modified", 
+                                           "reportSuiteID"), 
+                                accessLevel = "all")
+
+mg_dt <- restr.Get_Segments(mg_exclude)
+
+# to recreate this
+seg_meta <- make_segment_meta(name = mg_exclude$name, 
+                              reportSuiteID = mg_exclude$reportSuiteID, 
+                              owner = "w.zhang")
+
+rule_vec <- mg_exclude$definition$container$rules[[1]]$value
+
+# now, note that there are two elements, two operators
+# if there is more than one of either element or operator in a rule, handle it
+
+# check if any of element, operator, or rules is > 1L
+# use the temporary alternative function
+seg_rules <- make_element_rules(element = mg_dt$defn$element, 
+                                rules = mg_dt$defn$rules, 
+                                operator = mg_dt$defn$operator)
+
+
+seg_container <- make_segment_container(type = "hits", operator = "or", exclude = TRUE, rules = seg_rules)
+
+seg_body <- make_segment_body(segment_container = seg_container, segment_meta = seg_meta)
 
 
 
-# # or a simple way to get atomic stuff
-# recur_get_what <- function(x, what = "value") {
-#   ul <- unlist(x)
-#   filt <- grepl(what, names(ul))
-#   
-#   out <- unlist(unname(ul[filt]))
-#   unique(out[!is.na(out)])
-# }
-# 
-# 
-# vals <- recur_get_what(WZ_all_dirty, what = "value")
-# alt_vals <- recur_get_what(tst1, what = "value")
-# whats <- list("id", "operator", "value", "type", "element", "name")
-# names(whats) <- whats
-# 
-# my_whats <- lapply(whats, function(f) recur_get_what(WZ_all, f))
-
-
-# recur_extract <- function(x, d = 0L, out = vector("list", 0L)) {
-#   print(d)
-#   x <- x[[c("container", "rules")]][[1]]
-#   
-#   if(is.null(x)) {
-#     return(out)
-#   } else {
-#     recur_extract(x = x, d = d + 1L, out = append(out, x))
-#   }
-#   
-# }
-
-#####
-
-# Delete dupe in progress -------------------------------------------------
-# 
-# dupe_ID <- def_out[dupe == TRUE, segment_id]
-# 
-# double_check <- GS_ALL(selected = dupe_ID) %>%
-#   restr.Get_Segments(., collapse_rules = TRUE, bind_rules = TRUE)
-# 
-# 
-# # WARNING
-# qstring <- list(
-#   segmentID = unbox(dupe_ID)
-# )
-# 
-# # #ApiRequest(toJSON(qstring), "Segments.Delete")
-# 
-# Get_Segments(selected = dupe_ID) # should be NULL, but not found returns list(), so handle
-# # this in the core FUN later!
