@@ -167,7 +167,7 @@ seg_test <- call.Get_Segments(accessLevel = "all", filters = list(name = "Databa
 
 # Let's grab only a sinle segment
 test_split <- .split_segment_ret(seg_test)
-single_test <- test_split[[2]]
+single_test <- test_split[[1]]
 
 ## Reference set-- an unnested segment for comparison
 seg_ref <- call.Get_Segments(accessLevel = "owned", filters = list(name = "ThermoPhysProd"), 
@@ -204,31 +204,37 @@ p1.tst <- split_seg_return(single_test)
 
 
 
-# Then, check names to see if this is nested
-## TODO: Write a parser that properly names output for inherently non-nested containers
-## and pass such structures to this function; the parse_nested_container should only
-## be used for actual nested containers, as the naming convention is recursive and 
-## therefore confusing for non-recursive inputs
-
-## Remember, the recursive logic will flip the order of the if...else 
-## for things that are natively recursive, vs. not. Hence the naming confusion. 
-
-## NB: This is also noted in comments after this function. 
 
 # for now, input the "segment_def" part of split_set_ret
-parse_nested_container <- function(x, lst = c()) {
+parse_nested_container <- function(x, lst = c(), d = 0L) {
+  
+  if("segment_def" %in% names(x)) {
+    x <- x[["segment_def"]]
+  }
   
   is_nested <- "container" %in% names(x[[c("container", "rules")]][[1]])
-  
 
   if(!is_nested) {
+    message("at iteration ", d, ", x is no longer nested")
+    
     x.tmp <- x[["container"]]
-    lst <- c(lst, 
-             list(sub_cont_meta = x.tmp[setdiff(names(x.tmp), "rules")],
-                  sub_cont_rule = x.tmp[["rules"]]
-             )
-    )
+    
+    if(d == 0L) { # then was not originally nested
+      lst <- c(lst, 
+               list(cont_meta = x.tmp[setdiff(names(x.tmp), "rules")],
+                    cont_rule = x.tmp[["rules"]]
+               )
+      )
+    } else { # then was originally nested, so all we are changing is names
+      lst <- c(lst, 
+               list(sub_cont_meta = x.tmp[setdiff(names(x.tmp), "rules")],
+                    sub_cont_rule = x.tmp[["rules"]]
+               )
+      )
+    }
+    
     return(lst)
+    
   } else {
     x.tmp      <- x[["container"]]
     x.tmp_nest <- x.tmp[["rules"]][[1]]
@@ -238,18 +244,27 @@ parse_nested_container <- function(x, lst = c()) {
                   #cont_rule = x.tmp_nest # I think this is actually redundant for natively recursive inputs...
              )
     )
-    parse_nested_container(x = x.tmp_nest, lst = lst)
+    parse_nested_container(x = x.tmp_nest, lst = lst, d = d+1L)
     
   }
   
 }
 
-parse_p1.ref <- parse_nested_container(p1.ref$segment_def) # should use a different parser for containers that are
-# intrinsically not nested, because naming for recursive structures is confusing is not natively recursive, in 
-# the current function. Or could fix the function naming logic...
-
-parse_p1.tst <- parse_nested_container(p1.tst$segment_def) # this is closer to what you want
+parse_p1.ref <- parse_nested_container(p1.ref)
+parse_p1.tst <- parse_nested_container(p1.tst) 
 
 
+# Stringing these two functions together: 
 
+parse_seg_return <- function(x) {
+  splitted = split_seg_return(x)
+  
+  cont_parsed <- parse_nested_container(x = splitted)
+  
+  c(splitted[1], cont_parsed)
+}
+
+
+ref_parsed <- parse_seg_return(single_ref)
+tst_parsed <- parse_seg_return(single_test)
 
