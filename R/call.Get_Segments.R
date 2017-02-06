@@ -19,8 +19,9 @@
 #' @param sort (optional) A character vector of length 1. Must be one of \code{id, name, description, reportSuiteID,
 #' owner, modified, favorite}. If not specified, defaults to \code{id}.
 #' @param filters (optional) A named \code{list}. Valid names include
-#' \code{approved, favorite, name, owner, reportSuiteID, tags}. For each name, character vectors of length > 1 are supported, 
-#' but will be collapsed into comma-separated vectors of length 1 per API requirements. 
+#' \code{approved, favorite, name, owner, reportSuiteID, tags}. For \code{tags}, character vectors of length > 1 are supported, 
+#' and will be collapsed into comma-separated vectors of length 1 per API requirements. For the other fields, the API appears to 
+#' only support character vectors of length 1. 
 #' @param ... Additional args to pass to \code{ApiRequest}
 #'
 #' @return
@@ -40,6 +41,11 @@
 #' @note 
 #' It is expected that once the full method is completed, this function will no longer be required by itself, 
 #' although likely will still be exported for flexibility and debugging. 
+#' 
+#' The documentation is somewhat unclear as to whether values for \emph{filters} with names of \code{name, owner, reportSuiteID} 
+#' actually support vectors of length > 1. Initial testing suggests not; the function will accept character vectors of length >1 for
+#' such named fields at the moment, and will be updated accordingly when further testing to complete, i.e. will enforce input lengths
+#' in a manner consistent with API expectations. 
 #' 
 #' @export
 #'
@@ -176,6 +182,9 @@ call.Get_Segments <- function(accessLevel = NULL, fields = NULL,
 NULL
 
 # helper to validate and preprocess filters arg
+# TODO: Carefully check that the API indeed will NOT support character vectors of length > 1L
+# for owner, rsid, and name. If indeed the case, put appropriate input checks and handle 
+# the new restrictions in this function. 
 .l_helper_process_filters <- function(arglst) {
   if(!is.list(arglst)) {
     stop("Class of 'filters' must be a list, but is currently ", 

@@ -23,8 +23,9 @@ The API always includes \code{id} and \code{name}, by default.}
 owner, modified, favorite}. If not specified, defaults to \code{id}.}
 
 \item{filters}{(optional) A named \code{list}. Valid names include
-\code{approved, favorite, name, owner, reportSuiteID, tags}. For each name, character vectors of length > 1 are supported, 
-but will be collapsed into comma-separated vectors of length 1 per API requirements.}
+\code{approved, favorite, name, owner, reportSuiteID, tags}. For \code{tags}, character vectors of length > 1 are supported, 
+and will be collapsed into comma-separated vectors of length 1 per API requirements. For the other fields, the API appears to 
+only support character vectors of length 1.}
 
 \item{...}{Additional args to pass to \code{ApiRequest}}
 }
@@ -48,7 +49,12 @@ the level of desired detail
 }
 \note{
 It is expected that once the full method is completed, this function will no longer be required by itself, 
-although likely will still be exported for flexibility and debugging.
+although likely will still be exported for flexibility and debugging. 
+
+The documentation is somewhat unclear as to whether values for \emph{filters} with names of \code{name, owner, reportSuiteID} 
+actually support vectors of length > 1. Initial testing suggests not; the function will accept character vectors of length >1 for
+such named fields at the moment, and will be updated accordingly when further testing to complete, i.e. will enforce input lengths
+in a manner consistent with API expectations.
 }
 \examples{
 # These should be thrown into tests; being lazy for now
