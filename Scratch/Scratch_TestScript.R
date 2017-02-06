@@ -83,24 +83,24 @@ call.Get_Segments(filters = list(name = "A", alt="B"))
 # Initial calls for next step testing -------------------------------------
 
 
-full_single <- easy.Get_Segments(filters = list(name = "aarti"), 
-                                 fields = c("definition", "description", 
-                                            "owner", "modified", 
-                                            "reportSuiteID"), 
-                                 accessLevel = "owned", 
-                                 fun = "call.Get_Segments"
-)
-full_multi <- easy.Get_Segments(filters = list(name = "aarti"), 
-                                fields = c("definition", "description",
-                                           "owner", "modified", 
-                                           "reportSuiteID"), 
-                                accessLevel = "all", 
-                                fun = "call.Get_Segments"
-)
-MG_all <- easy.Get_Segments(filters = list(name = "Knovel"))
-WZ_all <- easy.Get_Segments() # test all mine; there are 34, 3 are problematic
-
-WZ_out <- merge(WZ_all$segment_meta, WZ_all$defn, by = c("segment_id"))
+# full_single <- easy.Get_Segments(filters = list(name = "aarti"), 
+#                                  fields = c("definition", "description", 
+#                                             "owner", "modified", 
+#                                             "reportSuiteID"), 
+#                                  accessLevel = "owned", 
+#                                  fun = "call.Get_Segments"
+# )
+# full_multi <- easy.Get_Segments(filters = list(name = "aarti"), 
+#                                 fields = c("definition", "description",
+#                                            "owner", "modified", 
+#                                            "reportSuiteID"), 
+#                                 accessLevel = "all", 
+#                                 fun = "call.Get_Segments"
+# )
+# MG_all <- easy.Get_Segments(filters = list(name = "Knovel"))
+# WZ_all <- easy.Get_Segments() # test all mine; there are 34, 3 are problematic
+# 
+# WZ_out <- merge(WZ_all$segment_meta, WZ_all$defn, by = c("segment_id"))
 
 WZ_call <- GS_ALL()
 WZ_call_split <- .split_segment_ret(WZ_call)
@@ -192,8 +192,6 @@ split_seg_return <- function(x) {
   seg_meta <- setdiff(names(x), "definition")
   seg_def <- c("definition")
   
-  
-  
   list(segment_meta = x[seg_meta], 
        segment_def = x[[seg_def]]
        )
@@ -204,57 +202,90 @@ p1.tst <- split_seg_return(single_test)
 
 
 
+# Helper to handle null without pre-parsing, which gets
+# complicated with recursion when you actually need
+# this functionality to handle poorly created segments
+# that can be parsed with a bit NULL handling
+check_clean_nested <- function(x) {
+  if(! "container" %in% names(x)) {
+    return(FALSE)
+  }
+  
+  x_noNULL <- Filter(function(x) !is.null(x),
+                     x[[c("container", "rules")]]
+                     )
+  
+  "container" %in% names(x_noNULL[[1]])
+  
+}
 
 # for now, input the "segment_def" part of split_set_ret
 parse_nested_container <- function(x, lst = c(), d = 0L) {
   
+
   if("segment_def" %in% names(x)) {
     x <- x[["segment_def"]]
   }
   
-  is_nested <- "container" %in% names(x[[c("container", "rules")]][[1]])
+  is_nested <- check_clean_nested(x)
+  
 
   if(!is_nested) {
-    message("at iteration ", d, ", x is no longer nested")
+    message("at iteration ", d+1L, ", x is no longer nested")
     
     x.tmp <- x[["container"]]
     
     if(d == 0L) { # then was not originally nested
-      lst <- c(lst, 
-               list(cont_meta = x.tmp[setdiff(names(x.tmp), "rules")],
-                    cont_rule = x.tmp[["rules"]]
-               )
-      )
+      nms_meta <- "cont_meta"
+      nms_rule <- "cont_rule"
     } else { # then was originally nested, so all we are changing is names
-      lst <- c(lst, 
-               list(sub_cont_meta = x.tmp[setdiff(names(x.tmp), "rules")],
-                    sub_cont_rule = x.tmp[["rules"]]
-               )
-      )
+      nms_meta <- "sub_cont_meta"
+      nms_rule <- "sub_cont_rule"
     }
+    
+    x.tmp_out <- Filter(function(x) !is.null(x), x.tmp[["rules"]])
+    
+    lst <- c(lst, 
+             structure(list(x.tmp[setdiff(names(x.tmp), "rules")], 
+                            x.tmp_out), .Names = c(nms_meta, nms_rule))
+    )
     
     return(lst)
     
   } else {
-    x.tmp      <- x[["container"]]
-    x.tmp_nest <- x.tmp[["rules"]][[1]]
+    
+    x <- Filter(function(x) !is.null(x), x)
+    
+    x.tmp      <- Filter(function(x) !is.null(x), x[["container"]])
+    x.tmp_nest <- Filter(function(f) !is.null(x), x.tmp[["rules"]])
+    x.tmp_nest <- Filter(function(x) !is.null(x), x.tmp_nest)
+    
+    #str(x.tmp_nest)
+    #message(length(wtf))
+
+    # Have not yet figured out stacked containers; since the current
+    # function returns an incorrect (incomplete) result for stacked, 
+    # stop as a temporary workaround while figuring out.
+    if(length(x.tmp_nest) > 1L) {
+      stop("Detected a stacked container; parsing stacked containers not yet implemented")
+    }
     
     lst <- c(lst, 
-             list(cont_meta = x.tmp[setdiff(names(x.tmp), "rules")]
-                  #cont_rule = x.tmp_nest # I think this is actually redundant for natively recursive inputs...
+             list(cont_meta = x.tmp[setdiff(names(x.tmp), "rules")], 
+                  cont_rule = x.tmp_nest[[1]][["value"]]
              )
     )
-    parse_nested_container(x = x.tmp_nest, lst = lst, d = d+1L)
+    parse_nested_container(x = x.tmp_nest[[1]], lst = lst, d = d+1L)
     
   }
   
 }
 
 parse_p1.ref <- parse_nested_container(p1.ref)
-parse_p1.tst <- parse_nested_container(p1.tst) 
+parse_p1.tst <- parse_nested_container(p1.tst)
 
 
-# Stringing these two functions together: 
+# Stringing these two (and one helper) functions together: 
 
 parse_seg_return <- function(x) {
   splitted = split_seg_return(x)
@@ -267,4 +298,13 @@ parse_seg_return <- function(x) {
 
 ref_parsed <- parse_seg_return(single_ref)
 tst_parsed <- parse_seg_return(single_test)
+
+
+
+a <- parse_seg_return(type_1)
+b <- parse_seg_return(type_2)
+d <- parse_seg_return(type_3)
+
+names(d) <- make.unique(names(d))
+names(b) <- make.unique(names(b))
 
