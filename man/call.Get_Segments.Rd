@@ -22,7 +22,9 @@ The API always includes \code{id} and \code{name}, by default.}
 \item{sort}{(optional) A character vector of length 1. Must be one of \code{id, name, description, reportSuiteID,
 owner, modified, favorite}. If not specified, defaults to \code{id}.}
 
-\item{filters}{(optional) A named \code{list}.}
+\item{filters}{(optional) A named \code{list}. Valid names include
+approved, favorite, name, owner, reportSuiteID, tags. For each name, character vectors of length > 1 are supported, 
+but will be collapsed into comma-separated vectors of length 1 per API requirements.}
 
 \item{...}{Additional args to pass to \code{ApiRequest}}
 }
