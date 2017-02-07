@@ -197,8 +197,8 @@ split_seg_return <- function(x) {
        )
 }
 
-p1.ref <- split_seg_return(single_ref)
-p1.tst <- split_seg_return(single_test)
+# p1.ref <- split_seg_return(single_ref)
+# p1.tst <- split_seg_return(single_test)
 
 
 
@@ -231,7 +231,7 @@ parse_nested_container <- function(x, lst = c(), d = 0L) {
   
 
   if(!is_nested) {
-    message("at iteration ", d+1L, ", x is no longer nested")
+    message("Took ", d, " recursion(s) to converge")
     
     x.tmp <- x[["container"]]
     
@@ -239,15 +239,21 @@ parse_nested_container <- function(x, lst = c(), d = 0L) {
       nms_meta <- "cont_meta"
       nms_rule <- "cont_rule"
     } else { # then was originally nested, so all we are changing is names
-      nms_meta <- "sub_cont_meta"
-      nms_rule <- "sub_cont_rule"
+      nms_meta <- paste("sub_cont_meta")
+      nms_rule <- paste("sub_cont_rule")
     }
     
     x.tmp_out <- Filter(function(x) !is.null(x), x.tmp[["rules"]])
+    lst_nm <- paste("L", d, sep = "")
     
     lst <- c(lst, 
-             structure(list(x.tmp[setdiff(names(x.tmp), "rules")], 
+             structure(
+               list(
+                 structure(
+                   list(x.tmp[setdiff(names(x.tmp), "rules")], 
                             x.tmp_out), .Names = c(nms_meta, nms_rule))
+               ), .Names = lst_nm
+             )
     )
     
     return(lst)
@@ -270,9 +276,14 @@ parse_nested_container <- function(x, lst = c(), d = 0L) {
       stop("Detected a stacked container; parsing stacked containers not yet implemented")
     }
     
+    lst_nm <- paste("L", d, sep = "")
     lst <- c(lst, 
-             list(cont_meta = x.tmp[setdiff(names(x.tmp), "rules")], 
-                  cont_rule = x.tmp_nest[[1]][["value"]]
+             structure(
+               list(
+                 list(sub_cont_meta = x.tmp[setdiff(names(x.tmp), "rules")], 
+                      sub_cont_rule = x.tmp_nest[[1]][["value"]]
+                 )
+               ), .Names = lst_nm
              )
     )
     parse_nested_container(x = x.tmp_nest[[1]], lst = lst, d = d+1L)
@@ -281,8 +292,8 @@ parse_nested_container <- function(x, lst = c(), d = 0L) {
   
 }
 
-parse_p1.ref <- parse_nested_container(p1.ref)
-parse_p1.tst <- parse_nested_container(p1.tst)
+# parse_p1.ref <- parse_nested_container(p1.ref)
+# parse_p1.tst <- parse_nested_container(p1.tst)
 
 
 # Stringing these two (and one helper) functions together: 
@@ -293,11 +304,15 @@ parse_seg_return <- function(x) {
   cont_parsed <- parse_nested_container(x = splitted)
   
   c(splitted[1], cont_parsed)
-}
 
+}
 
 ref_parsed <- parse_seg_return(single_ref)
 tst_parsed <- parse_seg_return(single_test)
+
+meta1 <- c(tst_parsed$sub_cont_meta_1, 
+           tst_parsed$sub_cont_rule_1
+)
 
 
 
@@ -305,6 +320,4 @@ a <- parse_seg_return(type_1)
 b <- parse_seg_return(type_2)
 d <- parse_seg_return(type_3)
 
-names(d) <- make.unique(names(d))
-names(b) <- make.unique(names(b))
 
