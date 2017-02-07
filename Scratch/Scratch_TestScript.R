@@ -115,41 +115,6 @@ type_2 <- WZ_call_split$s300000520_57e0343be4b007430cbdcdc3
 type_3 <- WZ_call_split$s300000520_582ca0d2e4b0a4d9dc2936ac 
 
 
-# Make segments testing ---------------------------------------------------
-
-# this is a segment that contains two rules with exclude
-
-mg_exclude <- call.Get_Segments(filters = list(name = "Knovel exclude toc"),
-                                fields = c("description", "definition", "owner", "modified", 
-                                           "reportSuiteID"), 
-                                accessLevel = "all")
-
-mg_dt <- restr.Get_Segments(mg_exclude)
-
-# to recreate this
-seg_meta <- make_segment_meta(name = mg_exclude$name, 
-                              reportSuiteID = mg_exclude$reportSuiteID, 
-                              owner = "w.zhang")
-
-rule_vec <- mg_exclude$definition$container$rules[[1]]$value
-
-# now, note that there are two elements, two operators
-# if there is more than one of either element or operator in a rule, handle it
-
-# check if any of element, operator, or rules is > 1L
-# use the temporary alternative function
-seg_rules <- make_element_rules(element = mg_dt$defn$element, 
-                                rules = mg_dt$defn$rules, 
-                                operator = mg_dt$defn$operator)
-
-
-seg_container <- make_segment_container(type = "hits", operator = "or", exclude = TRUE, rules = seg_rules)
-
-seg_body <- make_segment_body(segment_container = seg_container, segment_meta = seg_meta)
-
-
-
-
 # More nested container parsing -------------------------------------------
 
 ## With a bit more insight into how nested containers can be built, properly, take another
@@ -157,7 +122,8 @@ seg_body <- make_segment_body(segment_container = seg_container, segment_meta = 
 
 
 # Here are some properly built nested segments, as a first test case:
-seg_test <- call.Get_Segments(accessLevel = "all", filters = list(name = "Databases all"), 
+seg_test <- call.Get_Segments(accessLevel = "all", filters = list(name = "DB Session", 
+                                                                  owner = "m.gray"), 
                                fields = c("tags", "shares",
                                           "description", "owner",
                                           "modified", "compatibility",
@@ -310,14 +276,39 @@ parse_seg_return <- function(x) {
 ref_parsed <- parse_seg_return(single_ref)
 tst_parsed <- parse_seg_return(single_test)
 
-meta1 <- c(tst_parsed$sub_cont_meta_1, 
-           tst_parsed$sub_cont_rule_1
-)
+all_test_parsed <- lapply(test_split, parse_seg_return)
+
+# Make segments testing ---------------------------------------------------
+
+# this is a segment that contains two rules with exclude
+
+mg_exclude <- call.Get_Segments(selected = "s300000520_589774a4e4b08939f9d6e818",
+                                fields = c("description", "definition", "owner", "modified", 
+                                           "reportSuiteID"), 
+                                accessLevel = "all")
+mg_exclude.parse <- parse_seg_return(mg_exclude)
+
+# to recreate this
+seg_meta <- make_segment_meta(name = "ThermoPhysDyn_ContentName", 
+                              reportSuiteID = mg_exclude$reportSuiteID, 
+                              owner = "w.zhang")
+# have to use a temporary DT while figuring out the parsing mechanism to completion for
+# simple nested segments
+rule_dt.tmp <- mg_exclude.parse$L1$sub_cont_rule[[1]] %>% as.data.table
+
+# and pull rule vec from here
+rule_vec <- rule_dt.tmp[element == "evar75", value]
+
+# check if any of element, operator, or rules is > 1L
+# use the temporary alternative function
+seg_rules <- make_element_rules(element = "evar75", 
+                                rules = rule_vec, 
+                                operator = "equals")
 
 
+seg_container <- make_segment_container(type = "hits", operator = "or", exclude = FALSE, rules = seg_rules)
 
-a <- parse_seg_return(type_1)
-b <- parse_seg_return(type_2)
-d <- parse_seg_return(type_3)
+seg_body <- make_segment_body(segment_container = seg_container, segment_meta = seg_meta)
 
+my_new_seg <- Save_Segment(seg_body)
 
