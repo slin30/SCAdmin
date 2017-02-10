@@ -19,11 +19,11 @@ fix_blank <- function(x) {
 
 GS_ALL <- function(...) {
   call.Get_Segments(fields = c("tags", "shares",
-                          "description", "owner",
-                          "modified", "compatibility",
-                          "favorite", "reportSuiteID",
-                          "definition"),  
-               ...)
+                               "description", "owner",
+                               "modified", "compatibility",
+                               "favorite", "reportSuiteID",
+                               "definition"),  
+                    ...)
 }
 
 # splitter for get_segments return
@@ -57,7 +57,7 @@ easy.Get_Segments <- function(..., fun = NULL) {
   if(is.null(fun)) {
     fun <- "GS_ALL"
   }
-
+  
   seg_call  <- match.fun(fun)(...)
   restr_call <- .split_segment_ret(seg_call) %>%
     Map(restr.Get_Segments, ., merge_rules = TRUE) %>%
@@ -122,21 +122,8 @@ type_3 <- WZ_call_split$s300000520_582ca0d2e4b0a4d9dc2936ac
 
 
 # Here are some properly built nested segments, as a first test case:
-seg_test <- call.Get_Segments(accessLevel = "all", filters = list(name = "DB Session", 
+seg_ret.tst <- call.Get_Segments(accessLevel = "all", filters = list(name = "DB Session", 
                                                                   owner = "m.gray"), 
-                               fields = c("tags", "shares",
-                                          "description", "owner",
-                                          "modified", "compatibility",
-                                          "favorite", "reportSuiteID",
-                                          "definition")
-                               )
-
-# Let's grab only a sinle segment
-test_split <- .split_segment_ret(seg_test)
-single_test <- test_split[[1]]
-
-## Reference set-- an unnested segment for comparison
-seg_ref <- call.Get_Segments(accessLevel = "owned", filters = list(name = "ThermoPhysProd"), 
                               fields = c("tags", "shares",
                                          "description", "owner",
                                          "modified", "compatibility",
@@ -144,81 +131,83 @@ seg_ref <- call.Get_Segments(accessLevel = "owned", filters = list(name = "Therm
                                          "definition")
 )
 
-ref_split <- .split_segment_ret(seg_ref)
-single_ref <- ref_split[[1]]
+# Let's grab only a sinle segment
+split_tst_ret <- .split_segment_ret(seg_ret.tst)
+
+## Reference set-- an unnested segment for comparison
+seg_ret.ref <- call.Get_Segments(accessLevel = "owned", filters = list(name = "ThermoPhys"), 
+                             fields = c("tags", "shares",
+                                        "description", "owner",
+                                        "modified", "compatibility",
+                                        "favorite", "reportSuiteID",
+                                        "definition")
+)
+
+split_ref_ret <- .split_segment_ret(seg_ret.ref)
 
 ### Focus on rules
 
 # first, simply split into definition and not definition
-split_seg_return <- function(x) {
-  if(!"definition" %in% names(x)) {
+.l_helper_split_defn <- function(seg_ret) {
+  # Input must be a df with one row, from seg_ret
+  if(!is.data.frame(seg_ret) || nrow(seg_ret) > 1L) {
+    stop("seg_ret must be a single-row data.frame")
+  }
+  
+  if(!"definition" %in% names(seg_ret)) {
     stop("definition missing")
   }
   
-  seg_meta <- setdiff(names(x), "definition")
+  seg_meta <- setdiff(names(seg_ret), "definition")
   seg_def <- c("definition")
   
-  list(segment_meta = x[seg_meta], 
-       segment_def = x[[seg_def]]
-       )
+  list(segment_meta = seg_ret[seg_meta], 
+       segment_def = seg_ret[[seg_def]]
+  )
 }
-
-# p1.ref <- split_seg_return(single_ref)
-# p1.tst <- split_seg_return(single_test)
-
-
 
 # Helper to handle null without pre-parsing, which gets
 # complicated with recursion when you actually need
 # this functionality to handle poorly created segments
 # that can be parsed with a bit NULL handling
-check_clean_nested <- function(x) {
+.l_helper_checkNul_nested <- function(x) {
   if(! "container" %in% names(x)) {
     return(FALSE)
   }
   
   x_noNULL <- Filter(function(x) !is.null(x),
                      x[[c("container", "rules")]]
-                     )
+  )
   
   "container" %in% names(x_noNULL[[1]])
   
 }
 
 # for now, input the "segment_def" part of split_set_ret
-parse_nested_container <- function(x, lst = c(), d = 0L) {
+.l_helper_flatten_nested_container <- function(x, lst = c(), d = 0L) {
   
-
+  
   if("segment_def" %in% names(x)) {
     x <- x[["segment_def"]]
   }
   
-  is_nested <- check_clean_nested(x)
+  is_nested <- .l_helper_checkNul_nested(x)
   
-
+  
   if(!is_nested) {
     message("Took ", d, " recursion(s) to converge")
     
     x.tmp <- x[["container"]]
-    
-    if(d == 0L) { # then was not originally nested
-      nms_meta <- "cont_meta"
-      nms_rule <- "cont_rule"
-    } else { # then was originally nested, so all we are changing is names
-      nms_meta <- paste("sub_cont_meta")
-      nms_rule <- paste("sub_cont_rule")
-    }
-    
     x.tmp_out <- Filter(function(x) !is.null(x), x.tmp[["rules"]])
-    lst_nm <- paste("L", d, sep = "")
     
+    lst_nm <- paste("L", d, sep = "")
     lst <- c(lst, 
              structure(
                list(
-                 structure(
-                   list(x.tmp[setdiff(names(x.tmp), "rules")], 
-                            x.tmp_out), .Names = c(nms_meta, nms_rule))
-               ), .Names = lst_nm
+                 list(cont_meta = x.tmp[setdiff(names(x.tmp), "rules")], 
+                      cont_rule = x.tmp_out
+                      )
+                 ), .Names = lst_nm
              )
     )
     
@@ -231,9 +220,6 @@ parse_nested_container <- function(x, lst = c(), d = 0L) {
     x.tmp      <- Filter(function(x) !is.null(x), x[["container"]])
     x.tmp_nest <- Filter(function(f) !is.null(x), x.tmp[["rules"]])
     x.tmp_nest <- Filter(function(x) !is.null(x), x.tmp_nest)
-    
-    #str(x.tmp_nest)
-    #message(length(wtf))
 
     # Have not yet figured out stacked containers; since the current
     # function returns an incorrect (incomplete) result for stacked, 
@@ -246,37 +232,121 @@ parse_nested_container <- function(x, lst = c(), d = 0L) {
     lst <- c(lst, 
              structure(
                list(
-                 list(sub_cont_meta = x.tmp[setdiff(names(x.tmp), "rules")], 
-                      sub_cont_rule = x.tmp_nest[[1]][["value"]]
+                 list(cont_meta = x.tmp[setdiff(names(x.tmp), "rules")], 
+                      cont_rule = x.tmp_nest[[1]][["value"]]
                  )
                ), .Names = lst_nm
              )
     )
-    parse_nested_container(x = x.tmp_nest[[1]], lst = lst, d = d+1L)
+    .l_helper_flatten_nested_container(x = x.tmp_nest[[1]], lst = lst, d = d+1L)
     
   }
   
 }
 
-# parse_p1.ref <- parse_nested_container(p1.ref)
-# parse_p1.tst <- parse_nested_container(p1.tst)
-
-
 # Stringing these two (and one helper) functions together: 
-
-parse_seg_return <- function(x) {
-  splitted = split_seg_return(x)
+flatten_container <- function(x) {
+  splitted = .l_helper_split_defn(x)
   
-  cont_parsed <- parse_nested_container(x = splitted)
+  cont_parsed <- .l_helper_flatten_nested_container(x = splitted)
   
-  c(splitted[1], cont_parsed)
-
+  flat_cont <- c(splitted[1], cont_parsed)
+  return(flat_cont)
 }
 
-ref_parsed <- parse_seg_return(single_ref)
-tst_parsed <- parse_seg_return(single_test)
+flat_ref_ret <- flatten_container(split_ref_ret$s300000520_589a29f3e4b0cfc8b41c8978)
+flat_tst_ret <- flatten_container(split_tst_ret$s300000520_589a1638e4b0cfc8b41c8960)
 
-all_test_parsed <- lapply(test_split, parse_seg_return)
+# test WZ; note that type_2 needs tryCatch to handle better, exclude for now to test
+# other downstream functions first, come back to it.
+flat_wz <- lapply(list(type_1 = type_1, type_3 = type_3), function(f) .split_segment_ret(f)) %>%
+  lapply(X=., function(f) flatten_container(f[[1]]))
+
+
+# all_test_parsed <- lapply(test_split, parse_seg_return)
+
+
+# Stringing all together --------------------------------------------------
+
+
+# if cont_rule is in names, then rbindlist it
+# helper to .split_flat_cont
+.l_helper_bind_rules <- function(x) {
+  
+  if(!"cont_meta" %in% names(x)) {
+    stop("content_meta missing")
+  }
+  
+  if(!"cont_rule" %in% names(x)) {
+    return(x)
+  }
+  
+  # handle inputs where cont_meta is present along with cont_rule
+
+  cont_meta <- x[["cont_meta"]]
+  cont_rule <- x[["cont_rule"]]
+
+  
+  # check that all elements are df
+  df_check <- vapply(seq_along(cont_rule), 
+                     function(f) is.data.frame(cont_rule[[f]]), FUN.VALUE = logical(1))
+  if(!all(df_check)) {
+    stop(
+      "All elements of x are not of class data.frame"
+    )
+  } # this needs to be adjusted, see type1 and type3, for poorly created segments
+    # where you have a vector instead of a df
+  
+  # process as DT, make keys to merge
+  out_rules <- rbindlist(cont_rule, 
+                         use.names = TRUE, 
+                         fill = TRUE, 
+                         idcol = "rule_set_ID"
+  )
+  out_meta  <- as.data.table(cont_meta)
+  out_meta[, rule_set_ID := .I]
+  
+  list(
+    cont_meta = out_meta, 
+    cont_rule = out_rules
+  )
+  
+}
+
+# split a parsed return from parse_seg_return, remove NULLs, bind rules
+bind_flat_cont <- function(x) {
+  targ <- "segment_meta"
+  
+  if(!targ %in% names(x)) {
+    stop("Required input element of ", substitute(targ), " not present")
+  }
+  
+  segment_meta <- x[[targ]]
+  segment_cont <- x[setdiff(names(x), substitute(targ))] %>%
+    lapply(X=., function(f) Filter(function(x) !is.null(x), f)) 
+  
+  # make sure other names have not crept into segment_cont
+  segCont_nms <- paste0("L", seq_along(segment_cont)-1L)
+  if(length(setdiff(names(segment_cont), segCont_nms)) > 0L) {
+    stop("Mismatch in names in segment_cont and expected names")
+  }
+  
+  segment_cont <- lapply(segment_cont, .l_helper_bind_rules)
+
+  list(segment_meta = segment_meta, 
+       segment_cont = segment_cont
+       )
+}
+
+bound_ref_ret <- bind_flat_cont(flat_ref_ret)
+bound_tst_ret <- bind_flat_cont(flat_tst_ret)
+
+View(bound_tst_ret$segment_cont$L1$cont_rule)
+
+
+## Note: poorly created segments can have non-df rules, but these are not technically wrong...
+# handle them
+bound_wz <- lapply(flat_wz, function(f) bind_flat_cont(f))
 
 # Make segments testing ---------------------------------------------------
 
