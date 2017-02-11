@@ -1,4 +1,4 @@
-image: rocker/hadleyverse  
+image: rocker/tidyverse  
 
 before_script:
     - apt-get update -y
