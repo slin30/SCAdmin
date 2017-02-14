@@ -3,6 +3,9 @@ library(RSiteCatalyst)
 library(data.table)
 library(jsonlite)
 library(SCAdmin)
+library(RCurl)
+library(httr)
+#set_config( config( ssl_verifypeer = 0L ) )
 
 SCAuth(key = Sys.getenv("wz_sc_id"), Sys.getenv("wz_sc_pw"))
 
@@ -258,7 +261,9 @@ flat_tst_ret <- flatten_container(split_tst_ret$s300000520_589a1638e4b0cfc8b41c8
 
 # test WZ; note that type_2 needs tryCatch to handle better, exclude for now to test
 # other downstream functions first, come back to it.
-flat_wz <- lapply(list(bad_stacked = bad_wz_stacked, bad_nested = bad_wz_nested), function(f) .split_segment_ret(f)) %>%
+flat_wz <- lapply(list(bad_stacked = bad_wz_stacked, bad_nested = bad_wz_nested), 
+                  function(f) .split_segment_ret(f)
+) %>%
   lapply(X=., function(f) flatten_container(f[[1]]))
 
 
@@ -347,13 +352,20 @@ View(bound_tst_ret$segment_cont$L1$cont_rule)
 # not apply-- rather, put generic handler for poorly made
 # segments, and consider throwing error on things that are just plain
 # wrong, or simply returning what you can.
-bound_wz_stacked <- bind_flat_cont(flat_wz$bad_stacked)
 
+# Note that stacked segments different order for the element of 'operator'
+# within 'container'. Check if this is a notable/specific characteristic
+bound_wz_stacked <- bind_flat_cont(flat_wz$bad_stacked)
 
 bound_wz_nested <- bind_flat_cont(flat_wz$bad_nested) # still errors, so handle it
 
+# mgDB <- GS_ALL(accessLevel = "all", filters = list(owner = "m.gray", name = "databases all"))
+# mgDB_restr <- .split_segment_ret(mgDB) %>% 
+#   Map(flatten_container, .) %>% 
+#   Map(bind_flat_cont, .)
 
-a <- bind_flat_cont(flat_wz$bad_stacked)
+
+
 # Make segments testing ---------------------------------------------------
 
 # this is a segment that contains two rules with exclude
