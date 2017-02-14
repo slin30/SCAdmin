@@ -107,12 +107,11 @@ WZ_call_split <- .split_segment_ret(WZ_call)
 
 # this one part of the stacked segment. Not created properly
 # since is unnecessarily nested, but perhaps a good test case
-type_1 <- WZ_call_split$s300000520_57e0327ae4b007430cbdcdc0 
 # this is the stacked segment
-type_2 <- WZ_call_split$s300000520_57e0343be4b007430cbdcdc3 
+bad_wz_stacked <- WZ_call_split$s300000520_57e0343be4b007430cbdcdc3 
 # this is a pretty terribly created (TLV) nested
 # unnecessarily as well.
-type_3 <- WZ_call_split$s300000520_582ca0d2e4b0a4d9dc2936ac 
+bad_wz_nested <- WZ_call_split$s300000520_582ca0d2e4b0a4d9dc2936ac 
 
 
 # More nested container parsing -------------------------------------------
@@ -259,7 +258,7 @@ flat_tst_ret <- flatten_container(split_tst_ret$s300000520_589a1638e4b0cfc8b41c8
 
 # test WZ; note that type_2 needs tryCatch to handle better, exclude for now to test
 # other downstream functions first, come back to it.
-flat_wz <- lapply(list(type_1 = type_1, type_3 = type_3), function(f) .split_segment_ret(f)) %>%
+flat_wz <- lapply(list(bad_stacked = bad_wz_stacked, bad_nested = bad_wz_nested), function(f) .split_segment_ret(f)) %>%
   lapply(X=., function(f) flatten_container(f[[1]]))
 
 
@@ -343,11 +342,18 @@ bound_tst_ret <- bind_flat_cont(flat_tst_ret)
 
 View(bound_tst_ret$segment_cont$L1$cont_rule)
 
+# Note: With updated segment, fixing original db_like, this 
+# actually works for stacked segments, so change the error handling as it does 
+# not apply-- rather, put generic handler for poorly made
+# segments, and consider throwing error on things that are just plain
+# wrong, or simply returning what you can.
+bound_wz_stacked <- bind_flat_cont(flat_wz$bad_stacked)
 
-## Note: poorly created segments can have non-df rules, but these are not technically wrong...
-# handle them
-bound_wz <- lapply(flat_wz, function(f) bind_flat_cont(f))
 
+bound_wz_nested <- bind_flat_cont(flat_wz$bad_nested) # still errors, so handle it
+
+
+a <- bind_flat_cont(flat_wz$bad_stacked)
 # Make segments testing ---------------------------------------------------
 
 # this is a segment that contains two rules with exclude
