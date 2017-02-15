@@ -35,7 +35,6 @@ recur_flatten_nested_container <- function(x, lst = c(), d = 0L) {
   
   is_nested <- .l_helper_checkNul_nested(x)
   
-  
   if(!is_nested) {
     message("Took ", d, " recursion(s) to converge")
     
@@ -63,11 +62,10 @@ recur_flatten_nested_container <- function(x, lst = c(), d = 0L) {
     x.tmp_nest <- Filter(function(f) !is.null(x), x.tmp[["rules"]])
     x.tmp_nest <- Filter(function(x) !is.null(x), x.tmp_nest)
     
-    # Have not yet figured out stacked containers; since the current
-    # function returns an incorrect (incomplete) result for stacked,
-    # stop as a temporary workaround while figuring out.
+    #This check no longer is needed for properly stacked segments, so not
+    #sure it is needed-- definitely have to tweak
     if(length(x.tmp_nest) > 1L) {
-      stop("Detected a stacked container; parsing stacked containers not yet implemented")
+      stop("Detected an unusual structure in segment")
     }
     
     lst_nm <- paste("L", d, sep = "")

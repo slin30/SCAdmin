@@ -3,6 +3,7 @@
 export(Save_Segment)
 export(call.Get_Group)
 export(call.Get_Segments)
+export(flatten_container)
 export(make_element_rules)
 export(make_segment_body)
 export(make_segment_container)

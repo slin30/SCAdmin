@@ -41,17 +41,6 @@ easy.Get_Segments <- function(..., fun = NULL) {
     rbindlist(f, use.names = TRUE, fill = TRUE))
 }
 
-# Stringing splitter and recursive parser together into a wrapper for now: 
-flatten_container <- function(x) {
-  splitted = SCAdmin:::split_single_row_ret(x)
-  
-  cont_parsed <- SCAdmin:::recur_flatten_nested_container(x = splitted)
-  
-  flat_cont <- c(splitted[1], cont_parsed)
-  return(flat_cont)
-}
-
-
 # Errors in input testing -------------------------------------------------
 
 call.Get_Segments(filters = c("A", "a"))
