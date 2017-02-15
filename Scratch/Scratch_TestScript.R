@@ -52,7 +52,6 @@ call.Get_Segments(sort = "A")
 call.Get_Segments(filters = list(name = "A", alt="B"))
 
 
-
 # Initial calls for next step testing -------------------------------------
 
 
@@ -229,6 +228,41 @@ bound_wz_nested <- bind_flat_cont(flat_wz$bad_nested) # still errors, so handle 
 
 
 
+# For DAF -----------------------------------------------------------------
+# Daf segments
+
+dseg <- call.Get_Segments(accessLevel = "all", 
+                          filters = list(reportSuiteID = "elsevier-ha-prod", 
+                                         tags = "JBS-Journal"), 
+                          fields = c("description", "owner", "definition", 
+                                     "reportSuiteID", "modified")
+)
+
+dseg_split <- SCAdmin:::split_segment_ret(dseg)
+
+# DAF restr (WIP)
+dseg_flat <- lapply(dseg_split, function(f) flatten_container(f))
+dseg_bind <- lapply(dseg_flat, function(f) bind_flat_cont(f))
+
+
+tst_merge <- function(x) {
+  cont <- x[["segment_cont"]][[1]]
+  
+  cont_bind <- merge(cont[["cont_meta"]], cont[["cont_rule"]], by = "rule_set_ID")
+  
+  out <- list(x[["segment_meta"]], cont_bind)
+  names(out) <- names(x)
+  return(out)
+}
+
+dseg_mrg <- lapply(dseg_bind, function(f) tst_merge(f))
+dseg_rbl <- lapply(dseg_mrg, function(f) do.call(cbind, f))
+
+out <- rbindlist(dseg_rbl, use.names = TRUE)
+
+library(xlsx)
+
+write.xlsx2(out, "C:/Users/WZDESKTOP/Desktop/DAF_SEGMENTS.xlsx", row.names = FALSE, sheetName = "DATA")
 # Make segments testing ---------------------------------------------------
 
 # this is a segment that contains two rules with exclude
