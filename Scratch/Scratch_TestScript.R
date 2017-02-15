@@ -9,7 +9,6 @@ SCAuth(key = Sys.getenv("wz_sc_id"), Sys.getenv("wz_sc_pw"))
 
 # FUNS --------------------------------------------------------------------
 
-source("./Scratch/Scratch_TestFUNS.R") # temporary stuff
 
 fix_blank <- function(x) {
   x[x==""] <- NA
