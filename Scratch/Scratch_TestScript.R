@@ -3,17 +3,13 @@ library(RSiteCatalyst)
 library(data.table)
 library(jsonlite)
 library(SCAdmin)
-library(RCurl)
-library(httr)
-#set_config( config( ssl_verifypeer = 0L ) )
 
 SCAuth(key = Sys.getenv("wz_sc_id"), Sys.getenv("wz_sc_pw"))
 
 
 # FUNS --------------------------------------------------------------------
 
-source("./Scratch/Scratch_TestFUNS.R") # temporarily pull in .extract_defn for testing
-#source("./Scratch/Scratch_TestFUNS_nested.R")
+source("./Scratch/Scratch_TestFUNS.R") # temporary stuff
 
 fix_blank <- function(x) {
   x[x==""] <- NA
@@ -28,31 +24,6 @@ GS_ALL <- function(...) {
                                "definition"),  
                     ...)
 }
-
-# splitter for get_segments return
-.split_segment_ret <- function(seg_ret) {
-  # check class
-  if(!is.list(seg_ret)) {
-    stop("seg_ret is of class ", 
-         class(seg_ret), " but expected a data.frame"
-    )
-  }
-  # get id
-  id <- seg_ret[["id"]]
-  # check row and id match
-  if(nrow(seg_ret) != length(id)) {
-    stop("There are ", nrow(seg_ret), 
-         " but only ", length(id), " ids"
-    )
-  }
-  
-  out <- lapply(seq_along(id), function(f) 
-    seg_ret[f, ])  
-  names(out) <- id
-  
-  return(out)
-}
-
 
 # easy-mode get all; template of sorts, before packaging
 easy.Get_Segments <- function(..., fun = NULL) {
@@ -69,6 +40,17 @@ easy.Get_Segments <- function(..., fun = NULL) {
   lapply(restr_call, function(f) 
     rbindlist(f, use.names = TRUE, fill = TRUE))
 }
+
+# Stringing splitter and recursive parser together into a wrapper for now: 
+flatten_container <- function(x) {
+  splitted = SCAdmin:::split_single_row_ret(x)
+  
+  cont_parsed <- SCAdmin:::recur_flatten_nested_container(x = splitted)
+  
+  flat_cont <- c(splitted[1], cont_parsed)
+  return(flat_cont)
+}
+
 
 # Errors in input testing -------------------------------------------------
 
@@ -106,7 +88,7 @@ call.Get_Segments(filters = list(name = "A", alt="B"))
 # WZ_out <- merge(WZ_all$segment_meta, WZ_all$defn, by = c("segment_id"))
 
 WZ_call <- GS_ALL()
-WZ_call_split <- .split_segment_ret(WZ_call)
+WZ_call_split <- SCAdmin:::split_segment_ret(WZ_call)
 
 # this one part of the stacked segment. Not created properly
 # since is unnecessarily nested, but perhaps a good test case
@@ -134,7 +116,7 @@ seg_ret.tst <- call.Get_Segments(accessLevel = "all", filters = list(name = "DB 
 )
 
 # Let's grab only a sinle segment
-split_tst_ret <- .split_segment_ret(seg_ret.tst)
+split_tst_ret <- SCAdmin:::split_segment_ret(seg_ret.tst)
 
 ## Reference set-- an unnested segment for comparison
 seg_ret.ref <- call.Get_Segments(accessLevel = "owned", filters = list(name = "ThermoPhys"), 
@@ -145,124 +127,17 @@ seg_ret.ref <- call.Get_Segments(accessLevel = "owned", filters = list(name = "T
                                         "definition")
 )
 
-split_ref_ret <- .split_segment_ret(seg_ret.ref)
+split_ref_ret <- SCAdmin:::split_segment_ret(seg_ret.ref)
 
-### Focus on rules
 
-# first, simply split into definition and not definition
-.l_helper_split_defn <- function(seg_ret) {
-  # Input must be a df with one row, from seg_ret
-  if(!is.data.frame(seg_ret) || nrow(seg_ret) > 1L) {
-    stop("seg_ret must be a single-row data.frame")
-  }
-  
-  if(!"definition" %in% names(seg_ret)) {
-    stop("definition missing")
-  }
-  
-  seg_meta <- setdiff(names(seg_ret), "definition")
-  seg_def <- c("definition")
-  
-  list(segment_meta = seg_ret[seg_meta], 
-       segment_def = seg_ret[[seg_def]]
-  )
-}
-
-# Helper to handle null without pre-parsing, which gets
-# complicated with recursion when you actually need
-# this functionality to handle poorly created segments
-# that can be parsed with a bit NULL handling
-.l_helper_checkNul_nested <- function(x) {
-  if(! "container" %in% names(x)) {
-    return(FALSE)
-  }
-  
-  x_noNULL <- Filter(function(x) !is.null(x),
-                     x[[c("container", "rules")]]
-  )
-  
-  "container" %in% names(x_noNULL[[1]])
-  
-}
-
-# for now, input the "segment_def" part of split_set_ret
-.l_helper_flatten_nested_container <- function(x, lst = c(), d = 0L) {
-  
-  
-  if("segment_def" %in% names(x)) {
-    x <- x[["segment_def"]]
-  }
-  
-  is_nested <- .l_helper_checkNul_nested(x)
-  
-  
-  if(!is_nested) {
-    message("Took ", d, " recursion(s) to converge")
-    
-    x.tmp <- x[["container"]]
-    x.tmp_out <- Filter(function(x) !is.null(x), x.tmp[["rules"]])
-    
-    lst_nm <- paste("L", d, sep = "")
-    lst <- c(lst, 
-             structure(
-               list(
-                 list(cont_meta = x.tmp[setdiff(names(x.tmp), "rules")], 
-                      cont_rule = x.tmp_out
-                      )
-                 ), .Names = lst_nm
-             )
-    )
-    
-    return(lst)
-    
-  } else {
-    
-    x <- Filter(function(x) !is.null(x), x)
-    
-    x.tmp      <- Filter(function(x) !is.null(x), x[["container"]])
-    x.tmp_nest <- Filter(function(f) !is.null(x), x.tmp[["rules"]])
-    x.tmp_nest <- Filter(function(x) !is.null(x), x.tmp_nest)
-
-    # Have not yet figured out stacked containers; since the current
-    # function returns an incorrect (incomplete) result for stacked, 
-    # stop as a temporary workaround while figuring out.
-    if(length(x.tmp_nest) > 1L) {
-      stop("Detected a stacked container; parsing stacked containers not yet implemented")
-    }
-    
-    lst_nm <- paste("L", d, sep = "")
-    lst <- c(lst, 
-             structure(
-               list(
-                 list(cont_meta = x.tmp[setdiff(names(x.tmp), "rules")], 
-                      cont_rule = x.tmp_nest[[1]][["value"]]
-                 )
-               ), .Names = lst_nm
-             )
-    )
-    .l_helper_flatten_nested_container(x = x.tmp_nest[[1]], lst = lst, d = d+1L)
-    
-  }
-  
-}
-
-# Stringing these two (and one helper) functions together: 
-flatten_container <- function(x) {
-  splitted = .l_helper_split_defn(x)
-  
-  cont_parsed <- .l_helper_flatten_nested_container(x = splitted)
-  
-  flat_cont <- c(splitted[1], cont_parsed)
-  return(flat_cont)
-}
-
+# Flatten with wrapper FUN
 flat_ref_ret <- flatten_container(split_ref_ret$s300000520_589a29f3e4b0cfc8b41c8978)
 flat_tst_ret <- flatten_container(split_tst_ret$s300000520_589a1638e4b0cfc8b41c8960)
 
 # test WZ; note that type_2 needs tryCatch to handle better, exclude for now to test
 # other downstream functions first, come back to it.
 flat_wz <- lapply(list(bad_stacked = bad_wz_stacked, bad_nested = bad_wz_nested), 
-                  function(f) .split_segment_ret(f)
+                  function(f) SCAdmin:::split_segment_ret(f)
 ) %>%
   lapply(X=., function(f) flatten_container(f[[1]]))
 
