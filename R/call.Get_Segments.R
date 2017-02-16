@@ -20,8 +20,8 @@
 #' owner, modified, favorite}. If not specified, defaults to \code{id}.
 #' @param filters (optional) A named \code{list}. Valid names include
 #' \code{approved, favorite, name, owner, reportSuiteID, tags}. For \code{tags}, character vectors of length > 1 are supported, 
-#' and will be collapsed into comma-separated vectors of length 1 per API requirements. For the other fields, the API appears to 
-#' only support character vectors of length 1. 
+#' and will be collapsed into comma-separated vectors of length 1 per API requirements. For the other fields, the API supports 
+#' only vectors of length 1. 
 #' @param ... Additional args to pass to \code{ApiRequest}
 #'
 #' @return
@@ -42,10 +42,28 @@
 #' It is expected that once the full method is completed, this function will no longer be required by itself, 
 #' although likely will still be exported for flexibility and debugging. 
 #' 
-#' The documentation is somewhat unclear as to whether values for \emph{filters} with names of \code{name, owner, reportSuiteID} 
-#' actually support vectors of length > 1. Initial testing suggests not; the function will accept character vectors of length >1 for
-#' such named fields at the moment, and will be updated accordingly when further testing to complete, i.e. will enforce input lengths
-#' in a manner consistent with API expectations. 
+#' @details 
+#' \emph{filters} has some nuances; there are only six fields that are grouped by argument length, then type:
+#' 
+#' \itemize{
+#' \itemize{length 1, \code{character}
+#'     \item{name}
+#'     \item{owner}
+#'     \item{reportSuiteID}
+#'     }
+#' \itemize{length 1, \code{logical} (or coercible to logical, without generating \code{NA})
+#'     \item{approved}
+#'     \item{favorite}
+#'     }
+#' \itemize{> length 1, \code{character}
+#'     \item{tags}
+#'     }
+#' }
+#' 
+#' It is an error to violate any of the above rules (i.e. length or type) for \emph{filters}. It is not strictly
+#' required that e.g. \code{name = c("name1", "name2")} throw an error, as it is a simple matter to only select the 
+#' first element and trigger a \code{warning} (instead). The decision to \code{stop} is to ensure that allowable inputs
+#' and actual results (i.e. end-user expectations) are synchronized, with a custom error message.
 #' 
 #' @export
 #'
@@ -61,7 +79,17 @@
 #' call.Get_Segments(filters = list("A", "B"))
 #' # filters must be a named list, and all names must be valid
 #' call.Get_Segments(filters = list(name = "A", alt="B"))
-#'  
+#' # filters named elements of name, owner, reportSuiteID must be vectors of length 1
+#' call.Get_Segments(filters = list(reportSuiteID = c("rsid1", "rsid2")))
+#' call.Get_Segments(filters = list(owner = c("person1", "person2")))
+#' call.Get_Segments(filters = list(name = c("name1", "name2")))
+#' # filters named elements of approved, favorite must be vectors of length 1 AND 
+#' #  logical, or coercible to logical
+#' call.Get_Segments(filters = list(approved = c("person1", "person2")))
+#' call.Get_Segments(filters = list(approved = c("person1")))
+#' call.Get_Segments(filters = list(favorite = c("person1", "person2")))
+#' call.Get_Segments(filters = list(favorite = c("person1")))
+#' 
 #' # accessLevel must be vector of length 1
 #' call.Get_Segments(accessLevel = c("all", "owned"))
 #' # accessLevel cannot contain invalid values
@@ -208,23 +236,54 @@ NULL
   
   # process args for certain names by data type req
   logi_nms <- c("approved", "favorite")
-  chr_nms  <- setdiff(validNms, logi_nms)
+  chr_nms  <- setdiff(validNms, c(logi_nms, "tags"))
+  tag_nm   <- "tags"
   
   logi_elems <- Filter(function(x) !is.null(x), arglst[logi_nms])
   chr_elems  <- Filter(function(x) !is.null(x), arglst[chr_nms])
+  tag_elem   <- Filter(function(x) !is.null(x), arglst[tag_nm])
   
+  #check and process logi_elems
   if(length(logi_elems) > 0L) {
+    logi_lenTrap <- any(vapply(logi_elems, length, integer(1)) > 1L)
+    if(logi_lenTrap) {
+      stop("filters named arguments of ", paste(logi_nms, collapse = ", "), 
+           " must all be vectors of length 1"
+      )
+    }
+    logi_invalid <- anyNA(vapply(logi_elems, as.logical, logical(1)))
+    if(logi_invalid) {
+      stop("Invalid inputs resulting in 'NA' upon coercion to 'logical' 
+           detected in one or more of ", paste(logi_nms, collapse = ", ")
+           )
+    }
+    
     logi_out <- lapply(logi_elems, function(f) as.logical(f))
   } else {
     logi_out <- NULL
   }
+  #check and process chr_elems
   if(length(chr_elems) > 0L) {
-    chr_out <- lapply(chr_elems, function(f) paste(f, collapse = ",", sep = ","))
+    chr_lenTrap <- any(vapply(chr_elems, length, integer(1)) > 1L)
+    if(chr_lenTrap) {
+      stop("filters named arguments of ", paste(chr_nms, collapse = ", "), 
+           " must all be vectors of length 1"
+      )
+    }
+    chr_out <- chr_elems
   } else {
-    chr_out < NULL
+    chr_out <- NULL
+  }
+  #check and process tag_elem
+  if(length(tag_elem) > 0L) {
+    tag_out <- lapply(tag_elem, function(f) 
+      paste(f, collapse = ",", sep = ",")
+    )
+  } else {
+    tag_out <- NULL
   }
   
-  c(chr_out, logi_out)
+  c(logi_out, chr_out, tag_out)
 }
 
 NULL
