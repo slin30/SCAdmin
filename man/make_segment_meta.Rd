@@ -24,8 +24,7 @@ the current user if not provided.}
 (Optional) A named list of length 2 with names \emph{type} (one of \code{group,user}) and \code{name}, 
 which is the group or user name to share with. Both values must be provided as character vectors of length 1.}
 
-\item{tags}{NOT CURRENTLY SUPPORTED; when this changes: 
-(Optional) A character vector of keywords to group segments for filtering}
+\item{tags}{(Optional) A character vector of keywords to group segments for filtering}
 }
 \value{
 A list, possibly nested, containing the required segment-level metadata
@@ -43,6 +42,10 @@ method, specifically for creating a NEW segment, as opposed to editing (updating
 This separation is intentional, as this function will eventually be integrated into the final exported function
 \code{Save_Segment()}, which does not yet exist. This means that this particular function will likely NOT be 
 exported in the public release.
+}
+\note{
+\emph{shares} are not yet supported, so if you pass this in via this function, they will be dropped. 
+\emph{tags} are now supported, but there is very limited type/structure checking, so be warned.
 }
 \examples{
 # Forthcoming

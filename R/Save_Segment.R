@@ -15,7 +15,12 @@
 #' Timestamp is always returned as a character-formatted vector of length 1, with timezone set to "UTC"
 #' 
 #' @note 
-#' Error checking not yet implemented, but will be.
+#' Error checking not yet implemented, but will be. At the moment, only errors if an
+#' element named \code{id} is detected, as such elements are used to edit/modify, but
+#' not create (brand-new) segments. 
+#' 
+#' The error message in this case refers to an EDIT version of this function, which needs
+#' to be written. 
 #' @export
 #'
 #' @examples
@@ -26,6 +31,14 @@ Save_Segment <- function(x, ...) {
   req_nms <- c("name", "reportSuiteID", "definition")
   if(length(setdiff(req_nms, nms)) > 1) {
     stop("Minimum required named elements not present")
+  }
+  # stop if an element of id is present
+  idPresent <- "id" %in% names(x)
+  if(idPresent) {
+    stop(
+      paste0("An element of 'id' was detected. This function only saves NEW segments;\n", 
+             "please use the corresponding EDIT function to modify existing segments")
+    )
   }
   # Capture the name and rsid
   nm <- as.character(x[["name"]])

@@ -21,7 +21,12 @@ Timestamp is always returned as a character-formatted vector of length 1, with t
 Push a new segment to a target report suite via the Adobe Analytics Segments.Save method
 }
 \note{
-Error checking not yet implemented, but will be.
+Error checking not yet implemented, but will be. At the moment, only errors if an
+element named \code{id} is detected, as such elements are used to edit/modify, but
+not create (brand-new) segments. 
+
+The error message in this case refers to an EDIT version of this function, which needs
+to be written.
 }
 \examples{
 # Forthcoming

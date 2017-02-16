@@ -17,8 +17,7 @@
 #' @param shares NOT CURRENTLY SUPPORTED; when this changes: 
 #' (Optional) A named list of length 2 with names \emph{type} (one of \code{group,user}) and \code{name}, 
 #' which is the group or user name to share with. Both values must be provided as character vectors of length 1.
-#' @param tags NOT CURRENTLY SUPPORTED; when this changes: 
-#' (Optional) A character vector of keywords to group segments for filtering
+#' @param tags (Optional) A character vector of keywords to group segments for filtering
 #'
 #' @details 
 #' WORK IN PROGRESS; this creates the appropriate segment-level metadata, required as a part of creating
@@ -31,6 +30,10 @@
 #' \code{Save_Segment()}, which does not yet exist. This means that this particular function will likely NOT be 
 #' exported in the public release.
 #' 
+#' @note 
+#' \emph{shares} are not yet supported, so if you pass this in via this function, they will be dropped. 
+#' \emph{tags} are now supported, but there is very limited type/structure checking, so be warned. 
+#' 
 #' @return
 #' A list, possibly nested, containing the required segment-level metadata
 #' @export
@@ -41,8 +44,7 @@ make_segment_meta <- function(name = NULL, reportSuiteID = NULL, description = N
                               favorite = NULL, owner = NULL, 
                               shares = NULL, tags = NULL) {
   
-  # don't do anything with shares or tags yet-- those need helper functions to restructure
-  # input automatically.
+  # don't do anything with shares yet-- need helper
   # Note that `id` is not included, intentionally since that is only for editing
   # Note that `definition` is also required, but will have a separate helper
   
@@ -56,20 +58,37 @@ make_segment_meta <- function(name = NULL, reportSuiteID = NULL, description = N
   if(!is.null(favorite) & class(favorite) != "logical") {
     stop("When provided, 'favorite' must be a logical value, but is currently ", 
          class(favorite))
-  } 
+  }
+  
+  # check inputs, only for tags so far. Consider helpers?
+  if(!is.null(tags)) {
+    if(!is.atomic(tags) || !is.character(tags)) {
+      stop("tags must be an atomic vector of type character")
+    }
+  }
   
   # denote what should be passed through without being unboxed
   funArgs       <- as.character(names(formals(make_segment_meta)))
-  not_to_scalar <- c("shares", "tags")
+  #not_to_scalar <- c("shares", "tags")
+  not_to_scalar <- c("tags") #temporarily only allow tags, until shares helper is built
   to_scalar     <- setdiff(funArgs, not_to_scalar)
   
   # make a list of things to output as scalar
   lst_scalar <- lapply(to_scalar, function(f) get(f))
   names(lst_scalar) <- to_scalar 
+  # make a list of things to output not as scalar
+  lst_not_scalar <- lapply(not_to_scalar, function(f) get(f))
+  names(lst_not_scalar) <- not_to_scalar
   
+  # output lists
   out_lst_scalar <- Filter(function(x) !is.null(x), lst_scalar) %>%
     Map(unbox, .)
-  # TODO: Helpers for shares and tags so you can pass them in and create a final
-  # output list structure
+  
+  out_lst_not_scalar <- Filter(function(x) !is.null(x), lst_not_scalar)
+  # TODO: Helpers for shares
+  # TODO: Input check for tags more robustly
+  
+  c(out_lst_scalar, out_lst_not_scalar)
   
 }
+

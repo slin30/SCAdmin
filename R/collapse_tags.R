@@ -32,7 +32,7 @@ collapse_tags <- function(x) {
   x_tag <- x[[1]]
   
   # handle empty return
-  if(identical(list(), x_tag)) {
+  if(identical(list(), x_tag) || identical(character(0), x_tag)) {
     return(NA_character_)
   }
   if(!is.character(x_tag)) {
