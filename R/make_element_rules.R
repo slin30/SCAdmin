@@ -10,14 +10,31 @@
 #' @param element A character vector. Must be a valid element (id) within access rights of your account
 #' @param operator A character vector. For elements-based rules, the API defines allowable values. See details.
 #' @param rules A character vector; if not, will be coerced via \code{as.character}
+#' @param classification A character vector of length 1. Element classification to segment, name of the 
+#' classification as returned from \code{\link{[RSiteCatalyst]GetClassifications}}
 #' @param trim logi. Should leading and trailing whitespace(s) be removed? Defaults to \code{FALSE}
 #' @param dedupe logi. Should input \emph{rules} be de-duplicated? Defaults to \code{FALSE}
-#' @param how  Not used at the moment. 
 #'
 #' @return
-#' A list of \code{length(rules)}. Will be hte length after whitespace-trimming and/or de-duplication
+#' A list of \code{length(rules)}. Will be the length after whitespace-trimming and/or de-duplication
 #' if \emph{trim} and/or \emph{dedupe} are \code{TRUE}, and if so, actions are performed by 
 #' \code{str_trim} and \code{unique}, respectively. 
+#' 
+#' @details 
+#' This function is only meant to be used for \emph{operator}-based rules, and NOT \emph{container}-based
+#' rules. If you do not know what this means, please see:
+#' \href{https://marketing.adobe.com/developer/documentation/
+#' segments-1-4/r-segment-rule#
+#' reference_62E104F8CA1C42819B9715CDDDD61E31}{Adobe documentation}
+#'  
+#' This function does NOT support the following arguments:
+#' 
+#' \itemize{
+#' \item \preformatted{after}
+#' \item \preformatted{within}
+#' \item \preformatted{exclude}
+#' }
+#' 
 #' 
 #' @note 
 #' This now accepts inputs to  \emph{element} and \emph{operator} of length > 1. Checks are in place to 
@@ -27,11 +44,33 @@
 #' 
 #' Anticipating all possible scenarios is impossible, so if you find any unexpected or overly-restrictive
 #' behavior, please file an issue.
+#' 
+#' Do note that if \emph{classification} is provided, \emph{element} must be a vector of length 1, i.e. 
+#' a non-\code{NULL} value for classification overrides the above flexibility, to avoid unanticipated 
+#' and/or unhandled combinations that could lead to unexpected results.
+#' 
+#' 
 #' @export
 #'
 #' @examples
 #' #TBD
-make_element_rules <- function(element, operator, rules, trim = FALSE, dedupe = FALSE, how = NULL) {
+make_element_rules <- function(element, operator, rules, 
+                               classification = NULL,
+                               trim = FALSE, dedupe = FALSE) {
+  # if classification is present, must be length 1
+  if(!is.null(classification)) {
+    if(length(classification) > 1L || !is.character(classification)) {
+      stop("Classification must be a character vector of length 1")
+    } 
+    if(length(element) > 1L || length(classification) > 1L) {
+      stop("When classification is present, element must also be a vector of length 1")
+    }
+  }
+  
+  # denote the required and optional args
+  req_nms <- c("element", "operator", "rules")
+  opt_nms <- c("classification")
+  
   # check for input lengths of element, operator, rules
   
   checkList <- list(
@@ -55,22 +94,32 @@ make_element_rules <- function(element, operator, rules, trim = FALSE, dedupe = 
     )
   }
   
-  # how arg is placeholder for additional options in future e.g. metrics
-  if(is.null(how)) {
-    how <- "expand"
-  }
-  
+  # handle rules via helper
   rules <- .l_helper_prep_rules(x = rules, trim = trim, dedupe = dedupe)
   
-  if(how == "expand") {
-    out <- Map(.l_helper_make_rule_elem, 
-               element = element, 
-               operator = operator, 
-               value = rules
-    )
+  # handle optional (only classification for now) args, that must be 1L (each)
+  opt_lst <- list(
+    classification = classification
+  )
+  opt_lst <- Filter(function(x) !is.null(x), opt_lst)
+  
+  # output
+  out <- Map(.l_helper_make_rule_elem,
+             element = element, 
+             operator = operator, 
+             value = rules
+  )
+  
+  if(length(opt_lst) > 0L) {
+    opt_lst <- Map(unbox, opt_lst)
+    out <- (lapply(out, function(f) c(f, opt_lst)))
+  } else {
+    out <- out
   }
+  
   names(out) <- NULL
   return(out)
+  
 }
 
 NULL

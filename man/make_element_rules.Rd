@@ -4,8 +4,8 @@
 \alias{make_element_rules}
 \title{Expand a vector of rules into scalar list-sets}
 \usage{
-make_element_rules(element, operator, rules, trim = FALSE, dedupe = FALSE,
-  how = NULL)
+make_element_rules(element, operator, rules, classification = NULL,
+  trim = FALSE, dedupe = FALSE)
 }
 \arguments{
 \item{element}{A character vector. Must be a valid element (id) within access rights of your account}
@@ -14,19 +14,35 @@ make_element_rules(element, operator, rules, trim = FALSE, dedupe = FALSE,
 
 \item{rules}{A character vector; if not, will be coerced via \code{as.character}}
 
+\item{classification}{A character vector of length 1. Element classification to segment, name of the 
+classification as returned from \code{\link{[RSiteCatalyst]GetClassifications}}}
+
 \item{trim}{logi. Should leading and trailing whitespace(s) be removed? Defaults to \code{FALSE}}
 
 \item{dedupe}{logi. Should input \emph{rules} be de-duplicated? Defaults to \code{FALSE}}
-
-\item{how}{Not used at the moment.}
 }
 \value{
-A list of \code{length(rules)}. Will be hte length after whitespace-trimming and/or de-duplication
+A list of \code{length(rules)}. Will be the length after whitespace-trimming and/or de-duplication
 if \emph{trim} and/or \emph{dedupe} are \code{TRUE}, and if so, actions are performed by 
 \code{str_trim} and \code{unique}, respectively.
 }
 \description{
 For the most common single element, single operator, many rules use case
+}
+\details{
+This function is only meant to be used for \emph{operator}-based rules, and NOT \emph{container}-based
+rules. If you do not know what this means, please see:
+\href{https://marketing.adobe.com/developer/documentation/
+segments-1-4/r-segment-rule#
+reference_62E104F8CA1C42819B9715CDDDD61E31}{Adobe documentation}
+ 
+This function does NOT support the following arguments:
+
+\itemize{
+\item \preformatted{after}
+\item \preformatted{within}
+\item \preformatted{exclude}
+}
 }
 \note{
 This now accepts inputs to  \emph{element} and \emph{operator} of length > 1. Checks are in place to 
@@ -36,6 +52,10 @@ anticipated use cases.
 
 Anticipating all possible scenarios is impossible, so if you find any unexpected or overly-restrictive
 behavior, please file an issue.
+
+Do note that if \emph{classification} is provided, \emph{element} must be a vector of length 1, i.e. 
+a non-\code{NULL} value for classification overrides the above flexibility, to avoid unanticipated 
+and/or unhandled combinations that could lead to unexpected results.
 }
 \examples{
 #TBD
