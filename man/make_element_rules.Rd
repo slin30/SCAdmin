@@ -15,7 +15,7 @@ make_element_rules(element, operator, rules, classification = NULL,
 \item{rules}{A character vector; if not, will be coerced via \code{as.character}}
 
 \item{classification}{A character vector of length 1. Element classification to segment, name of the 
-classification as returned from \code{\link{[RSiteCatalyst]GetClassifications}}}
+classification as returned from \code{\link[RSiteCatalyst]{GetClassifications}}}
 
 \item{trim}{logi. Should leading and trailing whitespace(s) be removed? Defaults to \code{FALSE}}
 
@@ -32,9 +32,7 @@ For the most common single element, single operator, many rules use case
 \details{
 This function is only meant to be used for \emph{operator}-based rules, and NOT \emph{container}-based
 rules. If you do not know what this means, please see:
-\href{https://marketing.adobe.com/developer/documentation/
-segments-1-4/r-segment-rule#
-reference_62E104F8CA1C42819B9715CDDDD61E31}{Adobe documentation}
+\href{https://marketing.adobe.com/developer/documentation/segments-1-4/r-segment-rule#reference_62E104F8CA1C42819B9715CDDDD61E31}{Adobe documentation}
  
 This function does NOT support the following arguments:
 

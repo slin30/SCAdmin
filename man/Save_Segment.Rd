@@ -4,12 +4,15 @@
 \alias{Save_Segment}
 \title{Create a new segment via Segments.Save}
 \usage{
-Save_Segment(x, ...)
+Save_Segment(x, ..., override_and_edit = FALSE)
 }
 \arguments{
 \item{x}{A segment body, generally constructed with \code{make_segment_body()}}
 
-\item{...}{Additional methods to pass to \code{ApiRequest()}.}
+\item{...}{Additional methods to pass to \code{ApiRequest()}}
+
+\item{override_and_edit}{logical value to override safety check and use this function for editing. 
+\code{FALSE} by default. Only works if a value for \preformatted{id} is present}
 }
 \value{
 If successful, a data.frame with the name, report suite ID, a timestamp, the method, 
@@ -26,7 +29,11 @@ element named \code{id} is detected, as such elements are used to edit/modify, b
 not create (brand-new) segments. 
 
 The error message in this case refers to an EDIT version of this function, which needs
-to be written.
+to be written. 
+
+IMPORTANT: For temporary convenience only, this function has an override so it can be used
+to edit, while the edit method is written. Since there are no checks for EDIT, this is an 
+unchecked hack to edit.
 }
 \examples{
 # Forthcoming

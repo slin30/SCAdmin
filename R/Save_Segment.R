@@ -6,7 +6,9 @@
 #' @importFrom jsonlite unbox toJSON
 #'
 #' @param x A segment body, generally constructed with \code{make_segment_body()}
-#' @param ... Additional methods to pass to \code{ApiRequest()}. 
+#' @param ... Additional methods to pass to \code{ApiRequest()}
+#' @param override_and_edit logical value to override safety check and use this function for editing. 
+#' \code{FALSE} by default. Only works if a value for \preformatted{id} is present
 #'
 #' @return
 #' If successful, a data.frame with the name, report suite ID, a timestamp, the method, 
@@ -21,11 +23,15 @@
 #' 
 #' The error message in this case refers to an EDIT version of this function, which needs
 #' to be written. 
+#' 
+#' IMPORTANT: For temporary convenience only, this function has an override so it can be used
+#' to edit, while the edit method is written. Since there are no checks for EDIT, this is an 
+#' unchecked hack to edit.
 #' @export
 #'
 #' @examples
 #' # Forthcoming
-Save_Segment <- function(x, ...) {
+Save_Segment <- function(x, ..., override_and_edit = FALSE) {
   # check that x has required names
   nms <- names(x)
   req_nms <- c("name", "reportSuiteID", "definition")
@@ -35,16 +41,24 @@ Save_Segment <- function(x, ...) {
   # stop if an element of id is present
   idPresent <- "id" %in% names(x)
   if(idPresent) {
-    stop(
-      paste0("An element of 'id' was detected. This function only saves NEW segments;\n", 
-             "please use the corresponding EDIT function to modify existing segments")
-    )
+    ## temporary hook to override and allow edit without validation for dev only!
+    if(!override_and_edit) {
+      stop(
+        paste0("An element of 'id' was detected. This function only saves NEW segments;\n", 
+               "please use the corresponding EDIT function to modify existing segments")
+      )
+    }
   }
   # Capture the name and rsid
   nm <- as.character(x[["name"]])
   rsid <- as.character(x[["reportSuiteID"]])
   timestamp <- as.character(as.POSIXct(Sys.time(),tz="UTC"))
-  method <- "Save" # denote that this is a save, since later can have edit, delete
+  ## To capture this is an edit, with hack workaround
+  if(override_and_edit) {
+    method <- "Edit"
+  } else {
+    method <- "Save" # denote that this is a save, since later can have edit, delete
+  }
   
   # not strictly required to create a function here, but maybe useful
   # for abstraction later with edit/delete?
