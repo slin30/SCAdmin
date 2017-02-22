@@ -12,7 +12,7 @@ Save_Segment(x, ..., override_and_edit = FALSE)
 \item{...}{Additional methods to pass to \code{ApiRequest()}}
 
 \item{override_and_edit}{logical value to override safety check and use this function for editing. 
-\code{FALSE} by default. Only works if a value for \preformatted{id} is present}
+\code{FALSE} by default. Only works if a value for \emph{id} is present}
 }
 \value{
 If successful, a data.frame with the name, report suite ID, a timestamp, the method, 
@@ -33,7 +33,8 @@ to be written.
 
 IMPORTANT: For temporary convenience only, this function has an override so it can be used
 to edit, while the edit method is written. Since there are no checks for EDIT, this is an 
-unchecked hack to edit.
+unchecked hack to edit. Since this is temporary, there is no check for \emph{id} being
+the required scalar type (via \code{\link[jsonlite]{unbox}}).
 }
 \examples{
 # Forthcoming

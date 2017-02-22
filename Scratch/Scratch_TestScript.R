@@ -271,15 +271,22 @@ mg_exclude <- call.Get_Segments(selected = "s300000520_589774a4e4b08939f9d6e818"
                                 fields = c("description", "definition", "owner", "modified", 
                                            "reportSuiteID"), 
                                 accessLevel = "all")
-mg_exclude.parse <- parse_seg_return(mg_exclude)
+mg_exclude.parse <- flatten_container(mg_exclude)
 
 # to recreate this
+
+## and to edit; get the ID first
+call.Get_Segments(filters = list(name = "ThermoPhysDyn_ContentName"))
+#s300000520_589a29f3e4b0cfc8b41c8978 is the ID for edit
+
 seg_meta <- make_segment_meta(name = "ThermoPhysDyn_ContentName", 
                               reportSuiteID = mg_exclude$reportSuiteID, 
-                              owner = "w.zhang")
+                              owner = "w.zhang", 
+                              tags = "SA_CNAME"
+)
 # have to use a temporary DT while figuring out the parsing mechanism to completion for
 # simple nested segments
-rule_dt.tmp <- mg_exclude.parse$L1$sub_cont_rule[[1]] %>% as.data.table
+rule_dt.tmp <- mg_exclude.parse$L1$cont_rule[[1]] %>% as.data.table
 
 # and pull rule vec from here
 rule_vec <- rule_dt.tmp[element == "evar75", value]
@@ -288,12 +295,21 @@ rule_vec <- rule_dt.tmp[element == "evar75", value]
 # use the temporary alternative function
 seg_rules <- make_element_rules(element = "evar75", 
                                 rules = rule_vec, 
-                                operator = "equals")
+                                operator = "equals"
+)
 
 
-seg_container <- make_segment_container(type = "hits", operator = "or", exclude = FALSE, rules = seg_rules)
+seg_container <- make_segment_container(type = "hits", 
+                                        operator = "or", 
+                                        exclude = FALSE, 
+                                        rules = seg_rules
+)
 
 seg_body <- make_segment_body(segment_container = seg_container, segment_meta = seg_meta)
 
-my_new_seg <- Save_Segment(seg_body)
+# test edit
+seg_body$id <- jsonlite::unbox("s300000520_589a29f3e4b0cfc8b41c8978")
+#my_new_seg <- Save_Segment(seg_body)
+#my_edit_seg <- Save_Segment(seg_body, override_and_edit = TRUE)
 
+call.Get_Segments(filters = list(tags = "SA_CNAME"))
