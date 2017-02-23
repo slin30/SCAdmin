@@ -235,19 +235,14 @@ wz_simple$tags <- collapse_simple_target(wz_simple, "tags")
 # tidyr in this case.
 shares_unnest <- tidyr::unnest(wz_simple, shares)
 
-# Handle shares without unnest from tidyr
+# Handle shares testing
 
 wz_shares <- wz_simple$shares
-
-rbindlist(wz_shares, fill = TRUE)
-
-
-
-collapse_shares(wz_simple) %>% print
+collapse_shares(wz_simple)
 collapse_shares(bound_tst_ret$segment_meta)
 
-tst <- Map(collapse_shares, WZ_call_split)
-rbindlist(tst[!is.na(tst)])
+# tst <- Map(collapse_shares, WZ_call_split)
+# rbindlist(tst[!is.na(tst)])
 
 mg_exclude <- GS_ALL(accessLevel = "all", 
                      filters = list(name = "exclude internal knovel", 
@@ -257,6 +252,13 @@ mg_exclude <- GS_ALL(accessLevel = "all",
 
 collapse_shares(mg_exclude)
 
+# A fully-parsed segment return, not including definition
+wz_simple_parse <- list(segment_meta = wz_simple[!names(wz_simple) == "shares"],
+                        shares = collapse_shares(wz_simple)
+                        )
+wz_simple_parse
+View(wz_simple_parse$segment_meta)
+View(wz_simple_parse$shares)
 # Note: With updated segment, fixing original db_like, this 
 # actually works for stacked segments, so change the error handling as it does 
 # not apply-- rather, put generic handler for poorly made
