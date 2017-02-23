@@ -61,6 +61,7 @@ and/or unhandled combinations that could lead to unexpected results.
 \seealso{
 Other make_segment functions: \code{\link{make_segment_body}},
   \code{\link{make_segment_container}},
-  \code{\link{make_segment_meta}}
+  \code{\link{make_segment_meta}},
+  \code{\link{make_sharelist}}
 }
 

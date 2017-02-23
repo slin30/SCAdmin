@@ -278,6 +278,79 @@ bound_wz_nested <- bind_flat_cont(flat_wz$bad_nested) # still errors, so handle 
 
 
 
+# Saving segment with shares ----------------------------------------------
+
+# The structure is quite simple:
+my_shares <- list(
+  list(type = "user",
+       name = "m.gray"
+  )
+)
+
+# make_shares <- function(type, name, as_df = FALSE) {
+#   if(!all(is.character(type) & is.character(name))) {
+#     stop("'type' and 'name' must be character inputs")
+#   }
+#   # type can be a vector of length 1 or same
+#   if(!(length(type) == 1L | length(type) == length(name))) {
+#     stop("'type' must be a vector of length 1 or the same length as 'name'")
+#   }
+#   # values for type must be either "user" or "group"
+#   valid_type <- c("group", "user")
+#   diff_type  <- setdiff(unique(type), valid_type)
+#   if(length(diff_type) > 0L) {
+#     stop("Allowed values for 'type' are {", 
+#          paste(valid_type, collapse = ","), 
+#          "}\n", 
+#          "Unallowed value(s) detected: [", 
+#          paste(diff_type, collapse = ","), 
+#          "]"
+#          )
+#   }
+#   out <- Map(list, type = type, name = name)
+#   names(out) <- NULL
+#   out <- rapply(out, function(f) unbox(f), how = "list")
+#   
+#   out_df <- do.call(rbind, Map(as.data.frame, out, stringsAsFactors = FALSE))
+#   if(as_df) {
+#     return(out_df)
+#   } else {
+#     return(out)
+#   }
+#   
+# }
+
+# back_list <- vector("list", nrow(out_df))
+# for(i in seq_len(nrow(out_df))) {
+#   back_list[[i]] <- as.list(out_df[i, ])
+#   back_list[[i]] <- Map(unbox, back_list[[i]])
+# }
+# return(back_list)
+
+chk <- make_shares(type = c("user"), name = sample(LETTERS, 10, replace = TRUE), as_df = TRUE)
+
+chk2 <- make_shares(type = c("user", "group", "user", "group"), name = LETTERS[1:4])
+
+
+make_shares(type = c("User", "user", "group", "Group", "name"), name = LETTERS[1:5])
+
+
+# check length of elements
+chk.elem_len <- vapply(chk, length, integer(1)) # must all be 2L 
+# check structure
+chk.elem_type <- lapply(chk, function(f) vapply(f, function(z) typeof(z), character(1)))
+lapply(chk, function(f) vapply(f, function(z) names(z), character(0)))
+
+chk_df <- do.call(rbind, Map(as.data.frame, chk, stringsAsFactors = FALSE))
+
+
+back_list <- vector("list", nrow(chk_df))
+for(i in seq_len(nrow(chk_df))) {
+  back_list[[i]] <- as.list(chk_df[i, ])
+  back_list[[i]] <- Map(unbox, back_list[[i]])
+}
+
+
 # For DAF -----------------------------------------------------------------
 # # Daf segments
 # 
