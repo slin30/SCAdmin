@@ -42,7 +42,6 @@ a \code{list}. To summarize, the following three sets of fields:
 \item \preformatted{shares}
 \item Everything else: \itemize{
                       \item \preformatted{tags}
-                      \item \preformatted{shares}
                       \item \preformatted{owner}
                       \item \preformatted{description}
                       \item \preformatted{modified}
