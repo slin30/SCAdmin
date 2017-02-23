@@ -132,6 +132,7 @@ flat_wz <- lapply(list(bad_stacked = bad_wz_stacked, bad_nested = bad_wz_nested)
 # all_test_parsed <- lapply(test_split, parse_seg_return)
 
 
+
 # Stringing all together --------------------------------------------------
 
 
@@ -160,8 +161,7 @@ flat_wz <- lapply(list(bad_stacked = bad_wz_stacked, bad_nested = bad_wz_nested)
     stop(
       "All elements of x are not of class data.frame"
     )
-  } # this needs to be adjusted, see type1 and type3, for poorly created segments
-    # where you have a vector instead of a df
+  }
   
   # process as DT, make keys to merge
   out_rules <- rbindlist(cont_rule, 
@@ -209,6 +209,32 @@ bound_tst_ret <- bind_flat_cont(flat_tst_ret)
 
 View(bound_tst_ret$segment_cont$L1$cont_rule)
 
+collapse_simple_target(bound_ref_ret$segment_meta, "tags") %>% print
+collapse_simple_target(bound_tst_ret$segment_meta, "tags") %>% print
+
+
+collapse_simple_target(bound_ref_ret$segment_meta, "compatibility") %>% print
+collapse_simple_target(bound_tst_ret$segment_meta, "compatibility") %>% print
+
+collapse_simple_target(bound_ref_ret$segment_cont$L0$cont_meta, "tags") # error, good
+collapse_simple_target(bound_ref_ret$segment_cont$L0$cont_meta, "compatibility") # error, good
+
+wz_simple <- call.Get_Segments(fields = c("tags", "shares",
+                                          "description", "owner",
+                                          "modified", "compatibility",
+                                          "favorite", "reportSuiteID")
+)
+collapse_simple_target(wz_simple, "tags")
+collapse_simple_target(wz_simple, "compatibility")
+
+wz_simple$compatibility <- collapse_simple_target(wz_simple, "compatibility")
+wz_simple$tags <- collapse_simple_target(wz_simple, "tags")
+
+# here is a simple way to unnest-- or could just return another data.frame altogether
+# for shares, and return a list of data.frames instead? Do not need to use 
+# tidyr in this case.
+shares_unnest <- tidyr::unnest(wz_simple, shares)
+
 # Note: With updated segment, fixing original db_like, this 
 # actually works for stacked segments, so change the error handling as it does 
 # not apply-- rather, put generic handler for poorly made
@@ -229,40 +255,41 @@ bound_wz_nested <- bind_flat_cont(flat_wz$bad_nested) # still errors, so handle 
 
 
 # For DAF -----------------------------------------------------------------
-# Daf segments
+# # Daf segments
+# 
+# dseg <- call.Get_Segments(accessLevel = "all", 
+#                           filters = list(reportSuiteID = "elsevier-ha-prod", 
+#                                          tags = "JBS-Journal"), 
+#                           fields = c("description", "owner", "definition", 
+#                                      "reportSuiteID", "modified")
+# )
+# 
+# dseg_split <- SCAdmin:::split_segment_ret(dseg)
+# 
+# # DAF restr (WIP)
+# dseg_flat <- lapply(dseg_split, function(f) flatten_container(f))
+# dseg_bind <- lapply(dseg_flat, function(f) bind_flat_cont(f))
+# 
+# 
+# tst_merge <- function(x) {
+#   cont <- x[["segment_cont"]][[1]]
+#   
+#   cont_bind <- merge(cont[["cont_meta"]], cont[["cont_rule"]], by = "rule_set_ID")
+#   
+#   out <- list(x[["segment_meta"]], cont_bind)
+#   names(out) <- names(x)
+#   return(out)
+# }
+# 
+# dseg_mrg <- lapply(dseg_bind, function(f) tst_merge(f))
+# dseg_rbl <- lapply(dseg_mrg, function(f) do.call(cbind, f))
+# 
+# out <- rbindlist(dseg_rbl, use.names = TRUE)
+# 
+# library(xlsx)
+# 
+# write.xlsx2(out, "C:/Users/WZDESKTOP/Desktop/DAF_SEGMENTS.xlsx", row.names = FALSE, sheetName = "DATA")
 
-dseg <- call.Get_Segments(accessLevel = "all", 
-                          filters = list(reportSuiteID = "elsevier-ha-prod", 
-                                         tags = "JBS-Journal"), 
-                          fields = c("description", "owner", "definition", 
-                                     "reportSuiteID", "modified")
-)
-
-dseg_split <- SCAdmin:::split_segment_ret(dseg)
-
-# DAF restr (WIP)
-dseg_flat <- lapply(dseg_split, function(f) flatten_container(f))
-dseg_bind <- lapply(dseg_flat, function(f) bind_flat_cont(f))
-
-
-tst_merge <- function(x) {
-  cont <- x[["segment_cont"]][[1]]
-  
-  cont_bind <- merge(cont[["cont_meta"]], cont[["cont_rule"]], by = "rule_set_ID")
-  
-  out <- list(x[["segment_meta"]], cont_bind)
-  names(out) <- names(x)
-  return(out)
-}
-
-dseg_mrg <- lapply(dseg_bind, function(f) tst_merge(f))
-dseg_rbl <- lapply(dseg_mrg, function(f) do.call(cbind, f))
-
-out <- rbindlist(dseg_rbl, use.names = TRUE)
-
-library(xlsx)
-
-write.xlsx2(out, "C:/Users/WZDESKTOP/Desktop/DAF_SEGMENTS.xlsx", row.names = FALSE, sheetName = "DATA")
 # Make segments testing ---------------------------------------------------
 
 # this is a segment that contains two rules with exclude

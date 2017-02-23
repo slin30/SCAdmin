@@ -9,7 +9,7 @@
 #' @family internal
 split_segment_ret <- function(seg_ret) {
   # check class
-  if(!is.list(seg_ret)) {
+  if(!is.data.frame(seg_ret)) {
     stop("seg_ret is of class ",
          class(seg_ret), " but expected a data.frame"
     )

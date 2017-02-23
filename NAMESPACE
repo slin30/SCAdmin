@@ -3,7 +3,7 @@
 export(Save_Segment)
 export(call.Get_Group)
 export(call.Get_Segments)
-export(collapse_tags)
+export(collapse_simple_target)
 export(flatten_container)
 export(make_element_rules)
 export(make_segment_body)

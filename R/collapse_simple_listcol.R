@@ -1,6 +1,8 @@
-#' collapse_tags
+#' collapse_simple_listcol
 #' 
-#' collapse nested tags list-column into a flattened atomic vector
+#' Internal function - unnest a list-column into a (possibly bracket-quoted) comma-delimited atomic vector
+#' 
+#' @family internal
 #'
 #' @param x An unnested list of length 1 
 #'
@@ -9,18 +11,17 @@
 #' in any element of \code{x[[1]]}, ALL elements will additionally be 
 #' encapsulated by square brackets as a more readable proxy for 
 #' quotes. 
-#' 
-#' @export
-#' 
+#'  
 #' @details 
-#' Will likely not be exported for release, but being exported for development. 
 #' This does not check for any upsteam (e.g. data.frame) names, and should be used
-#' directly on a column accessed by name (or double-subscripted via index/name); can
-#' be easily integrated into a pipeline, so this design is intentional in anticipation.
+#' directly on a column accessed by name (or double-subscripted via index/name); mainly
+#' a helper function that does the heavy lifting for collapse_tags and collapse_compatibility
+#' 
+#' See \code{\link{collapse_simple_target}}, where this function does the heavy lifting.
 #'
 #' @examples
 #' # TBD
-collapse_tags <- function(x) {
+collapse_simple_listcol <- function(x) {
   
   if(class(x) != "list") {
     stop("Expected an input of class 'list', but input is a ", class(x))
@@ -36,7 +37,7 @@ collapse_tags <- function(x) {
     return(NA_character_)
   }
   if(!is.character(x_tag)) {
-    stop("character expected for parsing 'tags', but encountered ", 
+    stop("character expected for parsing, but encountered ", 
          class(x[[1]]), " at x[[1]] instead")
   }
   

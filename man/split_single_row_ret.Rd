@@ -20,7 +20,8 @@ Internal function - Further splits and checks output from split_segment_ret
 This is mainly a helper for \code{\link{recur_flatten_nested_container}}
 }
 \seealso{
-Other internal: \code{\link{recur_flatten_nested_container}},
+Other internal: \code{\link{collapse_simple_listcol}},
+  \code{\link{recur_flatten_nested_container}},
   \code{\link{split_segment_ret}}
 }
 

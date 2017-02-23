@@ -16,7 +16,8 @@ A list of length equal to \code{nrow(x)}
 Internal function - splits data.frame into rows, with checks
 }
 \seealso{
-Other internal: \code{\link{recur_flatten_nested_container}},
+Other internal: \code{\link{collapse_simple_listcol}},
+  \code{\link{recur_flatten_nested_container}},
   \code{\link{split_single_row_ret}}
 }
 

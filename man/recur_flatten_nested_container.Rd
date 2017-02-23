@@ -38,7 +38,8 @@ definition of \emph{sub-optimally} is subjective, but includes:
 This function includes a helper that may not be required any longer, but does not hurt
 }
 \seealso{
-Other internal: \code{\link{split_segment_ret}},
+Other internal: \code{\link{collapse_simple_listcol}},
+  \code{\link{split_segment_ret}},
   \code{\link{split_single_row_ret}}
 }
 
