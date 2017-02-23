@@ -12,7 +12,7 @@
 #' this should be left alone, unless you specifically need a more human-viewable temporary data structure
 #'
 #' @details 
-#' The actual data structure for \emph{shares} is quite simple, so this is definitely a helper function, is
+#' The actual data structure for \emph{shares} is quite simple, so this is definitely a helper function, and is
 #' likely most useful when you need to create long lists of shares, and/or you have a complex mix of 
 #' \emph{type}, perhaps e.g. stored in tabular format. 
 #' 
@@ -47,12 +47,15 @@
 #' make_sharelist(type = c("User"), name = sample(LETTERS, 10)) #also error
 #' 
 #' # no error, demo of df use case
-#' make_sharelist(type = c("user"), name = sample(LETTERS, 1e3, replace = TRUE), as_df = TRUE) 
-#' # df_to_sharelist <- vector("list", nrow(out_df))
-#' # for(i in seq_len(nrow(out_df))) {
-#' #   back_list[[i]] <- as.list(out_df[i, ])
-#' #   back_list[[i]] <- Map(unbox, back_list[[i]])
-#' #}
+#' my_shares_df <- make_sharelist(type = c("user"), 
+#'   name = sample(LETTERS, 1e3, replace = TRUE), 
+#'   as_df = TRUE
+#' ) 
+#' back_list <- vector("list", nrow(my_shares_df))
+#' for(i in seq_len(nrow(my_shares_df))) {
+#'   back_list[[i]] <- as.list(my_shares_df[i, ])
+#'   back_list[[i]] <- Map(jsonlite::unbox, back_list[[i]])
+#' }
 #' }
 make_sharelist <- function(type, name, as_df = FALSE) {
   if(!all(is.character(type) & is.character(name))) {
