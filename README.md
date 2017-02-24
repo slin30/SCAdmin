@@ -1,8 +1,22 @@
 # SCAdmin
 
-## Adobe Analytics Admin API functions
+## Adobe Analytics Admin and Segments API functions
 
 Version 0.0.0.9000 (in dev)
+
+**Functions to access more advanced Adobe Analytics admin API methods, as well as in-depth
+Segments API methods.**
+
+At the moment, this package combines both Admin and Segments functions, but this is subject to 
+change, and the package may be split. The Admin API methods this package will ultimately 
+address require full admin privileges, while the overwhelming
+majority of potential Segments methods end-users neither have, nor require, access privileges
+beyond the standard level (i.e. non-admin). 
+
+Also note that the Segments methods, or at least the `GET` Segments methods, are targeted for 
+integration with the official [RSiteCatalyst package](https://github.com/randyzwitch/RSiteCatalyst)
+package. This is for the good of all current and future end-users (and developers/maintainers).
+
 
 **Quick Nav**  
 
