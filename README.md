@@ -14,8 +14,8 @@ majority of potential Segments methods end-users neither have, nor require, acce
 beyond the standard level (i.e. non-admin). 
 
 Also note that the Segments methods, or at least the `GET` Segments methods, are targeted for 
-integration with the official [RSiteCatalyst package](https://github.com/randyzwitch/RSiteCatalyst)
-package. This is for the good of all current and future end-users (and developers/maintainers).
+integration with the official [RSiteCatalyst package](https://github.com/randyzwitch/RSiteCatalyst).
+This is for the good of all current and future end-users (and developers/maintainers).
 
 
 **Quick Nav**  
