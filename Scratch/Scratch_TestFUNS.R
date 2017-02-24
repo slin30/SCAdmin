@@ -1,64 +1,99 @@
-# # draft restructuring fun
-# restr_segRules <- function(x, ...) {
-#   
-#   x_meta <- .parse_segMeta(x)
-#   x_cont <- .parse_container(x, ...)
-#   
-#   list(segment_meta = x_meta, 
-#        defn = x_cont)
-# 
-# }
-# NULL
+GS_ALL <- function(...) {
+  call.Get_Segments(fields = c("tags", "shares",
+                               "description", "owner",
+                               "modified", "compatibility",
+                               "favorite", "reportSuiteID",
+                               "definition"),  
+                    ...)
+}
 
-# Extractors --------------------------------------------------------------
-# need extractors for shares, compatibility, and tags
+# easy-mode get all; template of sorts, before packaging
+easy.Get_Segments <- function(..., fun = NULL) {
+  
+  if(is.null(fun)) {
+    fun <- "GS_ALL"
+  }
+  
+  seg_call  <- match.fun(fun)(...)
+  restr_call <- .split_segment_ret(seg_call) %>%
+    Map(restr.Get_Segments, ., merge_rules = TRUE) %>%
+    purrr::transpose(.)
+  
+  lapply(restr_call, function(f) 
+    rbindlist(f, use.names = TRUE, fill = TRUE))
+}
 
-# # extract definition out of different structures
-# .extract_defn <- function(x) {
-#   # if none of the expected names are present, stop
-#   possible_names <- c("definition", "type", "operator", "rules")
-#   
-#   if(is.null(names(unlist(x)))) {
-#     stop("No names detected in input")
-#   }
-#   
-#   flat_nms <- names(unlist(x)) %>%
-#     gsub("\\d", "", .) %>%
-#     unique
-#   
-#   nms_chk <- lapply(possible_names, function(f) grepl(f, flat_nms)) %>%
-#     unlist %>%
-#     Reduce("|", .)
-#   
-#   if(!nms_chk || is.null(nms_chk)) {
-#     stop("No expected names detected in input")
-#   }
-#   
-#   # Need to normalize input structure to df called "container" with rules nested df
-#   # handle input of df with container nested within definition
-#   if("definition" %in% names(x) & is.data.frame(x)) {
-#     cont <- x[["definition"]]
-#     return(cont)
-#   }
-#   # pass thru
-#   if(length(names(x)) == 1L && names(x) == "container") {
-#     return(x)
-#   }
-#   # However, if someone passed in rules , need to nest it a level as df
-#   if(all(c("type", "operator", "rules") %in% names(x))) {
-#     defn <- data.frame(container = seq_len(nrow(x)))
-#     defn$container <- data.frame(type = x[["type"]])
-#     
-#     x_class <- vapply(x, class, FUN.VALUE = character(1))
-#     x_flat <- x[, which(x_class != "list")]
-#     
-#     defn$container <- x_flat
-#     defn$container$rules <- x[["rules"]]
-#     return(defn)
-#   }
-#   
-# }
-# # 
+
+
+# Restructuring, for integration ------------------------------------------
+
+# if cont_rule is in names, then rbindlist it
+# helper to .split_flat_cont
+.l_helper_bind_rules <- function(x) {
+  
+  if(!"cont_meta" %in% names(x)) {
+    stop("content_meta missing")
+  }
+  
+  if(!"cont_rule" %in% names(x)) {
+    return(x)
+  }
+  
+  # handle inputs where cont_meta is present along with cont_rule
+  
+  cont_meta <- x[["cont_meta"]]
+  cont_rule <- x[["cont_rule"]]
+  
+  
+  # check that all elements are df
+  df_check <- vapply(seq_along(cont_rule), 
+                     function(f) is.data.frame(cont_rule[[f]]), FUN.VALUE = logical(1))
+  if(!all(df_check)) {
+    stop(
+      "All elements of x are not of class data.frame"
+    )
+  }
+  
+  # process as DT, make keys to merge
+  out_rules <- rbindlist(cont_rule, 
+                         use.names = TRUE, 
+                         fill = TRUE, 
+                         idcol = "rule_set_ID"
+  )
+  out_meta  <- as.data.table(cont_meta)
+  out_meta[, rule_set_ID := .I]
+  
+  list(
+    cont_meta = out_meta, 
+    cont_rule = out_rules
+  )
+  
+}
+
+# split a parsed return from parse_seg_return, remove NULLs, bind rules
+bind_flat_cont <- function(x) {
+  targ <- "segment_meta"
+  
+  if(!targ %in% names(x)) {
+    stop("Required input element of ", substitute(targ), " not present")
+  }
+  
+  segment_meta <- x[[targ]]
+  segment_cont <- x[setdiff(names(x), substitute(targ))] %>%
+    lapply(X=., function(f) Filter(function(x) !is.null(x), f)) 
+  
+  # make sure other names have not crept into segment_cont
+  segCont_nms <- paste0("L", seq_along(segment_cont)-1L)
+  if(length(setdiff(names(segment_cont), segCont_nms)) > 0L) {
+    stop("Mismatch in names in segment_cont and expected names")
+  }
+  
+  segment_cont <- lapply(segment_cont, .l_helper_bind_rules)
+  
+  list(segment_meta = segment_meta, 
+       segment_cont = segment_cont
+  )
+}
 
 # For Daf-- SaveInternalURLFilters draft ----------------------------------
 
