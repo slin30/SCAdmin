@@ -14,12 +14,18 @@
 #'       a \code{data.frame}.
 #' \item names, which must be \code{type,name}
 #' \item values of field \code{type}, which must be one or both of \code{user,group}
+#' \item values to each of \code{type,name} are \code{character} vectors of length 1
 #' }
 #' 
 #' Failing any of these checks is an error.
 #' Passing all of these checks returns \code{TRUE}
 #'
 #' @return \code{TRUE} or an error (with error message)
+#' 
+#' @note 
+#' Used in the context of \code{\link{make_segment_meta}} to validate inputs to the \emph{shares} argument,
+#' and also for testing the output of \code{make_sharelist}. Does not expect, although allows, values that are
+#' already coerced to \code{scalar}.
 #'
 #' @examples
 #' #TBD

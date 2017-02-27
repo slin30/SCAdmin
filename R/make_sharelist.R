@@ -24,11 +24,11 @@
 #' @note 
 #' The API requires values of class \code{scalar, character}, via \code{\link[jsonlite]{unbox}}. The
 #' output of this function is simply \code{character} vectors of length 1. The expected use of the output
-#' is to pass to the \code{shares} argument of \code{\link{make_segment_meta}} function, which handles all
-#' required argument type conversion. If you have a different application, you will need to handle the
-#' coercion yourself.
+#' is as input to the \code{shares} argument of \code{\link{make_segment_meta}}, which handles all
+#' required argument type conversion. If you have a different use case in mind that does not involve
+#' passing the output to \code{make_segment_meta}, you will need to handle the coercion yourself.
 #' 
-#' Also, see example for a quick mechanism to quickly convert a \code{data.frame} output (from this function) 
+#' Also, see example to convert a \code{data.frame} output (from this function) 
 #' into (or, rather, back into) a list. 
 #'
 #' @return
