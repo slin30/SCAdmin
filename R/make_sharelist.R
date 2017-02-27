@@ -12,7 +12,7 @@
 #' this should be left alone, unless you specifically need a more human-viewable temporary data structure
 #'
 #' @details 
-#' The actual data structure for \emph{shares} is quite simple, so this is definitely a helper function, and is
+#' The actual data structure for \emph{shares} is quite simple; this function is therefore
 #' likely most useful when you need to create long lists of shares, and/or you have a complex mix of 
 #' \emph{type}, perhaps e.g. stored in tabular format. 
 #' 
@@ -22,21 +22,22 @@
 #' 
 #' 
 #' @note 
-#' See example for a quick mechanism to quickly convert a \code{data.frame} output (from this function) 
+#' The API requires values of class \code{scalar, character}, via \code{\link[jsonlite]{unbox}}. The
+#' output of this function is simply \code{character} vectors of length 1. The expected use of the output
+#' is to pass to the \code{shares} argument of \code{\link{make_segment_meta}} function, which handles all
+#' required argument type conversion. If you have a different application, you will need to handle the
+#' coercion yourself.
+#' 
+#' Also, see example for a quick mechanism to quickly convert a \code{data.frame} output (from this function) 
 #' into (or, rather, back into) a list. 
 #'
 #' @return
-#' By default, a nested \code{list} of length \emph{name} with two named elements, with all
-#' values of class \code{scalar} (\code{character}):
-#' 
-#' \itemize{
-#' \item \preformatted{type}
-#' \item \preformatted{name}
-#' }
+#' By default, a nested \code{list} of \code{length(name)}, with two named elements, \code{type,name}
+#' of class \code{character}; see \strong{note}.
 #' 
 #' If \code{as_df = TRUE}, then a \code{data.frame} with fields \code{type,name}, with as many rows as 
 #' \code{length(name)}. As is the case for the default output, all values in both fields will be of
-#' class \code{scalar} (\code{character}).
+#' class \code{character}. Mainly for debugging/troubleshooting.
 #' 
 #' @export
 #'
