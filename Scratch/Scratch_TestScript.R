@@ -154,11 +154,16 @@ mg_exclude.parse <- flatten_container(mg_exclude)
 call.Get_Segments(filters = list(name = "ThermoPhysDyn_ContentName"))
 #s300000520_589a29f3e4b0cfc8b41c8978 is the ID for edit
 
+seg_shares <- make_sharelist("user", c("m.gray"))
+
 seg_meta <- make_segment_meta(name = "ThermoPhysDyn_ContentName", 
                               reportSuiteID = mg_exclude$reportSuiteID, 
                               owner = "w.zhang", 
-                              tags = "SA_CNAME"
+                              tags = "SA_CNAME", 
+                              shares = seg_shares, 
+                              favorite = FALSE
 )
+
 # have to use a temporary DT while figuring out the parsing mechanism to completion for
 # simple nested segments
 rule_dt.tmp <- mg_exclude.parse$L1$cont_rule[[1]] %>% as.data.table
@@ -182,9 +187,15 @@ seg_container <- make_segment_container(type = "hits",
 
 seg_body <- make_segment_body(segment_container = seg_container, segment_meta = seg_meta)
 
+
 # test edit
 seg_body$id <- jsonlite::unbox("s300000520_589a29f3e4b0cfc8b41c8978")
-#my_new_seg <- Save_Segment(seg_body)
-#my_edit_seg <- Save_Segment(seg_body, override_and_edit = TRUE)
+# #my_new_seg <- Save_Segment(seg_body)
+# #my_edit_seg <- Save_Segment(seg_body, override_and_edit = TRUE)
 
-call.Get_Segments(filters = list(tags = "SA_CNAME"))
+call.Get_Segments(filters = list(tags = "SA_CNAME")) # quick check
+recheck <- call.Get_Segments(filters = list(tags = "SA_CNAME"), 
+                  fields = c("shares", "favorite", "owner", "shares", "definition", "description")
+)
+
+collapse_shares(recheck)

@@ -23,7 +23,6 @@ This performs the following checks, in order:
       a \code{data.frame}.
 \item names, which must be \code{type,name}
 \item values of field \code{type}, which must be one or both of \code{user,group}
-\item column classes, which must be \code{scalar}, via \code{\link[jsonlite]{unbox}}
 }
 
 Failing any of these checks is an error.

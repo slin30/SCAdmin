@@ -79,7 +79,7 @@ make_sharelist <- function(type, name, as_df = FALSE) {
   }
   out <- Map(list, type = type, name = name)
   names(out) <- NULL
-  out <- rapply(out, function(f) unbox(f), how = "list")
+  #out <- rapply(out, function(f) unbox(f), how = "list")
   
   out_df <- do.call(rbind, Map(as.data.frame, out, stringsAsFactors = FALSE))
   if(as_df) {

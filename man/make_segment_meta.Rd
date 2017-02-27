@@ -20,8 +20,7 @@ belong to. Must be a valid report suite ID and one that your login has permissio
 \item{owner}{(Optional) A character vector of length 1. The Login of the user who will be the owner. Defaults to 
 the current user if not provided.}
 
-\item{shares}{NOT CURRENTLY SUPPORTED; when this changes: 
-(Optional) A named list of length 2 with names \emph{type} (one of \code{group,user}) and \code{name}, 
+\item{shares}{(Optional) A named list of length 2 with names \emph{type} (one of \code{group,user}) and \code{name}, 
 which is the group or user name to share with. Both values must be provided as character vectors of length 1.}
 
 \item{tags}{(Optional) A character vector of keywords to group segments for filtering}
@@ -44,7 +43,7 @@ This separation is intentional, as this function will eventually be integrated i
 exported in the public release.
 }
 \note{
-\emph{shares} are not yet supported, so if you pass this in via this function, they will be dropped. 
+\emph{shares} are now supported. See \code{\link{make_sharelist}}.
 \emph{tags} are now supported, but there is very limited type/structure checking, so be warned.
 }
 \examples{

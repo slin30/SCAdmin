@@ -14,7 +14,6 @@
 #'       a \code{data.frame}.
 #' \item names, which must be \code{type,name}
 #' \item values of field \code{type}, which must be one or both of \code{user,group}
-#' \item column classes, which must be \code{scalar}, via \code{\link[jsonlite]{unbox}}
 #' }
 #' 
 #' Failing any of these checks is an error.
@@ -25,6 +24,14 @@
 #' @examples
 #' #TBD
 chk_shares <- function(x) {
+  # check input length to ensure nested list fails
+  if(length(x[[1]]) == 1L || is.null(names(x[[1]])) || !names(x[[1]]) %in% c("type", "name")) {
+    stop(
+      paste("Unexpected input structure\n", 
+            " x must be nested list of length equal to number of shares with named elements"
+    )
+    )
+  }
   
   # bind to df for ease and as check
   share_df <- tryCatch({
@@ -35,14 +42,26 @@ chk_shares <- function(x) {
   }, finally = NULL
   )
   
+  # check named element length
+  len_ok <- nrow(share_df) == length(x)
+  if(!len_ok) {
+    stop(
+      paste("Mismatch in length of x and expected check length\n", 
+             " Most likely this is due to one or more elements being vectors of length > 1")
+    )
+  }
+  
+  
   # check names
   fields_ok <- all(
     ncol(share_df) == 2L &
       names(share_df) %in% c("type", "name")
   )
   if(!fields_ok) {
-    stop("Expected names of 'type' and 'name' but instead 
-         detected names of: ", names(share_df))
+    stop(
+      paste("Expected names of 'type' and 'name' but instead",
+            "detected names of: \n", names(share_df))
+)
   }
   # check vals of 'type'
   typeVals <- unique(share_df[["type"]])
@@ -57,11 +76,11 @@ chk_shares <- function(x) {
          paste(valDiff, collapse = ","))
   }
   
-  # check class
-  class_ok <- vapply(share_df, function(f) 
-    "scalar" %in% class(f), logical(1))
+  # check class for character
+  class_ok <- vapply(share_df, function(f)
+    "character" %in% class(f), logical(1))
   if(!all(class_ok)) {
-    stop("Input values for 'shares' must be of class 'scalar'")
+    stop("Input values for 'shares' must be of class 'character'")
   }
   
   return(TRUE)
