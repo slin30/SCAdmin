@@ -8,26 +8,28 @@ make_element_rules(element, operator, rules, classification = NULL,
   trim = FALSE, dedupe = FALSE)
 }
 \arguments{
-\item{element}{A character vector. Must be a valid element (id) within access rights of your account}
+\item{element}{(Required) A character vector. Must be a valid element (id) within access rights of your account}
 
-\item{operator}{A character vector. For elements-based rules, the API defines allowable values. See details.}
+\item{operator}{(Required) A character vector. For elements-based rules, the API defines allowable values. See details.}
 
-\item{rules}{A character vector; if not, will be coerced via \code{as.character}}
+\item{rules}{(Required) A character vector; if not, will be coerced via \code{as.character}}
 
-\item{classification}{A character vector of length 1. Element classification to segment, name of the 
+\item{classification}{(Optional) A character vector of length 1. Element classification to segment, i.e. the name of the 
 classification as returned from \code{\link[RSiteCatalyst]{GetClassifications}}}
 
-\item{trim}{logi. Should leading and trailing whitespace(s) be removed? Defaults to \code{FALSE}}
+\item{trim}{(Optional) logi. Should leading and trailing whitespace(s) be removed from \emph{rules}? Defaults to \code{FALSE}}
 
-\item{dedupe}{logi. Should input \emph{rules} be de-duplicated? Defaults to \code{FALSE}}
+\item{dedupe}{(Optional) logi. Should input \emph{rules} be de-duplicated? Defaults to \code{FALSE}}
 }
 \value{
-A list of \code{length(rules)}. Will be the length after whitespace-trimming and/or de-duplication
+A list of \code{length(rules)}, which may be passed to \code{\link{make_segment_container}}. 
+
+The length of the output will equal the length after whitespace-trimming and/or de-duplication
 if \emph{trim} and/or \emph{dedupe} are \code{TRUE}, and if so, actions are performed by 
 \code{str_trim} and \code{unique}, respectively.
 }
 \description{
-For the most common single element, single operator, many rules use case
+For the common single element, single operator, many rules use case (and more)
 }
 \details{
 This function is only meant to be used for \emph{operator}-based rules, and NOT \emph{container}-based
@@ -43,17 +45,14 @@ This function does NOT support the following arguments:
 }
 }
 \note{
-This now accepts inputs to  \emph{element} and \emph{operator} of length > 1. Checks are in place to 
-prevent ambiguous combinatons of lengths for these two arguments in conjunction with \emph{rules}. This is
-done to take advantage of standard recycling rules, while constraining the possible combinations of 
-anticipated use cases. 
+Inputs to \emph{element} and \emph{operator} of length > 1 are allowed, with constraints. Checks are in place to 
+prevent ambiguous combinatons of lengths for these two arguments in conjunction with \emph{rules}. This makes it 
+possible to create certain combinations of element, operator, and rule, where only one of the three variables is
+variant.
 
-Anticipating all possible scenarios is impossible, so if you find any unexpected or overly-restrictive
-behavior, please file an issue.
-
-Do note that if \emph{classification} is provided, \emph{element} must be a vector of length 1, i.e. 
-a non-\code{NULL} value for classification overrides the above flexibility, to avoid unanticipated 
-and/or unhandled combinations that could lead to unexpected results.
+If, however, \emph{classification} is provided, \emph{element} must be a vector of length 1, i.e. 
+a non-\code{NULL} value for \emph{classification} means that only one of \emph{operator} OR \emph{rules} can be
+a vector of length > 1.
 }
 \examples{
 #TBD

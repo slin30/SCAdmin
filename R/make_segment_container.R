@@ -14,12 +14,24 @@
 #' @param operator (Optional) How should rules within the container be evaluated? One of \code{and,or,then}. A
 #' character vector of length 1. Note that restrictions apply for \code{then}. If not provided, defaults to \code{and}. 
 #' Not meaningful for single-rule containers.
-#' @param rules (Required) A list of rules, with required names. Generally created with \code{make_element_rules}.
+#' @param rules (Required) A list of rules, with required names. Helper: \code{\link{make_element_rules}}.
 #' @param exclude (Optional) Should the container exclude, rather than include, data that matches the 
 #' rule(s)? A logical vector of length 1. Defaults to \code{FALSE}
+#' 
+#' @details 
+#' A complete segment body comprises two basic parts: the metadata and one or more containers. This function
+#' helps construct valid rule-based containers, which means you have rules nested within a container, and not
+#' the other way around. The latter is also valid, but a less common use case; this function is designed to 
+#' faciliate the former. 
+#' 
+#' 
+#' @note 
+#' As is true for all \code{make_} functions, there is no direct interaction with any API, as these are mainly helpers. 
+#' You are free to construct your own segment components without using any/all of the \code{make_} functions. 
+#' 
 #'
 #' @return
-#' A nested list
+#' A nested list, which may be passed to the appropriate argment of \code{\link{make_segment_body}}.
 #' @export
 #'
 #' @examples

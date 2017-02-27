@@ -7,13 +7,13 @@
 make_segment_body(segment_meta, segment_container)
 }
 \arguments{
-\item{segment_meta}{A named list; metadata for container. Generally the output from \code{make_segment_meta}}
+\item{segment_meta}{A named list; metadata for container. Generally the output from \code{\link{make_segment_meta}}}
 
 \item{segment_container}{A nested named list; container with one or more rules. Generally the output from 
-\code{make_segment_container}}
+\code{\link{make_segment_container}}}
 }
 \value{
-A nested named list.
+A nested named list, generally passed to \code{\link{Save_Segment}}
 }
 \description{
 Create a segment body to pass to Save_Segment()

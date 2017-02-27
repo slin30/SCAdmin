@@ -7,9 +7,9 @@
 Save_Segment(x, ..., override_and_edit = FALSE)
 }
 \arguments{
-\item{x}{A segment body, generally constructed with \code{make_segment_body()}}
+\item{x}{A segment body. Helper: \code{\link{make_segment_body}}}
 
-\item{...}{Additional methods to pass to \code{ApiRequest()}}
+\item{...}{Additional methods to pass to \code{\link[RSiteCatalyst]{ApiRequest}}}
 
 \item{override_and_edit}{logical value to override safety check and use this function for editing. 
 \code{FALSE} by default. Only works if a value for \emph{id} is present}
@@ -24,12 +24,9 @@ Timestamp is always returned as a character-formatted vector of length 1, with t
 Push a new segment to a target report suite via the Adobe Analytics Segments.Save method
 }
 \note{
-Error checking not yet implemented, but will be. At the moment, only errors if an
-element named \code{id} is detected, as such elements are used to edit/modify, but
-not create (brand-new) segments. 
-
-The error message in this case refers to an EDIT version of this function, which needs
-to be written. 
+Errors if an element named \code{id} is detected, as such elements are used to edit/modify, but
+not create (brand-new) segments. The error message in this case refers to an EDIT version of this function, 
+which needs to be written. 
 
 IMPORTANT: For temporary convenience only, this function has an override so it can be used
 to edit, while the edit method is written. Since there are no checks for EDIT, this is an 

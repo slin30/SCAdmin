@@ -7,12 +7,12 @@
 #' 
 #' @family make_segment functions
 #'
-#' @param segment_meta A named list; metadata for container. Generally the output from \code{make_segment_meta}
+#' @param segment_meta A named list; metadata for container. Generally the output from \code{\link{make_segment_meta}}
 #' @param segment_container A nested named list; container with one or more rules. Generally the output from 
-#' \code{make_segment_container}
+#' \code{\link{make_segment_container}}
 #'
 #' @return
-#' A nested named list. 
+#' A nested named list, generally passed to \code{\link{Save_Segment}}
 #' 
 #' @details 
 #' This builds up the final required structure, including nesting \emph{segment_container} under a value of

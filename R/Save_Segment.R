@@ -5,8 +5,8 @@
 #' @importFrom RSiteCatalyst ApiRequest
 #' @importFrom jsonlite unbox toJSON
 #'
-#' @param x A segment body, generally constructed with \code{make_segment_body()}
-#' @param ... Additional methods to pass to \code{ApiRequest()}
+#' @param x A segment body. Helper: \code{\link{make_segment_body}}
+#' @param ... Additional methods to pass to \code{\link[RSiteCatalyst]{ApiRequest}}
 #' @param override_and_edit logical value to override safety check and use this function for editing. 
 #' \code{FALSE} by default. Only works if a value for \emph{id} is present
 #'
@@ -17,12 +17,9 @@
 #' Timestamp is always returned as a character-formatted vector of length 1, with timezone set to "UTC"
 #' 
 #' @note 
-#' Error checking not yet implemented, but will be. At the moment, only errors if an
-#' element named \code{id} is detected, as such elements are used to edit/modify, but
-#' not create (brand-new) segments. 
-#' 
-#' The error message in this case refers to an EDIT version of this function, which needs
-#' to be written. 
+#' Errors if an element named \code{id} is detected, as such elements are used to edit/modify, but
+#' not create (brand-new) segments. The error message in this case refers to an EDIT version of this function, 
+#' which needs to be written. 
 #' 
 #' IMPORTANT: For temporary convenience only, this function has an override so it can be used
 #' to edit, while the edit method is written. Since there are no checks for EDIT, this is an 

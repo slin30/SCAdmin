@@ -21,7 +21,8 @@ belong to. Must be a valid report suite ID and one that your login has permissio
 the current user if not provided.}
 
 \item{shares}{(Optional) A named list of length 2 with names \emph{type} (one of \code{group,user}) and \code{name}, 
-which is the group or user name to share with. Both values must be provided as character vectors of length 1.}
+which is the group or user name to share with. Both values must be provided as character vectors of length 1.
+Helper: \code{\link{make_sharelist}}}
 
 \item{tags}{(Optional) A character vector of keywords to group segments for filtering}
 }
@@ -29,22 +30,30 @@ which is the group or user name to share with. Both values must be provided as c
 A list, possibly nested, containing the required segment-level metadata
 }
 \description{
-For a new segment, create required metadata and output appropriate structure for a call to Get_Segments
+For a new segment, create required metadata and output appropriate structure for a call to the AA method Segments.Save
 }
 \details{
-WORK IN PROGRESS; this creates the appropriate segment-level metadata, required as a part of creating
-a new segment. 
+This creates the appropriate segment-level metadata, required as a part of creating
+a new segment. Segment-level metadata comprises half of a complete segment body. The other half is the 
+container; see \code{\link{make_segment_container}} for more details.
 
-The scope of this function is for creating a new segment via the Adobe Analytics \code{Segments.Save}
-method, specifically for creating a NEW segment, as opposed to editing (updating) an existing segment. 
+All fields from the AA \emph{Segments.Save} method are supported by this function, except for, \emph{id}. 
+This is intentional; a field named \emph{id} containing a valid (existing) segment ID is the sole variable 
+that determines whether the AA \emph{Segments.Save} method edits (read: overwrites) an existing segment 
+or creates a new segment.
 
-This separation is intentional, as this function will eventually be integrated into the final exported function
-\code{Save_Segment()}, which does not yet exist. This means that this particular function will likely NOT be 
-exported in the public release.
+Since \emph{id} is NOT a supported argument, you cannot accidentally pass in a segment id, period. 
+This means you never have to worry that you might accidentally overwrite an existing segment so long as you
+use this function, and ONLY this function, to create the segment metadata. 
+
+There is nothing stopping you from appending an element named \emph{id} along with a segment ID value to the 
+output (of this function) for an edit use case.
 }
 \note{
-\emph{shares} are now supported. See \code{\link{make_sharelist}}.
-\emph{tags} are now supported, but there is very limited type/structure checking, so be warned.
+None of the\code{make_} functions in this package directly interact with any API, nor are they 
+strictly required to use \code{\link{Save_Segment}}. 
+
+You are free to create any and all parts of a segment body on your own, as needed.
 }
 \examples{
 # Forthcoming
