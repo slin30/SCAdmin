@@ -1,25 +1,42 @@
 context("shares")
 
+## Temp
+library(SCAdmin)
+library(jsonlite)
+library(testthat)
 
 # Reference data ----------------------------------------------------------
 
-pos.basic_sharelist <- list(
-  list(type = unbox("user"), 
-       name = unbox("first_initial.last_name"))
+##
+basic_sharelist.chr <- list(
+  list(type = "user", 
+       name = "first_initial.last_name")
 )
 
+
+basic_sharelist.scl <- rapply(basic_sharelist.chr, unbox, how = "list")
+
+##
+set.seed(1)
+multi_sharelist.chr <- Map(list, type = sample(c("user", "group"), 10, replace = TRUE), 
+      name = LETTERS[1:10]
+)
+names(multi_sharelist.chr) <- NULL
+
+multi_sharelist.scl <- rapply(multi_sharelist.chr, unbox, how = "list")
+
+##
 
 # make_sharelist ----------------------------------------------------------
 
 test_that("most basic case works", {
   expect_equal(make_sharelist("user", "first_initial.last_name"), 
-               pos.basic_sharelist)
+               basic_sharelist.scl)
 })
-
 
 test_that("valid scalar input works", {
   expect_equal(make_sharelist(unbox("user"), unbox("first_initial.last_name")), 
-               pos.basic_sharelist)
+               basic_sharelist.scl)
 })
 
 test_that("valid inputs of length 10 return length 10 output", {
