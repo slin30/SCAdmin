@@ -30,7 +30,7 @@ only vectors of length 1.}
 \item{...}{Additional args to pass to \code{ApiRequest}}
 }
 \value{
-A data.frame, possibly with nested columns depending on requested parameters within \emph{fields}. Notably, 
+A \code{data.frame}, possibly with nested columns depending on requested parameters within \emph{fields}. Notably, 
 the following values in \emph{fields} return list-columns of varying complexity:
 
 \itemize{
@@ -48,7 +48,20 @@ Query the AA segments API to return segment information based on different crite
 the level of desired detail
 }
 \details{
-\emph{filters} has some nuances; there are only six fields that are grouped by argument length, then type:
+This function calls the Adobe Analytics \emph{Segments.Get} method, which supercedes the deprecated 
+\emph{ReportSuite.GetSegments} method. The \emph{Segments.Get} method, and therefore this function, 
+allows essentially all available information about one or more segments to be returned.
+
+This means that it is now possible to download one or more complete segment definitions, which
+may be useful for batch auditing, back-up, and much more. Importantly, the new method operates at the segment
+ownership level, as opposed to the reportsuite ID level, which means you should expect your results with 
+the simplest call to \emph{Segments.Get} (via this function) to be different from the analagous call to
+(the now-deprecated) \emph{ReportSuite.GetSegments}.
+
+Aside from some fields previously returned by \emph{ReportSuite.GetSegments}, which are no longer supported
+by \emph{Segments.Get}, it is still possible to operate at the reportsuite ID level through the new \emph{filters}
+argument. Note that \emph{filters} has some nuances; there are six fields, which are grouped by argument length,
+then type, below:
 
 \itemize{
 \itemize{length 1, \code{character}
@@ -65,10 +78,10 @@ the level of desired detail
     }
 }
 
-It is an error to violate any of the above rules (i.e. length or type) for \emph{filters}. It is not strictly
-required that e.g. \code{name = c("name1", "name2")} throw an error, as it is a simple matter to only select the 
-first element and trigger a \code{warning} (instead). The decision to \code{stop} is to ensure that allowable inputs
-and actual results (i.e. end-user expectations) are synchronized, with a custom error message.
+The \code{filters} argument as a whole is optional, but if used, the input must be a named list, where
+the name(s) denote the field(s) to filter, by the provided value. Of the six available fields, only 
+\code{tags} accepts inputs of length \code{>1}. Passing vectors of length \code{>1} to any of the other
+fields will raise an error.
 }
 \note{
 It is expected that once the full method is completed, this function will no longer be required by itself, 

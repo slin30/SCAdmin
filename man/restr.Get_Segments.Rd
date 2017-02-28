@@ -2,7 +2,7 @@
 % Please edit documentation in R/restr.Get_Segments.R
 \name{restr.Get_Segments}
 \alias{restr.Get_Segments}
-\title{restr.Get_Segments}
+\title{restr.Get_Segments (IN PROCESS OF BEING REPLACED)}
 \usage{
 restr.Get_Segments(x, merge_rules = TRUE, ...)
 }
@@ -29,9 +29,8 @@ properly for nested containers or stacked segments! Much more work required, but
 for the most basic cases.
 }
 \details{
-This function is still in progress; proper use requires that, each row of the return from
-\code{call.Get_Segments()} be handled individually. The splitting function is ready, but not yet
-integrated.
+\strong{The function below is being deprecated; a set of updated functions have been written and will be 
+stitched together to fix several deficiencies present in this first version}.
 }
 \note{
 At the moment, \code{...} can be used to pass \emph{collapse_rules} and \emph{bind_rules} (logi) 

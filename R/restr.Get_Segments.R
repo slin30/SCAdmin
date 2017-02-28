@@ -1,4 +1,4 @@
-#' restr.Get_Segments
+#' restr.Get_Segments (IN PROCESS OF BEING REPLACED)
 #'
 #' Restructure the return from a call to Segments.Get, via call.Get_Segments. Currently does NOT work
 #' properly for nested containers or stacked segments! Much more work required, but this suffices 
@@ -25,10 +25,9 @@
 #' Records across both list elements are uniquely identified by the \emph{segment_id} field, for 
 #' easy joining, if desired. 
 #' 
-#' @details 
-#' This function is still in progress; proper use requires that, each row of the return from
-#' \code{call.Get_Segments()} be handled individually. The splitting function is ready, but not yet
-#' integrated. 
+#' @details  
+#' \strong{The function below is being deprecated; a set of updated functions have been written and will be 
+#' stitched together to fix several deficiencies present in this first version}.
 #' 
 #' @note 
 #' At the moment, \code{...} can be used to pass \emph{collapse_rules} and \emph{bind_rules} (logi) 
