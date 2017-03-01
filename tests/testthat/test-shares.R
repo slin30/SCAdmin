@@ -1,10 +1,5 @@
 context("shares")
 
-# ## Temp
-library(SCAdmin)
-library(jsonlite)
-library(testthat)
-
 # Reference data ----------------------------------------------------------
 
 ##

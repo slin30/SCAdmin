@@ -134,9 +134,7 @@ NULL
     )
     x <- as.character(x)
   }
-  
-  x_origlen <- length(x)
-  
+
   if(trim) {
     x <- stringr::str_trim(x)
   }
@@ -144,10 +142,9 @@ NULL
     x <- unique(x)
   }
   # Check and message if any duplicated
-  x_newlen <- length(unique(x))
-  if(x_origlen != x_newlen) {
-    message("length of x is ", x_origlen, 
-            " but unique count is ", x_newlen, "\n\t", 
+  if(anyDuplicated(x)) {
+    message("length of x is ", length(x), 
+            " but unique count is ", length(unique(x)), "\n\t", 
             "If this is not intentional, rerun with 'dedupe = TRUE`"
     )
   }
