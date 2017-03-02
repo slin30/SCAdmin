@@ -88,43 +88,10 @@ It is expected that once the full method is completed, this function will no lon
 although likely will still be exported for flexibility and debugging.
 }
 \examples{
-# These should be thrown into tests; being lazy for now
+# These are being thrown into tests
 \dontrun{
 # Get your segments, with id and name; no restructuring required
 my_own_simple <- call.Get_Segments()
-
-# filters must be a list
-call.Get_Segments(filters = c("A", "a"))
-# filters must be a named list
-call.Get_Segments(filters = list("A", "B"))
-# filters must be a named list, and all names must be valid
-call.Get_Segments(filters = list(name = "A", alt="B"))
-# filters named elements of name, owner, reportSuiteID must be vectors of length 1
-call.Get_Segments(filters = list(reportSuiteID = c("rsid1", "rsid2")))
-call.Get_Segments(filters = list(owner = c("person1", "person2")))
-call.Get_Segments(filters = list(name = c("name1", "name2")))
-# filters named elements of approved, favorite must be vectors of length 1 AND 
-#  logical, or coercible to logical
-call.Get_Segments(filters = list(approved = c("person1", "person2")))
-call.Get_Segments(filters = list(approved = c("person1")))
-call.Get_Segments(filters = list(favorite = c("person1", "person2")))
-call.Get_Segments(filters = list(favorite = c("person1")))
-
-# accessLevel must be vector of length 1
-call.Get_Segments(accessLevel = c("all", "owned"))
-# accessLevel cannot contain invalid values
-call.Get_Segments(accessLevel = "A")
-# although if you pass in a list, helper will coerce to vector
-## this works:
-call.Get_Segments(accessLevel = list("owned")) 
-
-# sort must be a vector of length 1
-call.Get_Segments(sort = 1:2)
-# sort cannot contain invalid values
-call.Get_Segments(sort = 1)
-# although if you pass in a list, helper will coerce to vector
-## this works:
-call.Get_Segments(sort = list("name")) 
 
 # fields must contain valid values
 ## error; always get `id`, but not allowed value:
