@@ -96,5 +96,15 @@ test_that("invalid values to sort raise an error", {
 
 # fields ------------------------------------------------------------------
 
-
-
+# fields must contain valid values
+## error; always get `id`, but not allowed value:
+test_that("an invalid value of length 1 for 'fields' throws an error", {
+  expect_error(call.Get_Segments(fields = "id"),
+  "Invalid input values\\(s\\) detected in 'fields'.*")
+})
+# fields must contain ALL valid values
+## 'reportSuiteID' is valid, 'id' is not
+test_that("a single invalid value in 'fields' throws an error", {
+  expect_error(call.Get_Segments(fields = c("id", "reportSuiteID")), 
+               "Invalid input values\\(s\\) detected in 'fields'.*")
+})

@@ -88,21 +88,9 @@ It is expected that once the full method is completed, this function will no lon
 although likely will still be exported for flexibility and debugging.
 }
 \examples{
-# These are being thrown into tests
 \dontrun{
 # Get your segments, with id and name; no restructuring required
 my_own_simple <- call.Get_Segments()
-
-# fields must contain valid values
-## error; always get `id`, but not allowed value:
-call.Get_Segments(fields = c("id"))
-# fields must contain ALL valid values
-## 'reportSuiteID' is valid, 'id' is not
-call.Get_Segments(fields = c("id", "reportSuiteID")) 
-## this works:
-call.Get_Segments(fields = c("owner", "reportSuiteID"))
-# if you pass in a list, helper will coerce to vector
-call.Get_Segments(fields = list("owner", "reportSuiteID"))
 
 # Parsing is needed for certain fields, in particular 'definition'
 # This returns some nested fields

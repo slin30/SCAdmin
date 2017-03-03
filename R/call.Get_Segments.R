@@ -81,21 +81,9 @@
 #' @export
 #'
 #' @examples
-#' # These are being thrown into tests
 #' \dontrun{
 #' # Get your segments, with id and name; no restructuring required
 #' my_own_simple <- call.Get_Segments()
-#' 
-#' # fields must contain valid values
-#' ## error; always get `id`, but not allowed value:
-#' call.Get_Segments(fields = c("id"))
-#' # fields must contain ALL valid values
-#' ## 'reportSuiteID' is valid, 'id' is not
-#' call.Get_Segments(fields = c("id", "reportSuiteID")) 
-#' ## this works:
-#' call.Get_Segments(fields = c("owner", "reportSuiteID"))
-#' # if you pass in a list, helper will coerce to vector
-#' call.Get_Segments(fields = list("owner", "reportSuiteID"))
 #' 
 #' # Parsing is needed for certain fields, in particular 'definition'
 #' # This returns some nested fields
@@ -113,7 +101,7 @@ call.Get_Segments <- function(accessLevel = NULL, fields = NULL,
                               selected = NULL, sort = NULL, 
                               filters = NULL, ...) {
   
-  # accessLevel, must be vetor of length 1
+  # accessLevel, must be vector of length 1
   validAccessLevel <- c("all", "shared", "owned")
   if(!is.null(accessLevel)) {
     # check input length, must be length 1
@@ -190,9 +178,6 @@ call.Get_Segments <- function(accessLevel = NULL, fields = NULL,
 NULL
 
 # helper to validate and preprocess filters arg
-# TODO: Carefully check that the API indeed will NOT support character vectors of length > 1L
-# for owner, rsid, and name. If indeed the case, put appropriate input checks and handle 
-# the new restrictions in this function. 
 .l_helper_process_filters <- function(arglst) {
   if(!is.list(arglst)) {
     stop("Class of 'filters' must be a list, but is currently ", 
