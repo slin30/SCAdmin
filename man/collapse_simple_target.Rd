@@ -12,21 +12,25 @@ collapse_simple_target(x, targ = NULL)
 \item{targ}{A character vector of length 1 to denote the column in \emph{x} to operate on}
 }
 \value{
-A unnested character vector; see \code{collapse_simple_listcol}.
+A unnested character vector; see \code{\link{collapse_simple_listcol}} for details.
 }
 \description{
 A custom mechanism to unnest simple list-columns by collapsing into a delimited atomic vector
 }
 \details{
-This wraps the internal function \code{\link{collapse_simple_listcol}} to handle more (and) typical
+This wraps the internal function \code{collapse_simple_listcol} to handle more (and) typical
 inputs, with some additional constraints. \emph{targ} is set to a default of \code{NULL}
 intentionally, for flexibility and to enforce explicit provision of a value. However, it 
-is expected that the valid values should only be:
+is expected that the valid values should typically be:
 
 \itemize{
 \item \preformatted{tags}
 \item \preformatted{compatibility}
 }
+}
+\note{
+This function is called by \code{\link{call.Get_Segments}} if that function's \emph{collapse_simple}
+argument is \code{TRUE}.
 }
 \examples{
 simple_df <- data.frame(

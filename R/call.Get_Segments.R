@@ -19,21 +19,34 @@
 #' \code{approved, favorite, name, owner, reportSuiteID, tags}. For \code{tags}, character vectors of length > 1 are supported, 
 #' and will be collapsed into comma-separated vectors of length 1 per API requirements. For the other fields, the API supports 
 #' only vectors of length 1. 
+#' @param collapse_simple Should we parse simple list-columns, i.e. \code{tags} and \code{compatibility} in the return
+#' value? Defaults to \code{TRUE} and only applies if these columns are requested via \emph{fields}
 #' @param ... (optional) Additional args to pass to \code{ApiRequest}
 #'
 #' @return
-#' A \code{data.frame}, possibly with nested columns depending on requested parameters within \emph{fields}. Notably, 
-#' the following values in \emph{fields} return list-columns of varying complexity:
+#' A \code{data.frame}; the number of rows corresponds to the number of unique segments, identified by the \code{id} 
+#' field. With default settings, a successful return will contain two fields, \code{id} and \code{name}. 
+#' 
+#' If requested (via \emph{fields}), the following columns are returned as list-columns of varying complexity:
 #' 
 #' \itemize{
-#' \item{tags}
+#' \item{tags*}
+#' \item{compatibility*}
 #' \item{shares}
-#' \item{compatibility}
 #' \item{definition}
 #' }
 #' 
-#' The number of rows corresponds to the number of unique segments, identified by the \code{id} field. With default
-#' settings, a successful return will contain two fields, \code{id} and \code{name}. 
+#' \code{tags} and \code{compatibility} are called out because they are, by default, automatically collapsed into 
+#' atomic vectors (i.e. unnested columns) if requested within \emph{fields}. Collapsing is performed by 
+#' \code{\link{collapse_simple_target}}. 
+#' 
+#' \code{shares} does not have a 1-to-1 relationship with each segment, since a segment can have zero or more
+#' shares.
+#' 
+#' \code{definition} contains the entire segment definition, and can range from simple to quite complex. 
+#' 
+#' Parsers are available for both \code{shares} and \code{definition}, but are not integrated into this
+#' function at the moment. \emph{\strong{Randy: Would like input on this point-- how do we want to handle?}}
 #' 
 #' @note 
 #' 
@@ -83,24 +96,31 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Get your segments, with id and name; no parsing required
+#' # Get your segments, with id and name
 #' my_own_simple <- call.Get_Segments()
 #' 
 #' # Parsing is needed for certain fields, in particular 'definition'
-#' # This returns some nested fields
+#' # This returns some nested fields, but tags and compatibility are collapsed automatically...
 #' needs_parsing_1 <- call.Get_Segments(fields = c("tags", "shares", "compatibility"))
+#' # ...unless you request otherwise
+#' needs_parsing_1_alt <- call.Get_Segments(fields = c("tags", "shares", "compatibility"), 
+#'                                          collapse_simple = FALSE
+#' )
+#' 
 #' # `definition` is the most complex
 #' needs_parsing_2 <- call.Get_Segments(fields = c("definition"))
+#' 
 #' # Here's what it looks like if we ask for all fields
 #' needs_parsing_3 <- call.Get_Segments(fields = c("compatibility", "definition", 
 #'                                                 "favorite", "modified", 
 #'                                                 "owner", "reportSuiteID", 
 #'                                                 "shares", "tags")
-#'                                      )
+#' )
 #' }
 call.Get_Segments <- function(accessLevel = NULL, fields = NULL, 
                               selected = NULL, sort = NULL, 
-                              filters = NULL, ...) {
+                              filters = NULL, 
+                              collapse_simple = TRUE, ...) {
   
   # accessLevel, must be vector of length 1
   validAccessLevel <- c("all", "shared", "owned")
@@ -173,8 +193,20 @@ call.Get_Segments <- function(accessLevel = NULL, fields = NULL,
   fun <- "Segments.Get"
   out <- ApiRequest(body = query, func.name = fun, ...)
   
+  # parse simple list-col(s) if call is successful and at least one such column is present
+  if(collapse_simple) {
+    if(is.data.frame(out)) {
+      simple_cols <- intersect(c("compatibility", "tags"), names(out))
+      if(length(simple_cols) > 0L) {
+        for(i in simple_cols) {
+          out[[i]] <- collapse_simple_target(out, i)
+        }
+      }
+    }
+  }
   return(out)
 }
+
 
 NULL
 
@@ -221,7 +253,7 @@ NULL
     if(logi_invalid) {
       stop("Invalid inputs resulting in 'NA' upon coercion to 'logical' 
            detected in one or more of ", paste(logi_nms, collapse = ", ")
-           )
+      )
     }
     
     logi_out <- lapply(logi_elems, function(f) as.logical(f))
