@@ -50,7 +50,28 @@
 #' @export
 #'
 #' @examples
-#' #TBD
+#' ##Any one arg can be of length > 1, as long as other two are length 1
+#' # single element, single operator, many rules:
+#' make_element_rules("element_1", "equals", LETTERS[1:3])
+#' 
+#' # multiple elements, single operator, single rule:
+#' make_element_rules(c("element_1", "element_2", "element_3"), "equals", LETTERS[1])
+#' 
+#' # single element, multiple operators, single rule:
+#' make_element_rules("element_1", c("equals", "contains", "contains_any"), LETTERS[1])
+#' 
+#' ##Can have two args > length 1 as long as they are same length AND third arg is length 1
+#' # single element, multiple same-length operator and rule:
+#' make_element_rules("element_1", 
+#'                    c("equals", "contains", "contains_any"), 
+#'                    LETTERS[1:3]
+#' )
+#' 
+#' ##Or all args can be of length > 1, if same length:
+#' make_element_rules(c("element_1", "element_2", "element_3"), 
+#'                    c("equals", "contains", "contains_any"), 
+#'                    LETTERS[1:3]
+#' )
 make_element_rules <- function(element, operator, rules, 
                                classification = NULL,
                                trim = FALSE, dedupe = FALSE) {

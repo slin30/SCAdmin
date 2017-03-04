@@ -29,10 +29,22 @@ is expected that the valid values should only be:
 }
 }
 \examples{
-
-\dontrun{
-collapse_tags   <- collapse_simple_target(x, targ = "tags")
-collapse_compat <- collapse_simple_target(x, targ = "compatibility")
-}
+simple_df <- data.frame(
+  x = LETTERS[1:10],
+  y = cbind(c(
+    list(c(LETTERS[1:2])),
+    list(c("tag1", "tag2", "tag3")),
+    list(c("", NA_character_, " ")),
+    letters[1:7])
+  ),
+  stringsAsFactors = FALSE
+)
+collapse_simple_target(simple_df, targ = "y")
+simple_df$z <- collapse_simple_target(simple_df, targ = "y")
+# Note that NA and blank will are counted, if present:
+data.frame(
+  n_parts = vapply(simple_df$z, function(f)
+    nchar(gsub("[^,]", "", f))+1L, integer(1))
+)
 }
 
