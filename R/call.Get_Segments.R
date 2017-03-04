@@ -1,12 +1,9 @@
-#' Get Adobe Analytics Segments information
+#' Get Adobe Analytics Segments
 #' 
-#' Query the AA segments API to return segment information based on different criteria, at 
-#' the level of desired detail
+#' Query the Adobe Analytics Segments.Get method to return segment information
 #' 
 #' @importFrom RSiteCatalyst ApiRequest
 #' @importFrom jsonlite unbox toJSON
-#' 
-#' @family get segments functions
 #'
 #' @param accessLevel (optional) A character vector of length 1. Must be one of \code{all, shared, owned}. 
 #' If not specified, defaults to \code{owned}. 
@@ -22,7 +19,7 @@
 #' \code{approved, favorite, name, owner, reportSuiteID, tags}. For \code{tags}, character vectors of length > 1 are supported, 
 #' and will be collapsed into comma-separated vectors of length 1 per API requirements. For the other fields, the API supports 
 #' only vectors of length 1. 
-#' @param ... Additional args to pass to \code{ApiRequest}
+#' @param ... (optional) Additional args to pass to \code{ApiRequest}
 #'
 #' @return
 #' A \code{data.frame}, possibly with nested columns depending on requested parameters within \emph{fields}. Notably, 
@@ -39,36 +36,40 @@
 #' settings, a successful return will contain two fields, \code{id} and \code{name}. 
 #' 
 #' @note 
-#' It is expected that once the full method is completed, this function will no longer be required by itself, 
-#' although likely will still be exported for flexibility and debugging. 
+#' 
+#' \itemize{
+#' \item \strong{This function calls an Adobe Analytics method that requires administrative/elevated privileges}
+#' \item The fields \code{folder,class,suite_enabled}, and \code{read_only} are not supported by \code{Segments.Get}
+#' }
 #' 
 #' @details 
-#' This function calls the Adobe Analytics \emph{Segments.Get} method, which supercedes the deprecated 
-#' \emph{ReportSuite.GetSegments} method. The \emph{Segments.Get} method, and therefore this function, 
+#' This function calls the Adobe Analytics 1.4
+#' \href{https://marketing.adobe.com/developer/documentation/segments-1-4/r-get-1}{Segments.Get}
+#' method, which supercedes the deprecated \emph{ReportSuite.GetSegments} method. 
+#' The \emph{Segments.Get} method, and therefore this function, 
 #' allows essentially all available information about one or more segments to be returned.
 #' 
-#' This means that it is now possible to download one or more complete segment definitions, which
-#' may be useful for batch auditing, back-up, and much more. Importantly, the new method operates at the segment
-#' ownership level, as opposed to the reportsuite ID level, which means you should expect your results with 
-#' the simplest call to \emph{Segments.Get} (via this function) to be different from the analagous call to
-#' (the now-deprecated) \emph{ReportSuite.GetSegments}.
+#' As such, it is now possible to download one or more complete segment definitions, which
+#' may be useful for batch auditing, back-up, and much more. Note, though, that \emph{Segments.Get}
+#' operates at the segment ownership level, as opposed to the reportsuite ID level, 
+#' which means this is not a strict replacement for the (deprecated) \emph{ReportSuite.GetSegments} method.
 #' 
-#' Aside from some fields previously returned by \emph{ReportSuite.GetSegments}, which are no longer supported
-#' by \emph{Segments.Get}, it is still possible to operate at the reportsuite ID level through the new \emph{filters}
+#' It is possible to constrain results at the reportsuite ID (and more) level through the new \emph{filters}
 #' argument. Note that \emph{filters} has some nuances; there are six fields, which are grouped by argument length,
 #' then type, below:
 #' 
 #' \itemize{
-#' \itemize{length 1, \code{character}
+#' \itemize{length 1, \code{character}; partial case insensitive matching
 #'     \item{name}
 #'     \item{owner}
 #'     \item{reportSuiteID}
 #'     }
-#' \itemize{length 1, \code{logical} (or coercible to logical, without generating \code{NA})
+#' \itemize{length 1, \code{logical} (or coercible to logical, without
+#'           generating \code{NA}); \code{TRUE}/\code{FALSE} selection
 #'     \item{approved}
 #'     \item{favorite}
 #'     }
-#' \itemize{> length 1, \code{character}
+#' \itemize{> length 1, \code{character}; exact matching
 #'     \item{tags}
 #'     }
 #' }
@@ -82,7 +83,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Get your segments, with id and name; no restructuring required
+#' # Get your segments, with id and name; no parsing required
 #' my_own_simple <- call.Get_Segments()
 #' 
 #' # Parsing is needed for certain fields, in particular 'definition'

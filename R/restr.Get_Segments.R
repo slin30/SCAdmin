@@ -9,8 +9,6 @@
 #' @importFrom magrittr "%>%"
 #' @import data.table
 #' 
-#' @family get segments functions
-#' 
 #' @param x A call return from \code{call.Get_Segments()}
 #' @param merge_rules logi. Should the function return a list of \code{data.table}s? Defaults to \code{TRUE}
 #' @param ... Additional named args to pass to parse functions. Should not normally be needed. See notes

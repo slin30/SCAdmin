@@ -80,7 +80,4 @@ In summary: This is definitely not a complete function yet; you have been warned
 \examples{
 #Forthcoming
 }
-\seealso{
-Other get segments functions: \code{\link{call.Get_Segments}}
-}
 
