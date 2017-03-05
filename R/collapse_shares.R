@@ -42,7 +42,8 @@
 #'       (data-containing) record for 'shares', and therefore:
 #'    \itemize{
 #'    \item a \code{data.frame} with as many rows as valid records and three columns, denoting
-#'    \code{id,name,type} where \code{id} is the segment ID
+#'    \code{id,name,type} where \code{id} is the segment ID. Columns aside from \code{id} are
+#'    prefixed with \code{shares.}. 
 #'    }
 #' }
 #' 
@@ -128,5 +129,11 @@ collapse_shares <- function(x) {
   
   out <- do.call(rbind.data.frame, shares)
   rownames(out) <- NULL
-  return(out[, c(ncol(out):1)])
+  # ensure 'id' is the first column, append 'shares.' to non-id names
+  non_id_nms <- setdiff(names(out), "id")
+  out <- out[, c("id", non_id_nms)]
+  return(
+    setNames(out, c("id", paste0("shares.", non_id_nms)))
+  )
+  
 }

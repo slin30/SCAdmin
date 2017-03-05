@@ -64,6 +64,15 @@ test_that("As long as 'shares', 'name', and 'id' are present, collapsing works",
                ".*One or more expected names of 'id' and/or 'name' missing in x")
 })
 
+test_that("prefixing names works", {
+  expect_true(names(collapse_shares(good_df))[1] == "id")
+  expect_true(
+    all(
+      grepl("shares\\.", setdiff(names(collapse_shares(good_df)), "id"))
+    )
+  )
+})
+
 test_that("A return without 'shares' raises an error", {
   expect_error(collapse_shares(test_df[, setdiff(names(test_df), "shares")]), 
                ".*'shares' not found in.*"

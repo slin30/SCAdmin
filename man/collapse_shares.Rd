@@ -22,7 +22,8 @@ Depending on the type and length of input, one of the following:
       (data-containing) record for 'shares', and therefore:
    \itemize{
    \item a \code{data.frame} with as many rows as valid records and three columns, denoting
-   \code{id,name,type} where \code{id} is the segment ID
+   \code{id,name,type} where \code{id} is the segment ID. Columns aside from \code{id} are
+   prefixed with \code{shares.}. 
    }
 }
 }
