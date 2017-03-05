@@ -46,11 +46,36 @@
 #'    }
 #' }
 #' 
+#' @note 
+#' This function does NOT check for \code{shares} names, i.e. it does not require that non zero-row
+#' \code{shares} have names of \code{type} and \code{name}. This means it also does NOT check that
+#' the values within \code{type} must be one of \code{user,group}. 
 #' 
 #' @export
 #'
 #' @examples
-#' #TBD
+#' df <- data.frame(id = c("segment_id_1", "segment_id_2"), 
+#' name = c("segment_name_1", "segment_name_2"),
+#' shares = cbind(list(
+#'   data.frame(list(
+#'     type = c("user", "user", "group"),
+#'     name = c("my_user1_name", "my_user2_name", "my_group_name")
+#'   ),
+#'   stringsAsFactors = FALSE),
+#'   data.frame(list(type = "user",
+#'                   name = "my_user1_name"),
+#'              stringsAsFactors = FALSE)
+#' )),
+#' stringsAsFactors = FALSE
+#' )
+#' 
+#' collapse_shares(df)
+#' \dontrun{
+#' # Must have shares, id, and name
+#' collapse_shares(df[, c("name", "id")])
+#' collapse_shares(df[, c("id", "shares")])
+#' collapse_shares(df[, c("name", "shares")])
+#' }
 collapse_shares <- function(x) {
   if(!is.data.frame(x)) {
     stop("x must be a data.frame")
