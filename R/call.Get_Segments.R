@@ -22,6 +22,8 @@
 #' @param collapse_simple Should we parse simple list-columns, i.e. \code{tags} and \code{compatibility} in the return
 #' value? Defaults to \code{TRUE} and only applies if these columns are requested via \emph{fields}
 #' @param ... (optional) Additional args to pass to \code{ApiRequest}
+#' @param fun (optional) One of "Segments.Get (default) or "CalculatedMetrics.Get". THIS IS EXPERIMENTAL
+#' AND TEMPORARY!
 #'
 #' @return
 #' A \code{data.frame}; the number of rows corresponds to the number of unique segments, identified by the \code{id} 
@@ -120,7 +122,8 @@
 call.Get_Segments <- function(accessLevel = NULL, fields = NULL, 
                               selected = NULL, sort = NULL, 
                               filters = NULL, 
-                              collapse_simple = TRUE, ...) {
+                              collapse_simple = TRUE, ..., 
+                              fun = "Segments.Get") {
   
   # accessLevel, must be vector of length 1
   validAccessLevel <- c("all", "shared", "owned")
@@ -190,7 +193,7 @@ call.Get_Segments <- function(accessLevel = NULL, fields = NULL,
   body <- Filter(function(x) !is.null(x), body)
   
   query <- toJSON(body)
-  fun <- "Segments.Get"
+  #fun <- "Segments.Get"
   out <- ApiRequest(body = query, func.name = fun, ...)
   
   # parse simple list-col(s) if call is successful and at least one such column is present

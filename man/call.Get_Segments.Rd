@@ -5,7 +5,8 @@
 \title{Get Adobe Analytics Segments}
 \usage{
 call.Get_Segments(accessLevel = NULL, fields = NULL, selected = NULL,
-  sort = NULL, filters = NULL, collapse_simple = TRUE, ...)
+  sort = NULL, filters = NULL, collapse_simple = TRUE, ...,
+  fun = "Segments.Get")
 }
 \arguments{
 \item{accessLevel}{(optional) A character vector of length 1. Must be one of \code{all, shared, owned}. 
@@ -31,6 +32,9 @@ only vectors of length 1.}
 value? Defaults to \code{TRUE} and only applies if these columns are requested via \emph{fields}}
 
 \item{...}{(optional) Additional args to pass to \code{ApiRequest}}
+
+\item{fun}{(optional) One of "Segments.Get (default) or "CalculatedMetrics.Get". THIS IS EXPERIMENTAL
+AND TEMPORARY!}
 }
 \value{
 A \code{data.frame}; the number of rows corresponds to the number of unique segments, identified by the \code{id} 
