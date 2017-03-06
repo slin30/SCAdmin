@@ -1,0 +1,14 @@
+structure(list(id = c("s300000520_57e2e8dce4b0ec66f46b8f66", 
+"s300000520_57f84fe7e4b0483860fa28bf", "s300000520_57f8506de4b0978b0fce9bd3"
+), name = c("ContentType_itable", "DIPPR_801_Visitor", "DIPPR_801_Visit"
+), description = c("Content Type for kn itable", "DIPPR 801 Visitor testing for pathing", 
+"Dippr 801 Visit test"), reportSuiteID = c("elsevier-kn-prod", 
+"elsevier-kn-prod", "elsevier-kn-prod"), owner = c("w.zhang", 
+"w.zhang", "w.zhang"), compatibility = c("reportsAndAnalytics, adHocAnalysis, dataWarehouse", 
+"reportsAndAnalytics, adHocAnalysis, dataWarehouse", "reportsAndAnalytics, adHocAnalysis, dataWarehouse"
+), shares = list(list(), list(), list()), favorite = c(FALSE, 
+FALSE, FALSE), tags = c(NA_character_, NA_character_, NA_character_
+), modified = c("2016-09-21 13:09:41", "2016-10-07 18:46:16", 
+"2016-10-07 18:48:30")), .Names = c("id", "name", "description", 
+"reportSuiteID", "owner", "compatibility", "shares", "favorite", 
+"tags", "modified"), row.names = c(NA, 3L), class = "data.frame")

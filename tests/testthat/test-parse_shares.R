@@ -11,6 +11,16 @@ test_df <- tryCatch(
   }, finally = NULL
 )
 
+# structure if requesting shares, but no shares at all so 
+# return is list() instead of data.frame()
+test_noShares <- tryCatch(
+  {
+    dget("../testdata/test_set_noShares.txt")
+  }, warning = function(w) {
+    suppressMessages(w)
+    dget("./tests/testdata/test_set_noShares.txt")
+  }, finally = NULL
+)
 
 # list of mock dfs for shares only
 good_shares <- list(structure(list(type = c("user", "user", "group"), 
@@ -86,8 +96,7 @@ test_that("A multi-row return with a single shared segment returns a single-row 
   expect_length(names(out),3L)
 })
 
-# Note that this scenario is unlikely unless user intentionally does something 
-# similar to this test
-test_that("A return with 'shares' that are all zero-row returns NA_character_", {
+test_that("A return with 'shares' that are all zero-length returns NA_character_", {
   expect_identical(parse_shares(test_df[1:4, ]), NA_character_)
+  expect_identical(parse_shares(test_noShares), NA_character_)
 })
