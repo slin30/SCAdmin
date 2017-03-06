@@ -99,13 +99,11 @@ parse_shares <- function(x) {
   if(!is.list(shares)) {
     stop("Expected a list for 'structures', but class is ", class(shares))
   }
-  # handle empty list or data.frame
-  is_singleEmpty <- length(shares) == 1L & (
-    identical(shares[[1]], list()) | 
-      identical(shares[[1]], data.frame()
-      )
+  # handle all empty list or zero-row data.frame
+  is_allEmpty <- all(
+    vapply(shares, function(f) length(f) == 0L, logical(1))
   )
-  if(is_singleEmpty) {
+  if(is_allEmpty) {
     return(NA_character_)
   }
   
