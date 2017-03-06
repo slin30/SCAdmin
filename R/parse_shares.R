@@ -1,6 +1,6 @@
-#' collapse shares
+#' parse shares
 #' 
-#' For a return from call.Get_Segment() with 'shares', collapse into more user-friendly output
+#' For a return from call.Get_Segment() with 'shares', parse into more user-friendly output
 #'
 #' @param x a data.frame 
 #'
@@ -70,14 +70,14 @@
 #' stringsAsFactors = FALSE
 #' )
 #' 
-#' collapse_shares(df)
+#' parse_shares(df)
 #' \dontrun{
 #' # Must have shares, id, and name
-#' collapse_shares(df[, c("name", "id")])
-#' collapse_shares(df[, c("id", "shares")])
-#' collapse_shares(df[, c("name", "shares")])
+#' parse_shares(df[, c("name", "id")])
+#' parse_shares(df[, c("id", "shares")])
+#' parse_shares(df[, c("name", "shares")])
 #' }
-collapse_shares <- function(x) {
+parse_shares <- function(x) {
   if(!is.data.frame(x)) {
     stop("x must be a data.frame")
   }

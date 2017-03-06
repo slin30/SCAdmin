@@ -1,4 +1,4 @@
-context("collapse_shares")
+context("parse_shares")
 
 # ref data ----------------------------------------------------------------
 
@@ -40,10 +40,10 @@ good_df <- data.frame(
 
 # tests -------------------------------------------------------------------
 test_that("'shares' must be a list of data.frames found in the context of a data.frame", {
-  expect_error(collapse_shares(good_df[, c("shares")]))
-  expect_error(collapse_shares(good_shares), 
+  expect_error(parse_shares(good_df[, c("shares")]))
+  expect_error(parse_shares(good_shares), 
                ".*x must be a data.frame")
-  expect_error(collapse_shares(data.frame(
+  expect_error(parse_shares(data.frame(
     shares = LETTERS[1:3], 
     id = "id", 
     name = "name",
@@ -53,34 +53,34 @@ test_that("'shares' must be a list of data.frames found in the context of a data
 })
 
 test_that("As long as 'shares', 'name', and 'id' are present, collapsing works", {
-  expect_is(collapse_shares(good_df), "data.frame")
+  expect_is(parse_shares(good_df), "data.frame")
   expect_equal(
     sum(vapply(good_df$shares, nrow, FUN.VALUE = integer(1))), 
-    nrow(collapse_shares(good_df))
+    nrow(parse_shares(good_df))
   )
-  expect_error(collapse_shares(good_df[, c("shares", "id")]), 
+  expect_error(parse_shares(good_df[, c("shares", "id")]), 
                ".*One or more expected names of 'id' and/or 'name' missing in x")
-  expect_error(collapse_shares(good_df[, c("shares", "name")]), 
+  expect_error(parse_shares(good_df[, c("shares", "name")]), 
                ".*One or more expected names of 'id' and/or 'name' missing in x")
 })
 
 test_that("prefixing names works", {
-  expect_true(names(collapse_shares(good_df))[1] == "id")
+  expect_true(names(parse_shares(good_df))[1] == "id")
   expect_true(
     all(
-      grepl("shares\\.", setdiff(names(collapse_shares(good_df)), "id"))
+      grepl("shares\\.", setdiff(names(parse_shares(good_df)), "id"))
     )
   )
 })
 
 test_that("A return without 'shares' raises an error", {
-  expect_error(collapse_shares(test_df[, setdiff(names(test_df), "shares")]), 
+  expect_error(parse_shares(test_df[, setdiff(names(test_df), "shares")]), 
                ".*'shares' not found in.*"
   )
 })
 
 test_that("A multi-row return with a single shared segment returns a single-row df with 3 fields", {
-  out <- collapse_shares(test_df)
+  out <- parse_shares(test_df)
   expect_is(out, "data.frame")
   expect_length(nrow(out), 1L)
   expect_length(names(out),3L)
@@ -89,5 +89,5 @@ test_that("A multi-row return with a single shared segment returns a single-row 
 # Note that this scenario is unlikely unless user intentionally does something 
 # similar to this test
 test_that("A return with 'shares' that are all zero-row returns NA_character_", {
-  expect_identical(collapse_shares(test_df[1:4, ]), NA_character_)
+  expect_identical(parse_shares(test_df[1:4, ]), NA_character_)
 })
