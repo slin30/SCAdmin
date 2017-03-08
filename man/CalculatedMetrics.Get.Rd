@@ -91,7 +91,7 @@ method, which supercedes the deprecated \emph{ReportSuite.GetCalculatedMetrics} 
 The \emph{CalculatedMetrics.Get} method, and therefore this function, 
 allows essentially all available information about one or more calculated metrics to be returned.
 
-As such, it is now possible to download one or more complete segment definitions, which
+As such, it is now possible to download one or more complete calculated metric definitions, which
 may be useful for batch auditing, back-up, and much more. Note, though, that \emph{CalculatedMetrics.Get}
 operates at the calculated metrics ownership level, as opposed to the reportsuite ID level, 
 which means this is not a strict replacement for the (deprecated) \emph{ReportSuite.GetCalculatedMetrics} method.
