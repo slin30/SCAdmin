@@ -31,8 +31,8 @@ only vectors of length 1.}
 value? Defaults to \code{TRUE} and only applies if these columns are requested via \emph{fields}}
 }
 \value{
-A \code{data.frame}; the number of rows corresponds to the number of unique segments, identified by the \code{id} 
-field. With default settings, a successful return will contain two fields, \code{id} and \code{name}. 
+A \code{data.frame}; the number of rows corresponds to the number of unique \code{id}s.
+With default settings, a successful return will contain two fields, \code{id} and \code{name}. 
 
 If requested (via \emph{fields}), the following columns are returned as list-columns of varying complexity:
 
