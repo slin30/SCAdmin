@@ -15,13 +15,13 @@
 #' 
 #' @section API Method Info:
 #' This function calls the Adobe Analytics 1.4
-#' \href{https://marketing.adobe.com/developer/documentation/segments-1-4/calculated-metrics}{CalculatedMetrics_Get}
+#' \href{https://marketing.adobe.com/developer/documentation/segments-1-4/calculated-metrics}{CalculatedMetrics.Get}
 #' method, which supercedes the deprecated \emph{ReportSuite.GetCalculatedMetrics} method. 
 #' The \emph{CalculatedMetrics_Get} method, and therefore this function, 
 #' allows essentially all available information about one or more calculated metrics to be returned.
 #' 
 #' As such, it is now possible to download one or more complete calculated metric definitions, which
-#' may be useful for batch auditing, back-up, and much more. Note, though, that \emph{CalculatedMetrics_Get}
+#' may be useful for batch auditing, back-up, and much more. Note, though, that \emph{CalculatedMetrics.Get}
 #' operates at the calculated metrics ownership level, as opposed to the reportsuite ID level, 
 #' which means this is not a strict replacement for the (deprecated) \emph{ReportSuite.GetCalculatedMetrics} method.
 #' 
@@ -67,6 +67,6 @@ CalculatedMetrics_Get <- function(accessLevel = NULL, fields = NULL,
                 selected = selected, sort = sort, 
                 filters = filters, 
                 collapse_simple = collapse_simple,
-                func.name = "CalculatedMetrics_Get")
+                func.name = "CalculatedMetrics.Get")
   
 }

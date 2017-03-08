@@ -86,13 +86,13 @@ This is still experimental: \code{\link{flatten_container}}
 \section{API Method Info}{
 
 This function calls the Adobe Analytics 1.4
-\href{https://marketing.adobe.com/developer/documentation/segments-1-4/r-get-1}{Segments_Get}
+\href{https://marketing.adobe.com/developer/documentation/segments-1-4/r-get-1}{Segments.Get}
 method, which supercedes the deprecated \emph{ReportSuite.GetSegments} method. 
 The \emph{Segments_Get} method, and therefore this function, 
 allows essentially all available information about one or more segments to be returned.
 
 As such, it is now possible to download one or more complete segment definitions, which
-may be useful for batch auditing, back-up, and much more. Note, though, that \emph{Segments_Get}
+may be useful for batch auditing, back-up, and much more. Note, though, that \emph{Segments.Get}
 operates at the segment ownership level, as opposed to the reportsuite ID level, 
 which means this is not a strict replacement for the (deprecated) \emph{ReportSuite.GetSegments} method.
 }
