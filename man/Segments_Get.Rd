@@ -2,7 +2,7 @@
 % Please edit documentation in R/Segments_Get.R
 \name{Segments_Get}
 \alias{Segments_Get}
-\title{Get Segments via the 1.4 API Segments_Get method}
+\title{Get Segments via the 1.4 API Segments.Get method}
 \usage{
 Segments_Get(accessLevel = NULL, fields = NULL, selected = NULL,
   sort = NULL, filters = NULL, collapse_simple = TRUE)

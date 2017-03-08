@@ -2,7 +2,7 @@
 % Please edit documentation in R/CalculatedMetrics_Get.R
 \name{CalculatedMetrics_Get}
 \alias{CalculatedMetrics_Get}
-\title{Get Calculated Metrics via the 1.4 API CalculatedMetrics_Get method}
+\title{Get Calculated Metrics via the 1.4 API CalculatedMetrics.Get method}
 \usage{
 CalculatedMetrics_Get(accessLevel = NULL, fields = NULL, selected = NULL,
   sort = NULL, filters = NULL, collapse_simple = TRUE)

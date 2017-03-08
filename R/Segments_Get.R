@@ -1,4 +1,4 @@
-#' Get Segments via the 1.4 API Segments_Get method
+#' Get Segments via the 1.4 API Segments.Get method
 #' 
 #' Get segments information with different search criteria and return options
 #' 

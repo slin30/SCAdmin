@@ -1,4 +1,4 @@
-#' Get Calculated Metrics via the 1.4 API CalculatedMetrics_Get method
+#' Get Calculated Metrics via the 1.4 API CalculatedMetrics.Get method
 #' 
 #' Get calculated metrics information with different search criteria and return options
 #' 
