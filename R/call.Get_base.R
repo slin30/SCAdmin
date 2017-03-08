@@ -1,10 +1,12 @@
 #' Get Adobe Analytics Segments or Calculated Metrics
 #' 
-#' Query the Adobe Analytics Segments.Get or CalculatedMetrics.Get method
+#' Internal function - base args and doc for exported Segments and CM GET functions
 #' 
 #' @importFrom RSiteCatalyst ApiRequest
 #' @importFrom jsonlite unbox toJSON
 #'
+#' @family internal
+#' 
 #' @param accessLevel (optional) A character vector of length 1. Must be one of \code{all, shared, owned}. 
 #' If not specified, defaults to \code{owned}. 
 #' @param fields (optional) A character vector denoting the quantity, depth, and general detail of information desired. 
@@ -41,7 +43,7 @@
 #' atomic vectors (i.e. unnested columns) if requested within \emph{fields}. Collapsing is performed by 
 #' \code{\link{collapse_simple_target}}. 
 #' 
-#' Please see \code{\link{parse_shares}} for handling shares
+#' Please see \code{\link{parse_shares}} for handling shares.
 #' 
 #' @section Access Privileges: 
 #' This function calls an Adobe Analytics method that requires administrative/elevated privileges
@@ -52,7 +54,7 @@
 #' then type, below:
 #' 
 #' \itemize{
-#' \itemize{length 1, \code{character}; partial case insensitive matching
+#' \itemize{length 1, \code{character}; partial case-insensitive matching
 #'     \item{name}
 #'     \item{owner}
 #'     \item{reportSuiteID}

@@ -1,6 +1,6 @@
 #' chk_shares
 #' 
-#' Internal function - check input structure of 'shares' for a call to Segments.Get with shares
+#' Internal function - check input structure of 'shares' for a call to call.Get_base with shares
 #' 
 #' @family internal
 #'

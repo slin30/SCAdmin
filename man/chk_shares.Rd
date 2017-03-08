@@ -13,7 +13,7 @@ chk_shares(x)
 \code{TRUE} or an error (with error message)
 }
 \description{
-Internal function - check input structure of 'shares' for a call to Segments.Get with shares
+Internal function - check input structure of 'shares' for a call to call.Get_base with shares
 }
 \details{
 This performs the following checks, in order:
@@ -38,7 +38,8 @@ already coerced to \code{scalar}.
 #TBD
 }
 \seealso{
-Other internal: \code{\link{collapse_simple_listcol}},
+Other internal: \code{\link{call.Get_base}},
+  \code{\link{collapse_simple_listcol}},
   \code{\link{recur_flatten_nested_container}},
   \code{\link{split_segment_ret}},
   \code{\link{split_single_row_ret}}

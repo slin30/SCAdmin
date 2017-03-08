@@ -1,6 +1,6 @@
-#' Segments.Get
+#' Get Segments via the 1.4 API Segments_Get method
 #' 
-#' Call the Adobe Analytics 1.4 Segments.Get method
+#' Get segments information with different search criteria and return options
 #' 
 #' @importFrom RSiteCatalyst ApiRequest
 #' @importFrom jsonlite unbox toJSON
@@ -15,48 +15,51 @@
 #' 
 #' @section API Method Info:
 #' This function calls the Adobe Analytics 1.4
-#' \href{https://marketing.adobe.com/developer/documentation/segments-1-4/r-get-1}{Segments.Get}
+#' \href{https://marketing.adobe.com/developer/documentation/segments-1-4/r-get-1}{Segments_Get}
 #' method, which supercedes the deprecated \emph{ReportSuite.GetSegments} method. 
-#' The \emph{Segments.Get} method, and therefore this function, 
+#' The \emph{Segments_Get} method, and therefore this function, 
 #' allows essentially all available information about one or more segments to be returned.
 #' 
 #' As such, it is now possible to download one or more complete segment definitions, which
-#' may be useful for batch auditing, back-up, and much more. Note, though, that \emph{Segments.Get}
+#' may be useful for batch auditing, back-up, and much more. Note, though, that \emph{Segments_Get}
 #' operates at the segment ownership level, as opposed to the reportsuite ID level, 
 #' which means this is not a strict replacement for the (deprecated) \emph{ReportSuite.GetSegments} method.
 #' 
 #' @examples 
 #' \dontrun{
 #' # Get all segments you own
-#' Segments.Get()
+#' Segments_Get()
 #' 
 #' # Get all segments that are shared with you
-#' Segments.Get(accessLevel = "shared")
+#' Segments_Get(accessLevel = "shared")
 #' 
 #' # Get all segments, period
 #' # Note this requires admin privileges
-#' Segments.Get(accessLevel = "all")
+#' Segments_Get(accessLevel = "all")
+#' 
+#' # To constrain at report suite level
+#' Segments_Get(filters = list(reportSuiteID = "your_rsid"))
 #' 
 #' # Parsing is needed for certain fields, in particular 'definition'
 #' # This returns some nested fields, but tags and compatibility are collapsed automatically...
-#' needs_parsing_1 <- Segments.Get(fields = c("tags", "shares", "compatibility"))
+#' needs_parsing_1 <- Segments_Get(fields = c("tags", "shares", "compatibility"))
 #' # ...unless you request otherwise
-#' needs_parsing_1_alt <- Segments.Get(fields = c("tags", "shares", "compatibility"), 
+#' needs_parsing_1_alt <- Segments_Get(fields = c("tags", "shares", "compatibility"), 
 #'                                          collapse_simple = FALSE
 #' )
 #' 
 #' # `definition` is the most complex
-#' needs_parsing_2 <- Segments.Get(fields = c("definition"))
+#' needs_parsing_2 <- Segments_Get(fields = c("definition"))
 #' 
 #' # Here's what it looks like if we ask for all fields
-#' needs_parsing_3 <- Segments.Get(fields = c("compatibility", "definition", 
+#' needs_parsing_3 <- Segments_Get(fields = c("compatibility", "definition", 
 #'                                                 "favorite", "modified", 
 #'                                                 "owner", "reportSuiteID", 
 #'                                                 "shares", "tags")
 #' )
 #' 
 #' }
-Segments.Get <- function(accessLevel = NULL, fields = NULL, 
+Segments_Get <- function(accessLevel = NULL, fields = NULL, 
                           selected = NULL, sort = NULL, 
                           filters = NULL, 
                           collapse_simple = TRUE) {
@@ -65,6 +68,6 @@ Segments.Get <- function(accessLevel = NULL, fields = NULL,
                 selected = selected, sort = sort, 
                 filters = filters, 
                 collapse_simple = collapse_simple,
-                func.name = "Segments.Get")
+                func.name = "Segments_Get")
   
 }

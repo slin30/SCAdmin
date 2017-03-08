@@ -51,10 +51,10 @@ If requested (via \emph{fields}), the following columns are returned as list-col
 atomic vectors (i.e. unnested columns) if requested within \emph{fields}. Collapsing is performed by 
 \code{\link{collapse_simple_target}}. 
 
-Please see \code{\link{parse_shares}} for handling shares
+Please see \code{\link{parse_shares}} for handling shares.
 }
 \description{
-Query the Adobe Analytics Segments.Get or CalculatedMetrics.Get method
+Internal function - base args and doc for exported Segments and CM GET functions
 }
 \details{
 It is possible to constrain results at the reportsuite ID (and more) level through the new \emph{filters}
@@ -62,7 +62,7 @@ argument. Note that \emph{filters} has some nuances; there are six fields, which
 then type, below:
 
 \itemize{
-\itemize{length 1, \code{character}; partial case insensitive matching
+\itemize{length 1, \code{character}; partial case-insensitive matching
     \item{name}
     \item{owner}
     \item{reportSuiteID}
@@ -94,4 +94,11 @@ my_own_simple.segments <- call.Get_base(func.name = "Segments.Get")
 my_own_simple.calcMetrics <- call.Get_base(func.name = "CalculatedMetrics.Get")
 
 }
+}
+\seealso{
+Other internal: \code{\link{chk_shares}},
+  \code{\link{collapse_simple_listcol}},
+  \code{\link{recur_flatten_nested_container}},
+  \code{\link{split_segment_ret}},
+  \code{\link{split_single_row_ret}}
 }
