@@ -64,4 +64,3 @@ Other make_segment functions: \code{\link{make_element_rules}},
   \code{\link{make_segment_container}},
   \code{\link{make_sharelist}}
 }
-

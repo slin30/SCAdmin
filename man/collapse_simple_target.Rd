@@ -29,7 +29,7 @@ is expected that the valid values should typically be:
 }
 }
 \note{
-This function is called by \code{\link{call.Get_Segments}} if that function's \emph{collapse_simple}
+This function is called by \code{\link{call.Get_base}} if that function's \emph{collapse_simple}
 argument is \code{TRUE}.
 }
 \examples{
@@ -51,4 +51,3 @@ data.frame(
     nchar(gsub("[^,]", "", f))+1L, integer(1))
 )
 }
-

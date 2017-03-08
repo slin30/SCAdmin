@@ -7,7 +7,7 @@
 split_segment_ret(seg_ret)
 }
 \arguments{
-\item{seg_ret}{A data.frame from a successful call to Segments.Get via \code{\link{call.Get_Segments}}}
+\item{seg_ret}{A data.frame from a successful call to Segments.Get via \code{\link{Segments.Get}}}
 }
 \value{
 A list of length equal to \code{nrow(x)}
@@ -21,4 +21,3 @@ Other internal: \code{\link{chk_shares}},
   \code{\link{recur_flatten_nested_container}},
   \code{\link{split_single_row_ret}}
 }
-

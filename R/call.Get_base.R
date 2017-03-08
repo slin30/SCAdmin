@@ -1,6 +1,6 @@
-#' Get Adobe Analytics Segments
+#' Get Adobe Analytics Segments or Calculated Metrics
 #' 
-#' Query the Adobe Analytics Segments.Get method to return segment information
+#' Query the Adobe Analytics Segments.Get or CalculatedMetrics.Get method
 #' 
 #' @importFrom RSiteCatalyst ApiRequest
 #' @importFrom jsonlite unbox toJSON
@@ -11,7 +11,7 @@
 #' Must be one of 
 #' \code{tags, shares, description, owner, modified, compatibility, favorite, reportSuiteID, definition}. 
 #' The API always includes \code{id} and \code{name}, by default.
-#' @param selected (optional) A character vector of segment ID(s) you wish to query for. If both \code{selected} and 
+#' @param selected (optional) A character vector of ID(s) you wish to query for. If both \code{selected} and 
 #' \code{accessLevel} are provided, \code{selected} take precedence.
 #' @param sort (optional) A character vector of length 1. Must be one of \code{id, name, description, reportSuiteID,
 #' owner, modified, favorite}. If not specified, defaults to \code{id}.
@@ -21,9 +21,7 @@
 #' only vectors of length 1. 
 #' @param collapse_simple Should we parse simple list-columns, i.e. \code{tags} and \code{compatibility} in the return
 #' value? Defaults to \code{TRUE} and only applies if these columns are requested via \emph{fields}
-#' @param ... (optional) Additional args to pass to \code{ApiRequest}
-#' @param fun (optional) One of "Segments.Get (default) or "CalculatedMetrics.Get". THIS IS EXPERIMENTAL
-#' AND TEMPORARY!
+#' @param func.name Passed to pass to \code{ApiRequest}
 #'
 #' @return
 #' A \code{data.frame}; the number of rows corresponds to the number of unique segments, identified by the \code{id} 
@@ -42,33 +40,12 @@
 #' atomic vectors (i.e. unnested columns) if requested within \emph{fields}. Collapsing is performed by 
 #' \code{\link{collapse_simple_target}}. 
 #' 
-#' \code{shares} does not have a 1-to-1 relationship with each segment, since a segment can have zero or more
-#' shares.
+#' Please see \code{\link{parse_shares}} for handling shares
 #' 
-#' \code{definition} contains the entire segment definition, and can range from simple to quite complex. 
-#' 
-#' Parsers are available for both \code{shares} and \code{definition}, but are not integrated into this
-#' function at the moment. \emph{\strong{Randy: Would like input on this point-- how do we want to handle?}}
-#' 
-#' @note 
-#' 
-#' \itemize{
-#' \item \strong{This function calls an Adobe Analytics method that requires administrative/elevated privileges}
-#' \item The fields \code{folder,class,suite_enabled}, and \code{read_only} are not supported by \code{Segments.Get}
-#' }
+#' @section Access Privileges: 
+#' This function calls an Adobe Analytics method that requires administrative/elevated privileges
 #' 
 #' @details 
-#' This function calls the Adobe Analytics 1.4
-#' \href{https://marketing.adobe.com/developer/documentation/segments-1-4/r-get-1}{Segments.Get}
-#' method, which supercedes the deprecated \emph{ReportSuite.GetSegments} method. 
-#' The \emph{Segments.Get} method, and therefore this function, 
-#' allows essentially all available information about one or more segments to be returned.
-#' 
-#' As such, it is now possible to download one or more complete segment definitions, which
-#' may be useful for batch auditing, back-up, and much more. Note, though, that \emph{Segments.Get}
-#' operates at the segment ownership level, as opposed to the reportsuite ID level, 
-#' which means this is not a strict replacement for the (deprecated) \emph{ReportSuite.GetSegments} method.
-#' 
 #' It is possible to constrain results at the reportsuite ID (and more) level through the new \emph{filters}
 #' argument. Note that \emph{filters} has some nuances; there are six fields, which are grouped by argument length,
 #' then type, below:
@@ -93,37 +70,19 @@
 #' the name(s) denote the field(s) to filter, by the provided value. Of the six available fields, only 
 #' \code{tags} accepts inputs of length \code{>1}. Passing vectors of length \code{>1} to any of the other
 #' fields will raise an error. 
-#' 
-#' @export
 #'
 #' @examples
 #' \dontrun{
-#' # Get your segments, with id and name
-#' my_own_simple <- call.Get_Segments()
+#' # Get your segments or CMs, with id and name
+#' my_own_simple.segments <- call.Get_base(func.name = "Segments.Get")
+#' my_own_simple.calcMetrics <- call.Get_base(func.name = "CalculatedMetrics.Get")
 #' 
-#' # Parsing is needed for certain fields, in particular 'definition'
-#' # This returns some nested fields, but tags and compatibility are collapsed automatically...
-#' needs_parsing_1 <- call.Get_Segments(fields = c("tags", "shares", "compatibility"))
-#' # ...unless you request otherwise
-#' needs_parsing_1_alt <- call.Get_Segments(fields = c("tags", "shares", "compatibility"), 
-#'                                          collapse_simple = FALSE
-#' )
-#' 
-#' # `definition` is the most complex
-#' needs_parsing_2 <- call.Get_Segments(fields = c("definition"))
-#' 
-#' # Here's what it looks like if we ask for all fields
-#' needs_parsing_3 <- call.Get_Segments(fields = c("compatibility", "definition", 
-#'                                                 "favorite", "modified", 
-#'                                                 "owner", "reportSuiteID", 
-#'                                                 "shares", "tags")
-#' )
 #' }
-call.Get_Segments <- function(accessLevel = NULL, fields = NULL, 
+call.Get_base <- function(accessLevel = NULL, fields = NULL, 
                               selected = NULL, sort = NULL, 
                               filters = NULL, 
-                              collapse_simple = TRUE, ..., 
-                              fun = "Segments.Get") {
+                              collapse_simple = TRUE, 
+                              func.name = c("Segments.Get", "CalculatedMetrics.Get")) {
   
   # accessLevel, must be vector of length 1
   validAccessLevel <- c("all", "shared", "owned")
@@ -193,8 +152,7 @@ call.Get_Segments <- function(accessLevel = NULL, fields = NULL,
   body <- Filter(function(x) !is.null(x), body)
   
   query <- toJSON(body)
-  #fun <- "Segments.Get"
-  out <- ApiRequest(body = query, func.name = fun, ...)
+  out <- ApiRequest(body = query, func.name = func.name)
   
   # parse simple list-col(s) if call is successful and at least one such column is present
   if(collapse_simple) {

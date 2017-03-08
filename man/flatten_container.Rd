@@ -32,4 +32,3 @@ At the moment, all this is doing is wrapping around the two (not-exported) funct
 \examples{
 #TBD
 }
-

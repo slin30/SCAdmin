@@ -28,11 +28,11 @@ Depending on the type and length of input, one of the following:
 }
 }
 \description{
-For a return from call.Get_Segment() with 'shares', parse into more user-friendly output
+For a return from call.Get_base() with 'shares', parse into more user-friendly output
 }
 \details{
 A valid return, defined as a \code{data.frame} with the expected columns (see \strong{Value}), means that
-the other possibly returned fields from \code{\link{call.Get_Segments}}, excluding \code{definition},
+the other possibly returned fields from \code{\link{call.Get_base}}, excluding \code{definition},
 should be exported as a \code{list} of \code{data.frame}s. This is important for consistent return
 data structure expectations, as it means we can either return a single data.frame, for the case where
 the return from \emph{Segments.Get} does not include \code{definition} or \code{shares} -- or we must return
@@ -84,4 +84,3 @@ parse_shares(df[, c("id", "shares")])
 parse_shares(df[, c("name", "shares")])
 }
 }
-

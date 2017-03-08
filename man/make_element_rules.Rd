@@ -84,4 +84,3 @@ Other make_segment functions: \code{\link{make_segment_body}},
   \code{\link{make_segment_meta}},
   \code{\link{make_sharelist}}
 }
-

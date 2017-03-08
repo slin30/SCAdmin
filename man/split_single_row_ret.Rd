@@ -25,4 +25,3 @@ Other internal: \code{\link{chk_shares}},
   \code{\link{recur_flatten_nested_container}},
   \code{\link{split_segment_ret}}
 }
-

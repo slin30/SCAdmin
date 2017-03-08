@@ -16,7 +16,7 @@
 #' \item \preformatted{compatibility}
 #' }
 #' 
-#' @note This function is called by \code{\link{call.Get_Segments}} if that function's \emph{collapse_simple}
+#' @note This function is called by \code{\link{call.Get_base}} if that function's \emph{collapse_simple}
 #' argument is \code{TRUE}.
 #' 
 #' @return A unnested character vector; see \code{\link{collapse_simple_listcol}} for details.

@@ -2,7 +2,7 @@
 #' 
 #' Internal function - splits data.frame into rows, with checks
 #' 
-#' @param seg_ret A data.frame from a successful call to Segments.Get via \code{\link{call.Get_Segments}}
+#' @param seg_ret A data.frame from a successful call to Segments.Get via \code{\link{Segments.Get}}
 #' 
 #' @return A list of length equal to \code{nrow(x)}
 #' 

@@ -1,4 +1,4 @@
-context("Get_Segments")
+context("Segments.Get")
 
 # Temp
 library(testthat)
@@ -8,32 +8,32 @@ library(SCAdmin)
 
 # filters must be a list
 test_that("filters must be a list", {
-  expect_error(call.Get_Segments(filters = c("A", "a")),
+  expect_error(Segments.Get(filters = c("A", "a")),
                ".*Class of 'filters' must be a list, but is currently.*")
 })
 # filters must be a named list
 test_that("filters must be a named list", {
-  expect_error(call.Get_Segments(filters = list("A", "B")), 
+  expect_error(Segments.Get(filters = list("A", "B")), 
                ".*One or more names missing in 'filters.*")
 })
 # filters must be a named list, and all names must be valid
 test_that("filters names must be valid", {
-  expect_error(call.Get_Segments(filters = list(name = "A", alt="B")), 
+  expect_error(Segments.Get(filters = list(name = "A", alt="B")), 
                ".*Invalid input name\\(s\\) detected in 'filters'.*")
 })
 # filters named elements of name, owner, reportSuiteID must be vectors of length 1
 test_that("filters 'reportSuiteID must be a vector of length 1", {
-  expect_error(call.Get_Segments(filters = list(reportSuiteID = c("rsid1", "rsid2"))), 
+  expect_error(Segments.Get(filters = list(reportSuiteID = c("rsid1", "rsid2"))), 
                ".*owner, name, reportSuiteID must all be vectors of length 1.*"
                )
 })
 test_that("filters 'owner must be a vector of length 1", {
-  expect_error(call.Get_Segments(filters = list(owner = c("person1", "person2"))), 
+  expect_error(Segments.Get(filters = list(owner = c("person1", "person2"))), 
                ".*owner, name, reportSuiteID must all be vectors of length 1.*"
   )
 })
 test_that("filters 'name must be a vector of length 1", {
-  expect_error(call.Get_Segments(filters = list(name = c("name1", "name2"))), 
+  expect_error(Segments.Get(filters = list(name = c("name1", "name2"))), 
                ".*owner, name, reportSuiteID must all be vectors of length 1.*"
   )
 })
@@ -51,19 +51,19 @@ test_that("filters 'tags' of length >1 is collapsed into length 1 comma-sep char
 # filters named elements of approved, favorite must be vectors of length 1 AND
 #  logical, or coercible to logical
 test_that("approved must logical or coercible", {
-  expect_error(call.Get_Segments(filters = list(approved = "A")), 
+  expect_error(Segments.Get(filters = list(approved = "A")), 
                ".*Invalid inputs resulting in 'NA' upon coercion to 'logical'.*")
 })
 test_that("approved must length 1 logical or coercible", {
-  expect_error(call.Get_Segments(filters = list(approved = c("0", TRUE))), 
+  expect_error(Segments.Get(filters = list(approved = c("0", TRUE))), 
                ".*approved, favorite must all be vectors of length 1.*")
 })
 test_that("favorite must logical or coercible", {
-  expect_error(call.Get_Segments(filters = list(favorite = "A")), 
+  expect_error(Segments.Get(filters = list(favorite = "A")), 
                ".*Invalid inputs resulting in 'NA' upon coercion to 'logical'.*")
 })
 test_that("favorite must length 1 logical or coercible", {
-  expect_error(call.Get_Segments(filters = list(favorite = c("0", TRUE))), 
+  expect_error(Segments.Get(filters = list(favorite = c("0", TRUE))), 
                ".*approved, favorite must all be vectors of length 1.*")
 })
 
@@ -73,23 +73,23 @@ test_that("favorite must length 1 logical or coercible", {
 
 # accessLevel must be vector of length 1
 test_that("accessLevel must be a vector of length 1", {
-  expect_error(call.Get_Segments(accessLevel = c("all", "owned")), 
+  expect_error(Segments.Get(accessLevel = c("all", "owned")), 
                ".*'accessLevel' must be a vector of length 1")
 })
 # sort must be vector of length 1
 test_that("sort must be a vector of length 1", {
-  expect_error(call.Get_Segments(sort = c("id", "name")), 
+  expect_error(Segments.Get(sort = c("id", "name")), 
                ".*'sort' must be a vector of length 1")
 })
 
 # accessLevel cannot contain invalid values
 test_that("invalid values to accessLevel raise an error", {
-  expect_error(call.Get_Segments(accessLevel = c("al")), 
+  expect_error(Segments.Get(accessLevel = c("al")), 
                ".*Invalid input values\\(s\\) detected in 'accessLevel'.*")
 })
 # sort cannot contain invalid values
 test_that("invalid values to sort raise an error", {
-  expect_error(call.Get_Segments(sort = c("ID")), 
+  expect_error(Segments.Get(sort = c("ID")), 
                ".*Invalid input values\\(s\\) detected in 'sort'.*")
 })
 
@@ -99,12 +99,12 @@ test_that("invalid values to sort raise an error", {
 # fields must contain valid values
 ## error; always get `id`, but not allowed value:
 test_that("an invalid value of length 1 for 'fields' throws an error", {
-  expect_error(call.Get_Segments(fields = "id"),
+  expect_error(Segments.Get(fields = "id"),
   "Invalid input values\\(s\\) detected in 'fields'.*")
 })
 # fields must contain ALL valid values
 ## 'reportSuiteID' is valid, 'id' is not
 test_that("a single invalid value in 'fields' throws an error", {
-  expect_error(call.Get_Segments(fields = c("id", "reportSuiteID")), 
+  expect_error(Segments.Get(fields = c("id", "reportSuiteID")), 
                "Invalid input values\\(s\\) detected in 'fields'.*")
 })

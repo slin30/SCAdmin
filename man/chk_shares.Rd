@@ -43,4 +43,3 @@ Other internal: \code{\link{collapse_simple_listcol}},
   \code{\link{split_segment_ret}},
   \code{\link{split_single_row_ret}}
 }
-

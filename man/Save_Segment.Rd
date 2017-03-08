@@ -36,4 +36,3 @@ the required scalar type (via \code{\link[jsonlite]{unbox}}).
 \examples{
 # Forthcoming
 }
-
