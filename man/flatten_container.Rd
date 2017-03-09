@@ -13,7 +13,12 @@ flatten_container(x)
 A flattened segment definition
 }
 \description{
-Mainly for debugging and development purposes; flattens segment definitions containing nested containers
+Flattens segment definition returns for non-nested containers
+}
+\details{
+This does not work properly for nested containers, where "nested" is as defined in the GUI, 
+and not in terms of the data structure from the call return. At the moment, it does not
+error when encoutering such segments, but this will be addressed before public release.
 }
 \note{
 This is temporarily being exported during development to facilitate abstraction. Might
@@ -29,6 +34,14 @@ At the moment, all this is doing is wrapping around the two (not-exported) funct
 \item \code{\link{recur_flatten_nested_container}}
 }
 }
+\section{Note to self}{
+
+May want to explicitly handle nested containers (as created in GUI) with a modified version 
+of the current recursive (data structure) flattener that can handle both nested (as created in GUI)
+and non-nested segments. If too messy, make two functions and branch the logic by detecting which
+structure, since you are handling this row-wise, and not df-wise.
+}
+
 \examples{
 #TBD
 }

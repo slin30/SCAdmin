@@ -29,7 +29,7 @@ CALLS$seg_mg_shares <- GS_ALL(accessLevel = "all",
 )
 
 # Here are some properly built nested segments, as a first test case:
-CALLS$seg_ret.tst <- call.Get_Segments(accessLevel = "all", filters = list(name = "DB Session", 
+CALLS$seg_ret.tst <- Segments_Get(accessLevel = "all", filters = list(name = "DB Session", 
                                                                   owner = "m.gray"), 
                               fields = c("tags", "shares",
                                          "description", "owner",
@@ -38,7 +38,7 @@ CALLS$seg_ret.tst <- call.Get_Segments(accessLevel = "all", filters = list(name 
                                          "definition")
 )
 # Reference set-- an unnested segment for comparison
-CALLS$seg_ret.ref <- call.Get_Segments(accessLevel = "owned", filters = list(name = "ThermoPhys"), 
+CALLS$seg_ret.ref <- Segments_Get(accessLevel = "owned", filters = list(name = "ThermoPhys"), 
                              fields = c("tags", "shares",
                                         "description", "owner",
                                         "modified", "compatibility",
@@ -46,19 +46,20 @@ CALLS$seg_ret.ref <- call.Get_Segments(accessLevel = "owned", filters = list(nam
                                         "definition")
 )
 # no definition requested
-CALLS$seg_simple <- call.Get_Segments(fields = c("tags", "shares",
+CALLS$seg_simple <- Segments_Get(fields = c("tags", "shares",
                                           "description", "owner",
                                           "modified", "compatibility",
                                           "favorite", "reportSuiteID")
 )
-
-
-# Collapse tags and compatibility -----------------------------------------
-
-for(i in seq_along(CALLS)) {
-  CALLS[[i]]$tags <- collapse_simple_target(CALLS[[i]], "tags")
-  CALLS[[i]]$compatibility <- collapse_simple_target(CALLS[[i]], "compatibility")
-}
+# a nested segment from clinical, not sure if nesting is needed here
+CALLS$clinical <- Segments_Get(filters = list(name = "abb CK-P Browse Page Entry"), 
+                                           accessLevel = "all", 
+                               fields = c("tags", "shares",
+                                          "description", "owner",
+                                          "modified", "compatibility",
+                                          "favorite", "reportSuiteID", 
+                                          "definition")
+)
 
 # Parsing definition ------------------------------------------------------
 
@@ -69,6 +70,7 @@ splitted$split_ref <- SCAdmin:::split_segment_ret(CALLS$seg_ret.ref)
 splitted$split_wz_all  <- SCAdmin:::split_segment_ret(CALLS$seg_wz_all)
 splitted$split_mg_shares <- SCAdmin:::split_segment_ret(CALLS$seg_mg_shares)
 splitted$split_simple <- SCAdmin:::split_segment_ret(CALLS$seg_simple)
+splitted$split_clinical <- SCAdmin:::split_segment_ret(CALLS$clinical)
 
 # list2env(splitted, envir = globalenv())
 # rm(list = ls(pattern = "split_.*"))
@@ -81,6 +83,7 @@ single_flats$flat_wz  <- flatten_container(splitted$split_wz_all$s300000520_57e0
 single_flats$flat_wz_neg  <- flatten_container(splitted$split_wz_all$s300000520_582ca0d2e4b0a4d9dc2936ac)
 single_flats$flat_mg  <- flatten_container(splitted$split_mg_shares$`557a2135e4b093528ae4d446`)
 single_flats$flat_simple <- flatten_container(splitted$seg_simple) # error!
+single_flats$flat_clinical <- flatten_container(splitted$split_clinical$s300000520_584af94be4b015df188ac7a4)
 
 # list2env(single_flats, envir = globalenv())
 # rm(list = ls(pattern = "flat_.*"))
@@ -92,6 +95,7 @@ binds$bnd_tst <- bind_flat_cont(single_flats$flat_tst)
 binds$bnd_wz  <- bind_flat_cont(single_flats$flat_wz)
 binds$bnd_wz_neg <- bind_flat_cont(single_flats$flat_wz_neg) # error!
 binds$bnd_mg  <- bind_flat_cont(single_flats$flat_mg)
+binds$bnd_clinical <- bind_flat_cont(single_flats$flat_clinical) # error!
 
 # list2env(binds, envir = globalenv())
 # rm(list = ls(pattern = "bnd_.*"))
@@ -105,7 +109,7 @@ binds$bnd_mg  <- bind_flat_cont(single_flats$flat_mg)
 # For DAF -----------------------------------------------------------------
 # # Daf segments
 # 
-# dseg <- call.Get_Segments(accessLevel = "all", 
+# dseg <- Segments_Get(accessLevel = "all", 
 #                           filters = list(reportSuiteID = "elsevier-ha-prod", 
 #                                          tags = "JBS-Journal"), 
 #                           fields = c("description", "owner", "definition", 
@@ -142,7 +146,7 @@ binds$bnd_mg  <- bind_flat_cont(single_flats$flat_mg)
 
 # this is a segment that contains two rules with exclude
 
-mg_exclude <- call.Get_Segments(selected = "s300000520_589774a4e4b08939f9d6e818",
+mg_exclude <- Segments_Get(selected = "s300000520_589774a4e4b08939f9d6e818",
                                 fields = c("description", "definition", "owner", "modified", 
                                            "reportSuiteID"), 
                                 accessLevel = "all")
@@ -151,7 +155,7 @@ mg_exclude.parse <- flatten_container(mg_exclude)
 # to recreate this
 
 ## and to edit; get the ID first
-call.Get_Segments(filters = list(name = "ThermoPhysDyn_ContentName"))
+Segments_Get(filters = list(name = "ThermoPhysDyn_ContentName"))
 #s300000520_589a29f3e4b0cfc8b41c8978 is the ID for edit
 
 seg_shares <- make_sharelist("user", c("m.gray"))
@@ -193,8 +197,8 @@ seg_body$id <- jsonlite::unbox("s300000520_589a29f3e4b0cfc8b41c8978")
 # #my_new_seg <- Save_Segment(seg_body)
 # #my_edit_seg <- Save_Segment(seg_body, override_and_edit = TRUE)
 
-call.Get_Segments(filters = list(tags = "SA_CNAME")) # quick check
-recheck <- call.Get_Segments(filters = list(tags = "SA_CNAME"), 
+Segments_Get(filters = list(tags = "SA_CNAME")) # quick check
+recheck <- Segments_Get(filters = list(tags = "SA_CNAME"), 
                   fields = c("shares", "favorite", "owner", "shares", "definition", "description")
 )
 

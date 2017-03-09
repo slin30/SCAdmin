@@ -1,5 +1,5 @@
 GS_ALL <- function(...) {
-  call.Get_Segments(fields = c("tags", "shares",
+  Segments_Get(fields = c("tags", "shares",
                                "description", "owner",
                                "modified", "compatibility",
                                "favorite", "reportSuiteID",
@@ -7,21 +7,21 @@ GS_ALL <- function(...) {
                     ...)
 }
 
-# easy-mode get all; template of sorts, before packaging
-easy.Get_Segments <- function(..., fun = NULL) {
-  
-  if(is.null(fun)) {
-    fun <- "GS_ALL"
-  }
-  
-  seg_call  <- match.fun(fun)(...)
-  restr_call <- .split_segment_ret(seg_call) %>%
-    Map(restr.Get_Segments, ., merge_rules = TRUE) %>%
-    purrr::transpose(.)
-  
-  lapply(restr_call, function(f) 
-    rbindlist(f, use.names = TRUE, fill = TRUE))
-}
+# # easy-mode get all; template of sorts, before packaging
+# easy.Get_Segments <- function(..., fun = NULL) {
+#   
+#   if(is.null(fun)) {
+#     fun <- "GS_ALL"
+#   }
+#   
+#   seg_call  <- match.fun(fun)(...)
+#   restr_call <- .split_segment_ret(seg_call) %>%
+#     Map(restr.Get_Segments, ., merge_rules = TRUE) %>%
+#     purrr::transpose(.)
+#   
+#   lapply(restr_call, function(f) 
+#     rbindlist(f, use.names = TRUE, fill = TRUE))
+# }
 
 
 
