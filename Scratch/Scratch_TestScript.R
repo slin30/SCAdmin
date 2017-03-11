@@ -10,6 +10,7 @@ SCAuth(key = Sys.getenv("wz_sc_id"), Sys.getenv("wz_sc_pw"))
 # FUNS --------------------------------------------------------------------
 
 source("./Scratch/Scratch_TestFUNS.R")
+source("./Scratch/Scratch_FUNS_nestedDefn.R")
 
 fix_blank <- function(x) {
   x[x==""] <- NA
@@ -75,18 +76,50 @@ splitted$split_clinical <- SCAdmin:::split_segment_ret(CALLS$clinical)
 # list2env(splitted, envir = globalenv())
 # rm(list = ls(pattern = "split_.*"))
 
-# Flatten with wrapper FUN
+# Flatten with wrapper FUN, original version
 single_flats <- vector("list", 0L)
 single_flats$flat_ref <- flatten_container(splitted$split_ref$s300000520_589a29f3e4b0cfc8b41c8978)
 single_flats$flat_tst <- flatten_container(splitted$split_tst$s300000520_589a1638e4b0cfc8b41c8960)
 single_flats$flat_wz  <- flatten_container(splitted$split_wz_all$s300000520_57e0343be4b007430cbdcdc3)
 single_flats$flat_wz_neg  <- flatten_container(splitted$split_wz_all$s300000520_582ca0d2e4b0a4d9dc2936ac)
 single_flats$flat_mg  <- flatten_container(splitted$split_mg_shares$`557a2135e4b093528ae4d446`)
-single_flats$flat_simple <- flatten_container(splitted$seg_simple) # error!
+single_flats$flat_simple <- flatten_container(splitted$split_simple$s300000520_578d081ae4b0722aa03b038f) # error!
 single_flats$flat_clinical <- flatten_container(splitted$split_clinical$s300000520_584af94be4b015df188ac7a4)
 
 # list2env(single_flats, envir = globalenv())
 # rm(list = ls(pattern = "flat_.*"))
+
+# TODO: Use these as reference structures for tests while refactoring
+# Flatten with new version specifically for nested
+single_flats_2 <- vector("list", 0L)
+single_flats_2$flat_wz_neg <- flatten_nested_cont(
+  splitted$split_wz_all$s300000520_582ca0d2e4b0a4d9dc2936ac
+)
+single_flats_2$flat_clinical <- flatten_nested_cont(
+  splitted$split_clinical$s300000520_584af94be4b015df188ac7a4
+)
+single_flats_2$flat_mg <- flatten_nested_cont(
+  splitted$split_mg_shares$`557a2135e4b093528ae4d446`
+)
+single_flats_2$flat_ref <- flatten_nested_cont(
+  splitted$split_ref$s300000520_589a29f3e4b0cfc8b41c8978
+)
+single_flats_2$flat_tst <- flatten_nested_cont(
+  splitted$split_tst$s300000520_589a1638e4b0cfc8b41c8960
+) # error
+
+# two patterns:
+a <- splitted$split_tst$s300000520_589a1638e4b0cfc8b41c8960$definition # container top-level
+b <- splitted$split_wz_all$s300000520_582ca0d2e4b0a4d9dc2936ac$definition # container nested
+
+flatten_df(a) # not so much
+names(a[[1]])
+names(a[[1]][["rules"]][[1]])
+
+flatten_df(b) # this works
+names(b[[1]])
+names(b[[1]][["rules"]][[1]])
+
 
 # Bind --------------------------------------------------------------------
 binds <- vector("list", 0L)
