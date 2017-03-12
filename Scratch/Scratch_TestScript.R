@@ -112,11 +112,11 @@ single_flats_2$flat_tst <- flatten_nested_cont(
 a <- splitted$split_tst$s300000520_589a1638e4b0cfc8b41c8960$definition # container top-level
 b <- splitted$split_wz_all$s300000520_582ca0d2e4b0a4d9dc2936ac$definition # container nested
 
-flatten_df(a) # not so much
+flatten_df(a) # now it works
 names(a[[1]])
 names(a[[1]][["rules"]][[1]])
 
-flatten_df(b) # this works
+flatten_df(b) # this still works
 names(b[[1]])
 names(b[[1]][["rules"]][[1]])
 

@@ -13,6 +13,13 @@
 #   which means you must Filter on this to kill NULLs
 
 # may also need to handle exclude?
+flat_a <- flatten_nested_cont(a)
+flat_b <- flatten_nested_cont(b)
+
+b1 <- flatten_df(b)
+b2 <- flatten_df(b1$rem)
+b3 <- flatten_df(b2$rem)#
+b4 <- flatten_df(b3$rem)
 
 
 # FUNS --------------------------------------------------------------------
@@ -24,7 +31,7 @@ flatten_nested_cont <- function(x, d = 0L, out = list()) {
     x <- x[["definition"]]
   }
   
-  if(!(is_nested_valid(x))) {
+  if(!(is_nested_valid(x)) || is.null(x)) {
     out <- append(out, x)
     return(out)
   } else {
@@ -32,6 +39,7 @@ flatten_nested_cont <- function(x, d = 0L, out = list()) {
     flatten_nested_cont(x = tmp[["rem"]], d = d+1L, out = append(out, tmp["res"]))
   }
 }
+
 
 # main fun
 flatten_df <- function(x) {
@@ -43,19 +51,56 @@ flatten_df <- function(x) {
   out_L1 <- x[[1]][c(nms_L1)]
   names(out_L1) <- paste0("container.", nms_L1)
   
-  #get rules names, aside from container
-  nms_L2 <- setdiff(names(x[[1]][["rules"]][[1]]), "container")
-  # if length zero, then you have container top-level, so can 
-  # use this to switch logic downstream?
-  out_L2 <- x[[1]][["rules"]][[1]][, c(nms_L2)]
-  names(out_L2) <- paste0("rules.", nms_L2)
+  # use helper to extract rest of res
+  out_L2 <- detect_pattern(x)
   
-  res <- c(out_L1, out_L2)
-  rem <- extract_one(x)
+  res <- c(out_L1, out_L2[["res"]])
+  rem <- out_L2[["rem"]]
   
   list(res = res, rem = rem)
   
 }
+
+
+# helper to parse either container or rule nested
+# logi are handled here for e.g. exclude
+detect_pattern <- function(x) {
+
+  check <- names(x[[1]][["rules"]][[1]])
+  
+  if(length(check) == 1L && check == "container") {
+    # then nested rules
+    extracted <- x[[1]][["rules"]][[1]][["container"]]
+    nest_patt <- "rules"
+    # rem <- x[[1]]$rules[[1]]$container[nest_patt]
+  } else {
+    # nested container
+    extracted <- x[[1]][["rules"]][[1]]
+    nest_patt <- "container"
+    # rem <- filt_rule_null(x[[1]]$rules[[1]][nest_patt])
+  }
+  
+  nms <- setdiff(names(extracted), nest_patt)
+  
+  out <- extracted[, c(nms)]
+  out <- fill_logi_nm(out, nm = "exclude")
+  
+  # the new name should be the opposite pattern
+  nm_prefix <- setdiff(c("rules", "container"), nest_patt)
+  names(out) <- paste(nm_prefix, nms, sep = ".")
+  
+  # handle rem
+  still_nested <- nest_patt %in% names(extracted)
+  if(!still_nested) {
+    rem <- NULL
+  } else {
+    rem <- extracted[nest_patt]
+  }
+  
+  
+  list(res = out, rem = rem)
+}
+
 
 # helper extractor
 extract_one <- function(x) {
@@ -76,7 +121,8 @@ filt_rule_null <- function(x) {
   if(!is_nested_valid(x)) {
     stop("a valid structure was not detected")
   }
-  
+  # handle exclude if present
+  x <- fill_logi_nm(x, nm = "exclude")
   # look for NA
   if(!anyNA(x)) {
     return(x)
@@ -88,6 +134,23 @@ filt_rule_null <- function(x) {
     out[[1]] <- x[-na_pos, ]
     return(out)
   }
+}
+
+
+# helper to handle exclude, mainly
+fill_logi_nm <- function(x, nm = NULL) {
+  if(is.null(nm)) {
+    nm <- "exclude"
+  }
+  
+  if(!nm %in% names(x)) {
+    return(x)
+  }
+  
+  x_new <- !is.na(x[[nm]])
+  x[[nm]] <- x_new
+  return(x)
+  
 }
 
 # helper checker
