@@ -21,7 +21,10 @@ Nested rules, i.e. a definiton where \emph{rules} is nested within \emph{contain
 will return a list of length 2, with named elements of \code{res,rules}. 
 
 Nested containers, i.e. a definitions where \emph{container} is nested within \emph{rules}, 
-will return a list of length \emph{n}, where \emph{n} is the number of nested containers.
+will return a list of length \emph{n}, where \emph{n} is the number of nested containers. 
+
+Stacked segments are not meaningfully parsed, but they are flattened into a more readable 
+structure (for now).
 }
 \description{
 Flatten the definition return data structure for nested container(s) and rule(s)

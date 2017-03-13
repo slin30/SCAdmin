@@ -16,6 +16,9 @@
 #' Nested containers, i.e. a definitions where \emph{container} is nested within \emph{rules}, 
 #' will return a list of length \emph{n}, where \emph{n} is the number of nested containers. 
 #' 
+#' Stacked segments are not meaningfully parsed, but they are flattened into a more readable 
+#' structure (for now).
+#' 
 #' @note 
 #' This is not yet complete. There are several helper functions that are not exported, and this
 #' function may not be exported when final, and instead wrapped in a public-facing function with
@@ -31,6 +34,9 @@ flatten_nested_defn <- function(x, d = 0L, out = list()) {
   }
   
   if(!(.is_nested_valid(x)) || is.null(x)) {
+    msg_iters <- paste0("converged in ", d, " iterations")
+    message(msg_iters)
+    
     out <- append(out, x)
     return(out)
   } else {
@@ -45,10 +51,8 @@ flatten_nested_defn <- function(x, d = 0L, out = list()) {
   x <- .filt_rule_null(x)
   # get top level names, aside from rule
   nms_L1 <- setdiff(names(x[[1]]), "rules")
-  
   out_L1 <- x[[1]][c(nms_L1)]
-  #names(out_L1) <- paste0("container.", nms_L1)
-  
+
   # use helper to extract rest of res
   out_L2 <- .detect_and_parse(x)
   
@@ -76,20 +80,14 @@ flatten_nested_defn <- function(x, d = 0L, out = list()) {
   }
   
   nms <- setdiff(names(extracted), nest_patt)
-  
   out <- extracted[, c(nms)]
-  
   # impute defaults for NA
   out <- .fill_default_nm(out, nm = "exclude", FALSE)
-  # out <- .fill_default_nm(out, nm = "operator", "and")
-  
-  
+
   # the new name should be the opposite pattern
   nm_prefix <- setdiff(c("rules", "container"), nest_patt)
   names(out) <- paste(nm_prefix, nms, sep = ".")
-  #names(out) <- paste("rules", nms, sep = ".")
-  
-  
+
   # handle rem
   still_nested <- nest_patt %in% names(extracted)
   if(!still_nested) {
@@ -162,9 +160,8 @@ flatten_nested_defn <- function(x, d = 0L, out = list()) {
   is_rule_list <- class(x[[1]][["rules"]]) == "list"
   
   if(!has_rule || !is_rule_list) {
-    stop("x[[1]] must contain a list called 'rule'")
+    return(FALSE)
   }
   
   return(TRUE)
-  
 }
