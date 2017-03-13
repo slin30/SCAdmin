@@ -1,39 +1,30 @@
-# FUNS to flatten nested segment definitions
-
-# Notes:
-# first pull out definition
-# s1_defn <- clin[["definition"]]
-# 
-# container must be present
-# container must be a data.frame
-# container must have rules
-
-# rules must be a list
-# rules[[1]] must be a data.frame
-#   which means you must Filter on this to kill NULLs
-
-# may also need to handle exclude?
-a <- dget("./tests/testdata/nested_rule.txt")
-b <- dget("./tests/testdata/nested_container.txt")
-d <- dget("./tests/testdata/nested_stacked.txt")
-
-flat_a <- flatten_nested_defn(a)
-flat_b <- flatten_nested_defn(b)
-flat_d <- flatten_nested_defn(d)
-
-b1 <- .flatten_defn(b)
-b2 <- .flatten_defn(b1$rem)
-b3 <- .flatten_defn(b2$rem)#
-b4 <- .flatten_defn(b3$rem)
-
-seg_wz_all <- GS_ALL()
-seg_split <- SCAdmin:::split_segment_ret(seg_wz_all)
-seg_flat  <- lapply(seg_split, flatten_nested_defn)
-
-# FUNS --------------------------------------------------------------------
-
-
-# recursive wrapper fun
+#' Flatten a nested definition return
+#' 
+#' Flatten the definition return data structure for nested container(s) and rule(s)
+#'
+#' @param x The return from a call to Segments.Get with a named element of \emph{definition} 
+#' @param d Internal counter to track recursion iterations
+#' @param out Accumulator for results
+#'
+#' @return 
+#' A list, currently taking one of two possible patterns, both of which apply to single
+#' homogeneous cases:
+#' 
+#' Nested rules, i.e. a definiton where \emph{rules} is nested within \emph{containers}, 
+#' will return a list of length 2, with named elements of \code{res,rules}. 
+#' 
+#' Nested containers, i.e. a definitions where \emph{container} is nested within \emph{rules}, 
+#' will return a list of length \emph{n}, where \emph{n} is the number of nested containers. 
+#' 
+#' @note 
+#' This is not yet complete. There are several helper functions that are not exported, and this
+#' function may not be exported when final, and instead wrapped in a public-facing function with
+#' more consistent return structures and more error checking.
+#' 
+#' @export
+#'
+#' @examples
+#' # TBD
 flatten_nested_defn <- function(x, d = 0L, out = list()) {
   if("definition" %in% names(x)) {
     x <- x[["definition"]]
@@ -63,7 +54,7 @@ flatten_nested_defn <- function(x, d = 0L, out = list()) {
   
   res <- c(out_L1, out_L2[["res"]])
   rem <- out_L2[["rem"]]
-
+  
   list(res = res, rem = rem)
 }
 
@@ -71,7 +62,7 @@ flatten_nested_defn <- function(x, d = 0L, out = list()) {
 # helper to parse either container or rule nested
 # logi are handled here for e.g. exclude
 .detect_and_parse <- function(x) {
-
+  
   check <- names(x[[1]][["rules"]][[1]])
   
   if(length(check) == 1L && check == "container") {
@@ -90,7 +81,7 @@ flatten_nested_defn <- function(x, d = 0L, out = list()) {
   
   # impute defaults for NA
   out <- .fill_default_nm(out, nm = "exclude", FALSE)
- # out <- .fill_default_nm(out, nm = "operator", "and")
+  # out <- .fill_default_nm(out, nm = "operator", "and")
   
   
   # the new name should be the opposite pattern
@@ -115,7 +106,7 @@ flatten_nested_defn <- function(x, d = 0L, out = list()) {
   if(!.is_nested_valid(x)) {
     stop("a valid structure was not detected")
   }
-
+  
   # create check structure to fill defaults
   # to avoid false positive for anyNA
   x_check <- x[[1]]
@@ -124,7 +115,7 @@ flatten_nested_defn <- function(x, d = 0L, out = list()) {
   
   # look for NA
   if(!anyNA(x_check)) {
-
+    
     return(x)
   } else {
     diffnms <- setdiff(names(x[[1]]), "rules")
@@ -177,5 +168,3 @@ flatten_nested_defn <- function(x, d = 0L, out = list()) {
   return(TRUE)
   
 }
-
-
