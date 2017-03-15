@@ -50,7 +50,7 @@ There is nothing stopping you from appending an element named \emph{id} along wi
 output (of this function) for an edit use case.
 }
 \note{
-None of the\code{make_} functions in this package directly interact with any API, nor are they 
+None of the \code{make_} functions in this package directly interact with any API, nor are they 
 strictly required to use \code{\link{Save_Segment}}. 
 
 You are free to create any and all parts of a segment body on your own, as needed.

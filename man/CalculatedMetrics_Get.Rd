@@ -136,8 +136,3 @@ needs_parsing_3 <- CalculatedMetrics_Get(fields = c("compatibility", "definition
 
 }
 }
-\seealso{
-Other internal: \code{\link{chk_shares}},
-  \code{\link{collapse_simple_listcol}},
-  \code{\link{split_segment_ret}}
-}

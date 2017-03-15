@@ -7,7 +7,7 @@
 #' 
 #' @export
 #' 
-#' @inherit call.Get_base
+#' @inherit call.Get_base params return details
 #' @inheritSection call.Get_base Access Privileges
 #' 
 #' @section Definition Parsing:
