@@ -216,10 +216,10 @@ When complete, this package should provide, at minimum, the following functions 
 
 **Segments API Methods**
 
-- [ ] Get_Segments (`Segments.Get`)
-- [ ] Save_Segment (`Segments.Save`)
+- [X] Get_Segments (`Segments.Get`)
+- [X] Save_Segment (`Segments.Save`)
 - [ ] Edit_Segment (`Segments.Save`)
-- [ ] Delete_Segment (`Segments.Delete`)
+- [X] Delete_Segment (`Segments.Delete`)
 
 Please note additionally:
 
