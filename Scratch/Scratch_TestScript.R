@@ -82,3 +82,4 @@ DT_iters <- lapply(splitted, function(f)
 
 
 flats <- lapply(splitted, function(f) lapply(f, flatten_nested_defn))
+
