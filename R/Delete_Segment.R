@@ -58,7 +58,7 @@
 #' # If check_only = FALSE, single-step:
 #' no_check  <- Delete_Segment(valid_targs[1:2], check_only = FALSE)
 #' }
-Segments_Delete <- function(id, check_only = TRUE) {
+Delete_Segment <- function(id, check_only = TRUE) {
   
   if(!is.atomic(id) || !is.character(id)) {
     stop("'id' must be an atomic vector of type 'character'")
