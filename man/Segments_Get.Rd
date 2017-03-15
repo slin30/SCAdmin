@@ -80,7 +80,7 @@ fields will raise an error.
 }
 \section{Definition Parsing}{
 
-This is still experimental: \code{\link{flatten_container}}
+This is still experimental: \code{\link{flatten_nested_defn}}
 }
 
 \section{API Method Info}{
@@ -140,7 +140,5 @@ needs_parsing_3 <- Segments_Get(fields = c("compatibility", "definition",
 \seealso{
 Other internal: \code{\link{chk_shares}},
   \code{\link{collapse_simple_listcol}},
-  \code{\link{recur_flatten_nested_container}},
-  \code{\link{split_segment_ret}},
-  \code{\link{split_single_row_ret}}
+  \code{\link{split_segment_ret}}
 }

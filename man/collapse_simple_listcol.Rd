@@ -31,8 +31,5 @@ See \code{\link{collapse_simple_target}}, where this function does the heavy lif
 }
 \seealso{
 Other internal: \code{\link{call.Get_base}},
-  \code{\link{chk_shares}},
-  \code{\link{recur_flatten_nested_container}},
-  \code{\link{split_segment_ret}},
-  \code{\link{split_single_row_ret}}
+  \code{\link{chk_shares}}, \code{\link{split_segment_ret}}
 }

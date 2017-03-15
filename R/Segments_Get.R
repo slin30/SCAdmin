@@ -11,7 +11,7 @@
 #' @inheritSection call.Get_base Access Privileges
 #' 
 #' @section Definition Parsing:
-#' This is still experimental: \code{\link{flatten_container}}
+#' This is still experimental: \code{\link{flatten_nested_defn}}
 #' 
 #' @section API Method Info:
 #' This function calls the Adobe Analytics 1.4

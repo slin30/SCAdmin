@@ -33,6 +33,11 @@ to edit, while the edit method is written. Since there are no checks for EDIT, t
 unchecked hack to edit. Since this is temporary, there is no check for \emph{id} being
 the required scalar type (via \code{\link[jsonlite]{unbox}}).
 }
+\section{Access Privileges}{
+ 
+This function calls an Adobe Analytics method that requires administrative/elevated privileges
+}
+
 \examples{
 # Forthcoming
 }

@@ -5,6 +5,32 @@
 #' @param x The return from a call to Segments.Get with a named element of \emph{definition} 
 #' @param d Internal counter to track recursion iterations
 #' @param out Accumulator for results
+#' 
+#' @details 
+#' This function attempts to flatten a definition return, and should be used only
+#' on single-row data frames. It is being exported during development, but will likely
+#' not be exported for the first release. 
+#' 
+#' There remain two edge cases that are not handled; the base method (on Adobe's end) 
+#' currently cannot parse certain definitions, namely those with a \emph{then} operator. 
+#' In fact, when a single such segment is a part of a set of returns, via \emph{Segments.Get}, 
+#' the entire \code{definition} type is \code{list}, rather than \code{data.frame}. Furthremore,
+#' the return value for the unparsable \emph{definition(s)} is a message along the lines of e.g:
+#' 
+#' \itemize{
+#' \item \code{failed converting segment definition: failed converting container rule: datetime-within}
+#' }
+#' 
+#' This function will pass such cases through, untouched; this may change (i.e. raise an error)
+#' in the near future. 
+#' 
+#' The second case involves complex nesting patterns, where a nested container contains nested rules
+#' contains nested containers, and so forth. In the unlikely event it was necessary to create a segment
+#' in such a manner to begin with, you are on your own when it comes to parsing, and this function
+#' will error when it encounters these scenarios. 
+#' 
+#' When complete, however, this function will at least fail gracefully. It will also likely call
+#' \code{\link{split_segment_ret}}, so that it operates row-wise for a return. 
 #'
 #' @return 
 #' A list, currently taking one of two possible patterns, both of which apply to single
