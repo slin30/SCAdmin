@@ -1,8 +1,8 @@
 context("collapse_simple")
 
 # Temp
-# library(SCAdmin)
-# library(testthat)
+library(SCAdmin)
+library(testthat)
 
 # ref data ----------------------------------------------------------------
 
@@ -20,6 +20,20 @@ test_df_2$tags[3] <- list(NULL)
 
 
 # tests -------------------------------------------------------------------
+
+test_that("basic collapsing works for tags", {
+  expect_identical(c("Search", NA, NA, NA, "SA_CNAME"), 
+                   collapse_simple_target(test_df, "tags"))
+})
+
+test_that("basic collapsing works for compatibility", {
+  expect_identical(
+    c("reportsAndAnalytics, adHocAnalysis, dataWarehouse", "reportsAndAnalytics, adHocAnalysis, dataWarehouse", 
+      "reportsAndAnalytics, adHocAnalysis, dataWarehouse", "reportsAndAnalytics, adHocAnalysis, dataWarehouse", 
+      "reportsAndAnalytics, adHocAnalysis, dataWarehouse"), 
+    collapse_simple_target(test_df, "compatibility")
+  )
+})
 
 test_that("a field that is not found throws an error", {
   expect_error(collapse_simple_target(test_df, "idd"), 

@@ -54,5 +54,6 @@ collapse_simple_listcol <- function(x) {
   out <- paste(out, collapse = ", " )
   # if any NA literal were pasted, coerce back to NA_character
   out[out == "NA"] <- NA_character_
+  return(out)
 
 }
