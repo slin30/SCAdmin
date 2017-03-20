@@ -63,6 +63,9 @@ collapse_simple_target <- function(x, targ = NULL) {
     stop("Mismatch in row count and target column length")
   }
   
+  # handle NULLs
+  targ_col <- .nullTOna(targ_col)
+
   if(length(targ_col) > 1L) {
     out <- vector("character", length(targ_col))
     for(i in seq_along(targ_col)) {
@@ -74,4 +77,46 @@ collapse_simple_target <- function(x, targ = NULL) {
   }
   
 }
-
+NULL
+.nullTOna <- function(x) {
+  # can only work if a list
+  if(!is.list(x)) {
+    stop(substitute(x), " must be a list")
+  }
+  
+  xclass.default <- "character"
+  
+  # try to find the class for non-null elements
+  xfilt <- Filter(function(f) !is.null(f), x)
+  if(length(xfilt) == length(x)) {
+    return(x)
+  }
+  if(length(xfilt) == 0L) {
+    xclass <- xclass.default
+  }
+  
+  xclasses <- vapply(xfilt, class, character(1))
+  if(length(unique(xclasses)) == 1L) {
+    xclass <- unique(xclasses)
+  } else {
+    warning("More than one class detected; outputs will all be coerced to 'character'")
+    xclass <- xclass.default
+  }
+  
+  NA_type <- list(character = NA_character_, 
+                  logical = NA, 
+                  integer = NA_integer_, 
+                  numeric = NA_real_, 
+                  factor = NA_character_
+  )
+  
+  NA_type <- NA_type[[xclass]]
+  
+  out <- Map(function(f) {
+    f[is.null(f)] <- c(NA_type)
+    f
+  }, x
+  )
+  
+  return(out)
+}

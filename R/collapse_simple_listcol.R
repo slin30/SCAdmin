@@ -52,5 +52,7 @@ collapse_simple_listcol <- function(x) {
   
   out <- vapply(x_tag, function(f) paste0(collapse_prefix, f, collapse_suffix), character(1))
   out <- paste(out, collapse = ", " )
-  
+  # if any NA literal were pasted, coerce back to NA_character
+  out[out == "NA"] <- NA_character_
+
 }

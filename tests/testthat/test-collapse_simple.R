@@ -15,6 +15,9 @@ test_df <- tryCatch(
   }, finally = NULL
 )
 
+test_df_2 <- test_df
+test_df_2$tags[3] <- list(NULL)
+
 
 # tests -------------------------------------------------------------------
 
@@ -25,7 +28,7 @@ test_that("a field that is not found throws an error", {
 
 test_that("a target field that is not a list throws an error", {
   expect_error(collapse_simple_target(test_df, "id"), 
-               ".*Expected an input of class 'list', but input is a character")
+               ".* must be a list")
 })
 
 test_that("a target field that is not a simple list throws an error", {
@@ -38,4 +41,8 @@ test_that("a target field with an unexpected structure throws an error", {
                ".*Mismatch in row count and target column length")
 })
 
+test_that("NULL is handled properly", {
+  expect_identical(collapse_simple_target(test_df, "tags"), 
+                   collapse_simple_target(test_df_2, "tags"))
+})
 
