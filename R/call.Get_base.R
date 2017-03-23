@@ -8,7 +8,7 @@
 #' @family internal
 #' 
 #' @param accessLevel (optional) A character vector of length 1. Must be one of \code{all, shared, owned}. 
-#' If not specified, defaults to \code{owned}. 
+#' If not specified, defaults to \code{owned}; \code{all} can only be used by an admin.
 #' @param fields (optional) A character vector denoting the quantity, depth, and general detail of information desired. 
 #' Must be one of 
 #' \code{tags, shares, description, owner, modified, compatibility, favorite, reportSuiteID, definition}. 
@@ -46,7 +46,8 @@
 #' Please see \code{\link{parse_shares}} for handling shares.
 #' 
 #' @section Access Privileges: 
-#' This function calls an Adobe Analytics method that requires administrative/elevated privileges
+#' This function calls an Adobe Analytics method that requires administrative/elevated privileges for
+#' some or all functionality. 
 #' 
 #' @details 
 #' It is possible to constrain results at the reportsuite ID (and more) level through the new \emph{filters}

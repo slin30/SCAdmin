@@ -9,7 +9,7 @@ Segments_Get(accessLevel = NULL, fields = NULL, selected = NULL,
 }
 \arguments{
 \item{accessLevel}{(optional) A character vector of length 1. Must be one of \code{all, shared, owned}. 
-If not specified, defaults to \code{owned}.}
+If not specified, defaults to \code{owned}; \code{all} can only be used by an admin.}
 
 \item{fields}{(optional) A character vector denoting the quantity, depth, and general detail of information desired. 
 Must be one of 
@@ -95,11 +95,17 @@ As such, it is now possible to download one or more complete segment definitions
 may be useful for batch auditing, back-up, and much more. Note, though, that \emph{Segments.Get}
 operates at the segment ownership level, as opposed to the reportsuite ID level, 
 which means this is not a strict replacement for the (deprecated) \emph{ReportSuite.GetSegments} method.
+
+If this function is called with \code{accessLevel = "all"} by a non-admin, the following error message is
+returned:
+
+\code{ERROR: Bad Request  -  invalid accessLevel, only an admin user can request "all" segments}
 }
 
 \section{Access Privileges}{
  
-This function calls an Adobe Analytics method that requires administrative/elevated privileges
+This function calls an Adobe Analytics method that requires administrative/elevated privileges for
+some or all functionality.
 }
 
 \examples{

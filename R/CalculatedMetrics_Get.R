@@ -25,6 +25,11 @@
 #' operates at the calculated metrics ownership level, as opposed to the reportsuite ID level, 
 #' which means this is not a strict replacement for the (deprecated) \emph{ReportSuite.GetCalculatedMetrics} method.
 #' 
+#' If this function is called with \code{accessLevel = "all"} by a non-admin, the following error message is
+#' returned:
+#' 
+#' \code{ERROR: Bad Request  -  invalid accessLevel, only an admin user can request "all" Calculated Metrics}
+#' 
 #' @examples 
 #' \dontrun{
 #' # Get all calculated metrics you own
@@ -34,6 +39,7 @@
 #' CalculatedMetrics_Get(accessLevel = "shared")
 #' 
 #' # Get all calculated metrics, period
+#' # Note this requires admin privileges
 #' CalculatedMetrics_Get(accessLevel = "all")
 #' 
 #' # To constrain at report suite level

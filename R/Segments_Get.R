@@ -25,6 +25,12 @@
 #' operates at the segment ownership level, as opposed to the reportsuite ID level, 
 #' which means this is not a strict replacement for the (deprecated) \emph{ReportSuite.GetSegments} method.
 #' 
+#' If this function is called with \code{accessLevel = "all"} by a non-admin, the following error message is
+#' returned:
+#' 
+#' \code{ERROR: Bad Request  -  invalid accessLevel, only an admin user can request "all" segments}
+#' 
+#' 
 #' @examples 
 #' \dontrun{
 #' # Get all segments you own

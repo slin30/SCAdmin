@@ -10,7 +10,7 @@ call.Get_base(accessLevel = NULL, fields = NULL, selected = NULL,
 }
 \arguments{
 \item{accessLevel}{(optional) A character vector of length 1. Must be one of \code{all, shared, owned}. 
-If not specified, defaults to \code{owned}.}
+If not specified, defaults to \code{owned}; \code{all} can only be used by an admin.}
 
 \item{fields}{(optional) A character vector denoting the quantity, depth, and general detail of information desired. 
 Must be one of 
@@ -84,7 +84,8 @@ fields will raise an error.
 }
 \section{Access Privileges}{
  
-This function calls an Adobe Analytics method that requires administrative/elevated privileges
+This function calls an Adobe Analytics method that requires administrative/elevated privileges for
+some or all functionality.
 }
 
 \examples{
