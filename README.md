@@ -1,3 +1,5 @@
+[![build status](https://git.cm-elsevier.com/zhang1/SCAdmin/badges/master/build.svg)](https://git.cm-elsevier.com/zhang1/SCAdmin/commits/master)
+
 # SCAdmin
 
 ## Adobe Analytics Admin and Segments API functions
