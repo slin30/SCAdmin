@@ -136,6 +136,7 @@ flatten_nested_defn <- function(x, d = 0L, out = list()) {
   x_check <- x[[1]]
   x_check <- .fill_default_nm(x_check, nm = "exclude", FALSE)
   x_check <- .fill_default_nm(x_check, nm = "operator", "and")
+  x_check <- .fill_default_nm(x_check, nm = "name", "")
   
   # look for NA
   if(!anyNA(x_check)) {
