@@ -18,8 +18,9 @@ split_segment_ret <- function(seg_ret) {
   id <- seg_ret[["id"]]
   # check row and id match
   if(nrow(seg_ret) != length(id)) {
-    stop("There are ", nrow(seg_ret),
-         " but only ", length(id), " ids"
+    stop("Mismatch in number of rows and count of ids\n", 
+         "  There are ", nrow(seg_ret), " rows",
+         " but ", length(id), " ids"
     )
   }
   

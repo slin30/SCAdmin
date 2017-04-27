@@ -80,7 +80,7 @@ fields will raise an error.
 }
 \section{Definition Parsing}{
 
-This is still experimental: \code{\link{flatten_nested_defn}}
+This is still experimental: \code{\link{parse_segment_defn}}
 }
 
 \section{API Method Info}{

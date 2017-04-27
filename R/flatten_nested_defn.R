@@ -2,16 +2,18 @@
 #' 
 #' Flatten the definition return data structure for nested container(s) and rule(s)
 #'
-#' @param x The return from a call to Segments.Get with a named element of \emph{definition} 
+#' @param x The return from a call to Segments.Get via \code{\link{Segments_Get}} 
+#' with a named element of \emph{definition} 
 #' @param d Internal counter to track recursion iterations
 #' @param out Accumulator for results
 #' 
 #' @details 
-#' This function attempts to flatten a definition return, and should be used only
-#' on single-row data frames. It is being exported during development, but will likely
-#' not be exported for the first release. 
+#' This is still experimental, and is not guaranteed to work for all cases; see below. Furthermore, 
+#' note that \emph{parse} should not be taken as literal-- this function more accurately attempts
+#' to flatten the often-nested list-of-\code{data.frame}(s) that comprises the return when \emph{definition} 
+#' is requested in the \emph{fields} argument of \code{Segments_Get}.
 #' 
-#' There remain two edge cases that are not handled; the base method (on Adobe's end) 
+#' There remain (at least) two edge cases that are not handled; the base method (on Adobe's end) 
 #' currently cannot parse certain definitions, namely those with a \emph{then} operator. 
 #' In fact, when a single such segment is a part of a set of returns, via \emph{Segments.Get}, 
 #' the entire \code{definition} type is \code{list}, rather than \code{data.frame}. Furthremore,
@@ -21,16 +23,12 @@
 #' \item \code{failed converting segment definition: failed converting container rule: datetime-within}
 #' }
 #' 
-#' This function will pass such cases through, untouched; this may change (i.e. raise an error)
-#' in the near future. 
+#' This function will pass such cases through, untouched.
 #' 
 #' The second case involves complex nesting patterns, where a nested container contains nested rules
 #' contains nested containers, and so forth. In the unlikely event it was necessary to create a segment
 #' in such a manner to begin with, you are on your own when it comes to parsing, and this function
 #' will error when it encounters these scenarios. 
-#' 
-#' When complete, however, this function will at least fail gracefully. It will also likely call
-#' \code{\link{split_segment_ret}}, so that it operates row-wise for a return. 
 #'
 #' @return 
 #' A list, currently taking one of two possible patterns, both of which apply to single
@@ -46,11 +44,8 @@
 #' structure (for now).
 #' 
 #' @note 
-#' This is not yet complete. There are several helper functions that are not exported, and this
-#' function may not be exported when final, and instead wrapped in a public-facing function with
-#' more consistent return structures and more error checking.
-#' 
-#' @export
+#' This function attempts to flatten a definition return, and should be used only
+#' on single-row data frames.
 #'
 #' @examples
 #' # TBD
@@ -60,7 +55,7 @@ flatten_nested_defn <- function(x, d = 0L, out = list()) {
   }
   
   if(!(.is_nested_valid(x)) || is.null(x)) {
-    msg_iters <- paste0("converged in ", d, " iterations")
+    msg_iters <- paste0("Converged in ", d, " iterations")
     message(msg_iters)
     
     out <- append(out, x)

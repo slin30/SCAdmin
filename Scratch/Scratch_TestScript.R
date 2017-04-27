@@ -63,8 +63,14 @@ CALLS$clinical <- Segments_Get(filters = list(name = "abb CK-P Browse Page Entry
 
 # Parsing definition ------------------------------------------------------
 
+# single segment split
+
+single_segment <- Segments_Get(fields = c("definition"))
+single_defn_parsed <- parse_segment_defn(single_segment, verbose = FALSE)
+
 # single-rows
 splitted <- lapply(CALLS, SCAdmin:::split_segment_ret)
+
 
 # list2env(splitted, envir = globalenv())
 # rm(list = ls(pattern = "split_.*"))
