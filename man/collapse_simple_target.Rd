@@ -33,6 +33,7 @@ This function is called by \code{\link{call.Get_base}} if that function's \emph{
 argument is \code{TRUE}.
 }
 \examples{
+\dontrun{
 simple_df <- data.frame(
   x = LETTERS[1:10],
   y = cbind(c(
@@ -50,4 +51,11 @@ data.frame(
   n_parts = vapply(simple_df$z, function(f)
     nchar(gsub("[^,]", "", f))+1L, integer(1))
 )
+}
+}
+\seealso{
+Other internal: \code{\link{call.Get_base}},
+  \code{\link{chk_shares}},
+  \code{\link{collapse_simple_listcol}},
+  \code{\link{split_segment_ret}}
 }

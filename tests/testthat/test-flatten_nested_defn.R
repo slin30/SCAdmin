@@ -1,8 +1,5 @@
 context("flatten_nested_defn")
 
-##Temp
-# library(SCAdmin)
-# library(testthat)
 
 # ref data ----------------------------------------------------------------
 
@@ -36,12 +33,12 @@ ref_outs <- lapply(
 live_outs <- lapply(test_dats, function(f) suppressMessages(flatten_nested_defn(f)))
 
 # still ToDo; two types of errors, one my problem, one the API
-test_errors <- lapply(
-  list(complex_nest = "TODO_segs_exceptions.txt", # combination of nesting patterns
-       defn_notpars = "segs_10_one_notOK.txt", # one not parsed by API combined with 10 OK
-       defn_refpars = "segs_10_allOK.txt"), # only the 10 OK, as a positive control
-  function(f) dget(paste0(testdat_dir, f))
-)
+# test_errors <- lapply(
+#   list(complex_nest = "TODO_segs_exceptions.txt", # combination of nesting patterns
+#        defn_notpars = "segs_10_one_notOK.txt", # one not parsed by API combined with 10 OK
+#        defn_refpars = "segs_10_allOK.txt"), # only the 10 OK, as a positive control
+#   function(f) dget(paste0(testdat_dir, f))
+# )
 
 
 

@@ -5,6 +5,7 @@
 #' @param x A data.frame
 #' @param targ A character vector of length 1 to denote the column in \emph{x} to operate on
 #' 
+#' @family internal
 #' 
 #' @details This wraps the internal function \code{collapse_simple_listcol} to handle more (and) typical
 #' inputs, with some additional constraints. \emph{targ} is set to a default of \code{NULL}
@@ -21,8 +22,8 @@
 #' 
 #' @return A unnested character vector; see \code{\link{collapse_simple_listcol}} for details.
 #' 
-#' @export
 #' @examples 
+#' \dontrun{
 #'simple_df <- data.frame(
 #'   x = LETTERS[1:10],
 #'   y = cbind(c(
@@ -40,6 +41,7 @@
 #'   n_parts = vapply(simple_df$z, function(f)
 #'     nchar(gsub("[^,]", "", f))+1L, integer(1))
 #' )
+#' }
 collapse_simple_target <- function(x, targ = NULL) {
   
   if(missing(targ) || is.null(targ)) {

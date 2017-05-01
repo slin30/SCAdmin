@@ -40,5 +40,6 @@ already coerced to \code{scalar}.
 \seealso{
 Other internal: \code{\link{call.Get_base}},
   \code{\link{collapse_simple_listcol}},
+  \code{\link{collapse_simple_target}},
   \code{\link{split_segment_ret}}
 }

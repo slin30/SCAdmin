@@ -1,8 +1,5 @@
 context("call.Get_base")
 
-# Temp
-library(testthat)
-library(SCAdmin)
 
 # filters -----------------------------------------------------------------
 

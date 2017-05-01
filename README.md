@@ -20,6 +20,90 @@ integration with the official [RSiteCatalyst package](https://github.com/randyzw
 This is for the good of all current and future end-users (and developers/maintainers).
 
 
+## Integration with RSiteCatalyst
+
+The following files are required from each directory:
+
+### /R
+
+1. `Segments_Get` [X] Exported
+    - Calls:
+        - `call.Get_base`
+        - `parse_segment_defn` [OPT]
+    - Depends:
+        - NONE
+1. `CalculatedMetrics_Get` [X] Exported
+    - Calls: 
+        - `call.Get_base`
+    - Depends
+        - NONE
+1. `call.Get_base`
+    - Calls:
+        - `collapse_simple_target`
+        - `parse_shares` [OPT]
+    - Depends:
+        - `Segments_Get`
+        - `CalculatedMetrics_Get`
+1. `collapse_simple_target`
+    - Calls:
+        - `collapse_simple_listcol`
+    - Depends: 
+        - `call.Get_base`
+1. `collapse_simple_listcol`
+    - Calls: 
+        - NONE
+    - Depends:
+        - `collapse_simple_target`
+1. `parse_shares` [X] Exported
+    - Calls:
+        - NONE
+    - Depends:
+        - `call.Get_base` [OPT]
+1. `parse_segment_defn`[X] Exported
+    - Calls:
+        - `flatten_nested_defn`
+        - `split_segment_return`
+    - Depends:
+        - `Segments_Get` [OPT]
+1. `flatten_nested_defn`
+    - Calls:
+        - NONE
+    - Depends:
+        - `parse_segment_defn`
+1. `split_segment_return`
+    - Calls:
+        - NONE
+    - Depends: 
+        - `parse_segment_defn`
+
+
+### /tests/testthat
+
+1. `test-call.Get_base`
+1. `test-collapse_simple`
+    - testdata: 
+        - `test_set_unnested.txt`
+1. `test-flatten_nested`
+    - testdata: 
+        - `nested_rule.txt`
+        - `nested_container.txt`
+        - `nested_stacked.txt`
+        - `refOut_nested_rule.txt`
+        - `refOut_nested_container.txt`
+        - `refOut_nested_stacked.txt`
+1. `test-parse_shares`
+
+### /tests/testdata
+
+1. `test_set_unnested.txt`
+1. `nested_rule.txt`
+1. `nested_container.txt`
+1. `nested_stacked.txt`
+1. `refOut_nested_rule.txt`
+1. `refOut_nested_container.txt`
+1. `refOut_nested_stacked.txt`
+
+
 **Quick Nav**  
 
 [How to install](#how-to-install)  

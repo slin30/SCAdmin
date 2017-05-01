@@ -1,8 +1,5 @@
 context("collapse_simple")
 
-# Temp
-library(SCAdmin)
-library(testthat)
 
 # ref data ----------------------------------------------------------------
 

@@ -18,5 +18,6 @@ Internal function - splits data.frame into rows, with checks
 \seealso{
 Other internal: \code{\link{call.Get_base}},
   \code{\link{chk_shares}},
-  \code{\link{collapse_simple_listcol}}
+  \code{\link{collapse_simple_listcol}},
+  \code{\link{collapse_simple_target}}
 }

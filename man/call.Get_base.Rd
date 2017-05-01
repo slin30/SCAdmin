@@ -99,5 +99,6 @@ my_own_simple.calcMetrics <- call.Get_base(func.name = "CalculatedMetrics.Get")
 \seealso{
 Other internal: \code{\link{chk_shares}},
   \code{\link{collapse_simple_listcol}},
+  \code{\link{collapse_simple_target}},
   \code{\link{split_segment_ret}}
 }
