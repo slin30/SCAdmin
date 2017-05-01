@@ -87,7 +87,8 @@ test_data <- c(
   "nested_stacked.txt", 
   "refOut_nested_rule.txt", 
   "refOut_nested_container.txt", 
-  "refOut_nested_stacked.txt"
+  "refOut_nested_stacked.txt", 
+  "simple_calcMetric.txt"
 )
 
 

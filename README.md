@@ -62,7 +62,7 @@ The following files are required from each directory:
 1. `parse_segment_defn`[X] Exported
     - Calls:
         - `flatten_nested_defn`
-        - `split_segment_return`
+        - `split_segment_ret`
     - Depends:
         - `Segments_Get` [OPT]
 1. `flatten_nested_defn`
@@ -70,7 +70,7 @@ The following files are required from each directory:
         - NONE
     - Depends:
         - `parse_segment_defn`
-1. `split_segment_return`
+1. `split_segment_ret`
     - Calls:
         - NONE
     - Depends: 
@@ -102,6 +102,7 @@ The following files are required from each directory:
 1. `refOut_nested_rule.txt`
 1. `refOut_nested_container.txt`
 1. `refOut_nested_stacked.txt`
+1. `simple_calcMetric.txt`
 
 
 **Quick Nav**  
