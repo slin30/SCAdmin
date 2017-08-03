@@ -56,7 +56,7 @@ Classifications.GetTemplate <- function(rsid_list = NULL, element = NULL,
   element <- unique(element[!is.na(element)])
   
   # all args together
-  argNms  <- as.character(names(formals(GetTemplate)))
+  argNms  <- as.character(names(formals(Classifications.GetTemplates)))
   argList <- lapply(argNms, function(f) get(f))
   names(argList) <- argNms
   
