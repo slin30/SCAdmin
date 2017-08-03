@@ -32,9 +32,9 @@
 #'
 #' @examples
 #' \dontrun{
-#' GetTemplate(c("my_suite_prod", "my_suite_dev"), element = "product")
+#' Classifications.GetTemplate(c("my_suite_prod", "my_suite_dev"), element = "product")
 #' }
-GetTemplate <- function(rsid_list = NULL, element = NULL, 
+Classifications.GetTemplate <- function(rsid_list = NULL, element = NULL, 
                         classification_names = NULL, encoding = "UTF-8")
 {
   
