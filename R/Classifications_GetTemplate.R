@@ -32,9 +32,9 @@
 #'
 #' @examples
 #' \dontrun{
-#' Classifications.GetTemplate(c("my_suite_prod", "my_suite_dev"), element = "product")
+#' Classifications_GetTemplate(c("my_suite_prod", "my_suite_dev"), element = "product")
 #' }
-Classifications.GetTemplate <- function(rsid_list = NULL, element = NULL, 
+Classifications_GetTemplate <- function(rsid_list = NULL, element = NULL, 
                         classification_names = NULL, encoding = "UTF-8")
 {
   
@@ -56,7 +56,7 @@ Classifications.GetTemplate <- function(rsid_list = NULL, element = NULL,
   element <- unique(element[!is.na(element)])
   
   # all args together
-  argNms  <- as.character(names(formals(Classifications.GetTemplate)))
+  argNms  <- as.character(names(formals(Classifications_GetTemplate)))
   argList <- lapply(argNms, function(f) get(f))
   names(argList) <- argNms
   
