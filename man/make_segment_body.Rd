@@ -13,7 +13,7 @@ make_segment_body(segment_meta, segment_container)
 \code{\link{make_segment_container}}}
 }
 \value{
-A nested named list, generally passed to \code{\link{Save_Segment}}
+A nested named list, generally passed to \code{\link{Segments_Save}}
 }
 \description{
 Create a segment body to pass to Save_Segment()

@@ -32,7 +32,7 @@
 #'
 #' @examples
 #' # Forthcoming
-Save_Segment <- function(x, ..., override_and_edit = FALSE) {
+Segments_Save <- function(x, ..., override_and_edit = FALSE) {
   # check that x has required names
   nms <- names(x)
   req_nms <- c("name", "reportSuiteID", "definition")

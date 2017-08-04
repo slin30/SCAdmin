@@ -12,7 +12,7 @@
 #' \code{\link{make_segment_container}}
 #'
 #' @return
-#' A nested named list, generally passed to \code{\link{Save_Segment}}
+#' A nested named list, generally passed to \code{\link{Segments_Save}}
 #' 
 #' @details 
 #' This builds up the final required structure, including nesting \emph{segment_container} under a value of

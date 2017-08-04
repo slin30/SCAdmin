@@ -2,10 +2,10 @@
 
 export(CalculatedMetrics_Get)
 export(Classifications_GetTemplate)
-export(Delete_Segment)
 export(SaveInternalURLFilters)
-export(Save_Segment)
+export(Segments_Delete)
 export(Segments_Get)
+export(Segments_Save)
 export(WriteTemplate)
 export(call.Get_Group)
 export(make_element_rules)
