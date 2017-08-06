@@ -5,6 +5,8 @@
 #' @importFrom RSiteCatalyst ApiRequest
 #' @importFrom jsonlite unbox toJSON
 #' 
+#' @family Classifications methods
+#' 
 #' @inheritSection call.Get_base Access Privileges
 #' 
 #' @param rsid_list (Required) A character vector of report suite IDs to get templates for.
@@ -22,7 +24,8 @@
 #' called \emph{template}. Additionally, the requested \code{element} is captured as an attribute called 
 #' \emph{classification_element}.
 #' 
-#' The \emph{template} field can be written out as a tab-separated file, or quickly viewed via \code{cat}.
+#' The \emph{template} field can be written out as a tab-separated file (see \code{\link{WriteTemplate}}), or
+#' quickly viewed via \code{cat}.
 #' 
 #' @details 
 #' This calls the \code{Classifications.GetTemplate} method. The method supports multiple report suites in a single

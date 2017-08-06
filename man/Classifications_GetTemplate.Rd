@@ -28,7 +28,8 @@ A \code{data.frame}, where \code{nrow(data.frame) == length(rsid_list)}, contain
 called \emph{template}. Additionally, the requested \code{element} is captured as an attribute called 
 \emph{classification_element}.
 
-The \emph{template} field can be written out as a tab-separated file, or quickly viewed via \code{cat}.
+The \emph{template} field can be written out as a tab-separated file (see \code{\link{WriteTemplate}}), or
+quickly viewed via \code{cat}.
 }
 \description{
 Get a template for a single element for one or more report suites
@@ -54,4 +55,8 @@ some or all functionality.
 \dontrun{
 Classifications_GetTemplate(c("my_suite_prod", "my_suite_dev"), element = "product")
 }
+}
+\seealso{
+Other Classifications methods: \code{\link{Classifications_GetElements}},
+  \code{\link{WriteTemplate}}
 }
