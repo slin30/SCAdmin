@@ -5,7 +5,8 @@
 \title{Get a SAINT import template}
 \usage{
 Classifications_GetTemplate(rsid_list = NULL, element = NULL,
-  classification_names = NULL, encoding = "UTF-8")
+  classification_names = NULL, encoding = "UTF-8",
+  preprocess_rsids = TRUE)
 }
 \arguments{
 \item{rsid_list}{(Required) A character vector of report suite IDs to get templates for.}
@@ -18,6 +19,9 @@ Will return all names by default.}
 
 \item{encoding}{(Optional) The text encoding to use for the output. Defaults to \code{UTF-8} and generally should
 be left as such. If provided, must be a character vector of length 1.}
+
+\item{preprocess_rsids}{(Optional) If \code{TRUE}, uniquify case-normalized \emph{rsid_list} values, removing
+\code{NA} and \code{""} as well.}
 }
 \value{
 A \code{data.frame}, where \code{nrow(data.frame) == length(rsid_list)}, containing metadata and a field 
@@ -33,9 +37,12 @@ Get a template for a single element for one or more report suites
 This calls the \code{Classifications.GetTemplate} method. The method supports multiple report suites in a single
 call, with the condition that the specified \emph{element} is available for classification for all requested 
 report suites. A single report suite where the element is invalid will raise an error.
+}
+\note{
+The API does not distinguish between valid and accessible (within your access credentials) report suites. Invalid
+(i.e. non-existant) and valid but inaccessible report suite IDs will raise the same server message:
 
-All values passed to \emph{rsid_list} are case-normalized and uniquified, with \code{NA} and \code{""} dropped, 
-if present.
+\preformatted{ERROR: Bad Request  -  Access denied for some selected report suites.}
 }
 \section{Access Privileges}{
  

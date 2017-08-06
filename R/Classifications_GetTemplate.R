@@ -14,6 +14,8 @@
 #' Will return all names by default. 
 #' @param encoding (Optional) The text encoding to use for the output. Defaults to \code{UTF-8} and generally should
 #' be left as such. If provided, must be a character vector of length 1.
+#' @param preprocess_rsids (Optional) If \code{TRUE}, uniquify case-normalized \emph{rsid_list} values, removing
+#' \code{NA} and \code{""} as well.
 #'
 #' @return
 #' A \code{data.frame}, where \code{nrow(data.frame) == length(rsid_list)}, containing metadata and a field 
@@ -22,14 +24,16 @@
 #' 
 #' The \emph{template} field can be written out as a tab-separated file, or quickly viewed via \code{cat}.
 #' 
-#' 
 #' @details 
 #' This calls the \code{Classifications.GetTemplate} method. The method supports multiple report suites in a single
 #' call, with the condition that the specified \emph{element} is available for classification for all requested 
 #' report suites. A single report suite where the element is invalid will raise an error.
 #' 
-#' All values passed to \emph{rsid_list} are case-normalized and uniquified, with \code{NA} and \code{""} dropped, 
-#' if present.
+#' @note 
+#' The API does not distinguish between valid and accessible (within your access credentials) report suites. Invalid
+#' (i.e. non-existant) and valid but inaccessible report suite IDs will raise the same server message:
+#' 
+#' \preformatted{ERROR: Bad Request  -  Access denied for some selected report suites.}
 #' 
 #' @export
 #'
@@ -38,7 +42,8 @@
 #' Classifications_GetTemplate(c("my_suite_prod", "my_suite_dev"), element = "product")
 #' }
 Classifications_GetTemplate <- function(rsid_list = NULL, element = NULL, 
-                        classification_names = NULL, encoding = "UTF-8")
+                        classification_names = NULL, encoding = "UTF-8", 
+                        preprocess_rsids = TRUE)
 {
   
   # check for input lengths (presence) of required inputs
@@ -52,12 +57,15 @@ Classifications_GetTemplate <- function(rsid_list = NULL, element = NULL,
     stop("One or more required inputs are not present")
   }
 
-  # process required params, since these must be present at this point
-  rsid_list <- c(rsid_list, recursive = TRUE)
-  rsid_list <- unique(tolower(rsid_list[!is.na(rsid_list)]))
-  rsid_list <- rsid_list[!rsid_list %in% c("")]
-  element   <- unique(element[!is.na(element)])
+  # maybe process rsids
+  if(preprocess_rsids){
+    rsid_list <- c(rsid_list, recursive = TRUE)
+    rsid_list <- unique(tolower(rsid_list[!is.na(rsid_list)]))
+    rsid_list <- rsid_list[!rsid_list %in% c("")]
+  }
   
+  # check elements
+  element   <- unique(element)
   if(length(unique(element)) > 1L || !is.character(element)) {
     stop("element must be a single unique value of type character")
   }
