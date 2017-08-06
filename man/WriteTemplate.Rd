@@ -26,7 +26,7 @@ This function will operate on a single input and, if provided, write the input t
 specified by \emph{outfile}. For writing out more than one template, call this with e.g. \code{Map} and 
 pass in lists of templates and (optionally) \emph{outfile}s-- of equal length.
 
-The expected typical input is a valid return from \code{\link{Classifications.GetTemplate}}, passed in
+The expected typical input is a valid return from \code{\link{Classifications_GetTemplate}}, passed in
 row-wise if >1 row. Alternatively, call this function with a call to \code{Map} on the \emph{template}
 field. See examples
 }
@@ -40,7 +40,8 @@ WriteTemplate(single_template)
 
 # On a multi-row return
 multi_template <- GetTemplate(c("my_rsid_1", "my_rsid_2"), "my_element")
-my_files <- c("./rsid_1.tab", "./rsid_2") # file extension will automatically be stripped and output as '.tab'
+# file extension will automatically be stripped and output as '.tab'
+my_files <- c("./rsid_1.tab", "./rsid_2") 
 Map(WriteTemplate, multi_template[["template"]], my_files)
 }
 }

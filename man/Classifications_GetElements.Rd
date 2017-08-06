@@ -15,7 +15,8 @@ Classifications_GetElements(rsid_list, preprocess_rsids = TRUE)
 \value{
 A nested \code{data.frame}, where \code{nrow(data.frame) == length(rsid_list)}, containing report suite id, name,
 and a nested field, \emph{compatibility_elements}. The latter contains two fields named \code{id,name} denoting 
-the classification-enabled element \code{id} and element \code{name}, respectively.
+the classification-enabled element \code{id} and element \code{name}, respectively. See e.g. \code{\link[tidyr]{unnest}}
+to flatten this field or \code{flatten_nested_df} in \code{wzAAHelper}.
 }
 \description{
 Get the current classification-compatible elements for one or more report suites

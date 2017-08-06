@@ -14,7 +14,8 @@
 #' @return
 #' A nested \code{data.frame}, where \code{nrow(data.frame) == length(rsid_list)}, containing report suite id, name,
 #' and a nested field, \emph{compatibility_elements}. The latter contains two fields named \code{id,name} denoting 
-#' the classification-enabled element \code{id} and element \code{name}, respectively. 
+#' the classification-enabled element \code{id} and element \code{name}, respectively. See e.g. \code{\link[tidyr]{unnest}}
+#' to flatten this field or \code{flatten_nested_df} in \code{wzAAHelper}.
 #'  
 #' @details 
 #' This function calls the Adobe Analytics \code{Classifications.GetCompatibilityElements} method. The method supports
