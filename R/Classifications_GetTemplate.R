@@ -28,6 +28,9 @@
 #' call, with the condition that the specified \emph{element} is available for classification for all requested 
 #' report suites. A single report suite where the element is invalid will raise an error.
 #' 
+#' All values passed to \emph{rsid_list} are case-normalized and uniquified, with \code{NA} and \code{""} dropped, 
+#' if present.
+#' 
 #' @export
 #'
 #' @examples
@@ -48,24 +51,31 @@ Classifications_GetTemplate <- function(rsid_list = NULL, element = NULL,
   if(any(check_lens == 0)) {
     stop("One or more required inputs are not present")
   }
+
+  # process required params, since these must be present at this point
+  rsid_list <- c(rsid_list, recursive = TRUE)
+  rsid_list <- unique(tolower(rsid_list[!is.na(rsid_list)]))
+  rsid_list <- rsid_list[!rsid_list %in% c("")]
+  element   <- unique(element[!is.na(element)])
   
   if(length(unique(element)) > 1L || !is.character(element)) {
     stop("element must be a single unique value of type character")
   }
-  # This allows passing in a vector of identical elements of length rsid_list
-  element <- unique(element[!is.na(element)])
   
-  # all args together
-  argNms  <- as.character(names(formals(Classifications_GetTemplate)))
-  argList <- lapply(argNms, function(f) get(f))
-  names(argList) <- argNms
+  # all possible named args
+  argList <- list(
+    rsid_list = rsid_list, 
+    element = element, 
+    classification_names = classification_names, 
+    encoding = encoding
+  )
   
   out_args <- Filter(function(f) !is.null(f), argList)
   
   # denote the data types as scalar or not
   to_scalar <- c("element", "encoding")
   args_scalar <- lapply(out_args[c(to_scalar)], function(f) unbox(f))
-  args_array  <- out_args[c(setdiff(argNms, to_scalar))]
+  args_array  <- out_args[c(setdiff(names(argList), to_scalar))]
   
   # output the body
   body <- Filter(function(f) !is.null(f), c(args_scalar, args_array))
