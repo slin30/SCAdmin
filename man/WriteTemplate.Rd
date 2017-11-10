@@ -46,6 +46,10 @@ Map(WriteTemplate, multi_template[["template"]], my_files)
 }
 }
 \seealso{
-Other Classifications methods: \code{\link{Classifications_GetElements}},
+Other Classifications methods: \code{\link{CheckExportJobStatus}},
+  \code{\link{Classifications_CreateExport}},
+  \code{\link{Classifications_GetElements}},
+  \code{\link{Classifications_GetFilters}},
+  \code{\link{Classifications_GetStatus}},
   \code{\link{Classifications_GetTemplate}}
 }

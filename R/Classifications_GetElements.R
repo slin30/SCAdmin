@@ -3,9 +3,10 @@
 #' Get the current classification-compatible elements for one or more report suites
 #'
 #' @importFrom RSiteCatalyst ApiRequest
-#' @importFrom jsonlite toJSON
+#' @importFrom jsonlite toJSON unbox
 #' 
 #' @family Classifications methods
+#' @inheritSection call.Get_base Access Privileges
 #'
 #' @param rsid_list (Required) A character vector of report suite IDs to get compatibility elements for.
 #' @param preprocess_rsids (Optional) If \code{TRUE}, uniquify case-normalized \emph{rsid_list} values, removing

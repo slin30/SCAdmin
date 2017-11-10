@@ -36,12 +36,22 @@ one classification-enabled element will raise the same server message:
 
 \preformatted{ERROR: Bad Request  -  Access denied for the selected report suite:}
 }
+\section{Access Privileges}{
+ 
+This function calls an Adobe Analytics method that requires administrative/elevated privileges for
+some or all functionality.
+}
+
 \examples{
 \dontrun{
 Classifications_GetElements(c("my_report_suite_1", "my_report_suite_2"))
 }
 }
 \seealso{
-Other Classifications methods: \code{\link{Classifications_GetTemplate}},
+Other Classifications methods: \code{\link{CheckExportJobStatus}},
+  \code{\link{Classifications_CreateExport}},
+  \code{\link{Classifications_GetFilters}},
+  \code{\link{Classifications_GetStatus}},
+  \code{\link{Classifications_GetTemplate}},
   \code{\link{WriteTemplate}}
 }
