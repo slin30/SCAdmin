@@ -4,29 +4,50 @@
 #'
 #' @family Classifications methods
 #' 
-#' @param id (required)
-#' @param iters (optional)
-#' @param max_iters (optional)
-#' @param iter.wait (optional)
+#' @param id_or_ret (required) An integer job_id of length 1, or the return from a 
+#'        call to Classifications.CreateExport
+#' @param max_iters (optional) Total number of iterations to call before returning the 
+#'        current status. Defaults to \code{10L}
+#' @param iter.wait (optional) Number of seconds to wait between each successive attempt.
+#'        Defaults to \code{10L}
+#' @param iters Internal iteration accumulator
 #'
+#' @details 
+#' This is a recursive version of \code{\link{Classifications_GetStatus}}, and will
+#' continue to check the status of a job export request until the job is ready, or the
+#' number of iterations reaches \code{max_iters}, whichever happens first. 
+#' 
+#' @note 
+#' This function does not handle zero-page returns that are technically
+#' complete, but invalid. This will be addresed in the near future.
+#' 
 #' @return
-#' See \code{\link{Classifications_GetStatus}}
+#' A message denoting the current iteration and processing stautus. 
+#' See \code{\link{Classifications_GetStatus}} for the return upon a 
+#' non-error termination.
+#' 
 #' @export
 #'
 #' @examples
-#' # TBD
-CheckExportJobStatus <- function(id, iters = 0L, max_iters = 10L, iter.wait = 10) {
+#' # Same as \code{\link{Classifications_GetStatus}}, 
+#' #  except for the function called.
+CheckExportJobStatus <- function(id_or_ret, max_iters = 10L, iter.wait = 10, 
+                                 iters = 0L) {
   
-  if(iters > max_iters) {
-    message("Max iterations (",max_iters, ") exceeded.", 
-            "Returning input id")
-    return(id)
+  if(!is.integer(max_iters) || max_iters < 1L) {
+    stop("max_iters must be an integer greater than zero")
   }
   
-  status_ret <- Classifications_GetStatus(id)
+  if(iters >= max_iters) {
+    message("Max iterations (",max_iters, ") reached ", 
+            "Returning current status return")
+    return(Classifications_GetStatus(id_or_ret))
+  }
+  
+  status_ret <- Classifications_GetStatus(id_or_ret)
   check <- .check_status_ret(status_ret)
   if(all(unlist(check))) {
-    message("Export job_id ", id, " completed in ", 
+    message("Export job completed in ", 
             iters, " iteration(s)")
     return(status_ret)
   } 
@@ -48,7 +69,11 @@ CheckExportJobStatus <- function(id, iters = 0L, max_iters = 10L, iter.wait = 10
   
   message(message_print)
   Sys.sleep(iter.wait)
-  CheckExportJobStatus(id = id, iters = iters + 1L, max_iters = max_iters, iter.wait = iter.wait)
+  CheckExportJobStatus(id_or_ret = id_or_ret, 
+                       iters = iters + 1L, 
+                       max_iters = max_iters, 
+                       iter.wait = iter.wait
+  )
   
 }
 
@@ -108,7 +133,6 @@ NULL
   fileid_status <- as.list(
     x[x[["type"]] == "file_id", c("status", "viewable_pages")]
   )
-  
   
   report_done <- fileid_status[["status"]] == req_fileid_status
   pages_ready <- fileid_status[["viewable_pages"]] > 0L

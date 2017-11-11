@@ -4,25 +4,41 @@
 \alias{CheckExportJobStatus}
 \title{Custom recursive status checker for Classifications export job requests}
 \usage{
-CheckExportJobStatus(id, iters = 0L, max_iters = 10L, iter.wait = 10)
+CheckExportJobStatus(id_or_ret, max_iters = 10L, iter.wait = 10,
+  iters = 0L)
 }
 \arguments{
-\item{id}{(required)}
+\item{id_or_ret}{(required) An integer job_id of length 1, or the return from a 
+call to Classifications.CreateExport}
 
-\item{iters}{(optional)}
+\item{max_iters}{(optional) Total number of iterations to call before returning the 
+current status. Defaults to \code{10L}}
 
-\item{max_iters}{(optional)}
+\item{iter.wait}{(optional) Number of seconds to wait between each successive attempt.
+Defaults to \code{10L}}
 
-\item{iter.wait}{(optional)}
+\item{iters}{Internal iteration accumulator}
 }
 \value{
-See \code{\link{Classifications_GetStatus}}
+A message denoting the current iteration and processing stautus. 
+See \code{\link{Classifications_GetStatus}} for the return upon a 
+non-error termination.
 }
 \description{
 Periodically check the status of a job_id from a call to Classifications.CreateExport
 }
+\details{
+This is a recursive version of \code{\link{Classifications_GetStatus}}, and will
+continue to check the status of a job export request until the job is ready, or the
+number of iterations reaches \code{max_iters}, whichever happens first.
+}
+\note{
+This function does not handle zero-page returns that are technically
+complete, but invalid. This will be addresed in the near future.
+}
 \examples{
-# TBD
+# Same as \\code{\\link{Classifications_GetStatus}}, 
+#  except for the function called.
 }
 \seealso{
 Other Classifications methods: \code{\link{Classifications_CreateExport}},
