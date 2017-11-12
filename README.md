@@ -19,6 +19,7 @@ Also note that the Segments methods, or at least the `GET` Segments methods, are
 integration with the official [RSiteCatalyst package](https://github.com/randyzwitch/RSiteCatalyst).
 This is for the good of all current and future end-users (and developers/maintainers).
 
+Note that 1.4 Classifications methods are in active development.
 
 ## Integration with RSiteCatalyst
 
