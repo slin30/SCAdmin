@@ -53,6 +53,8 @@ A \code{list} of length 1, containing the \emph{job_id} \code{integer}.
 Instantiate an export request to pull classified values from one or more report suites
 }
 \details{
+\href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-createexport}{Adobe 1.4 documentation}:  
+
 This function is the first step when you wish to download classified data, 
 provided you know the element (id) and one or more valid report suites. The
 functionality replicates the browser export option in the UI. 
@@ -90,7 +92,9 @@ Per the documentation, \emph{campaign_filter_end_date} can take one of the follo
 \note{
 Though not specified in the documentation, it appears that the string format for 
 date filters is expected to be a three-letter month abbreviation followed by the four-digit year. 
-In other words, \emph{Jun 2017} as opposed to \emph{June 2017}.
+In other words, \emph{Jun 2017} as opposed to \emph{June 2017}. Per Adobe 1.4 documentation, 
+other allowable formats include any parsable by \code{php:date()}. 
+This includes e.g. \code{YYYY-MM-DD}.
 }
 \section{Access Privileges}{
  

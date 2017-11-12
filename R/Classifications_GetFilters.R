@@ -13,6 +13,8 @@
 #' @param rsid_list (required) One or more report suites. 
 #'
 #' @details 
+#' \href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-getfilters-1}{Adobe 1.4 documentation}:  
+#' 
 #' This is a useful ancillary function to obtain filter parameters for use with 
 #' e.g. \code{\link{Classifications_CreateExport}}. 
 #' 

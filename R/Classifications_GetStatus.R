@@ -14,6 +14,8 @@
 #'
 #'
 #' @details 
+#' \href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-getstatus-1}{Adobe 1.4 documentation}:  
+#' 
 #' This function is required to obtain the \code{file_id} and number of pages, for a 
 #' return from Classifications.CreateExport. The expected input can be either an 
 #' \code{integer} id of length 1, or the direct return from 

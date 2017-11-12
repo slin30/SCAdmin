@@ -22,9 +22,11 @@ to flatten this field or \code{flatten_nested_df} in \code{wzAAHelper}.
 Get the current classification-compatible elements for one or more report suites
 }
 \details{
-This function calls the Adobe Analytics \code{Classifications.GetCompatibilityElements} method. The method supports
-multiple report suites in a single call, with the condition that the every \emph{rsid_list} value has at least one
-classification-enabled element. A single report suite where this is not the case will raise an error.
+\href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-getcompatibilityelements}{Adobe 1.4 documentation}:  
+
+This method supports multiple report suites in a single call, with the condition that
+ every \emph{rsid_list} value has at least one classification-enabled element. 
+ A single report suite where this is not the case will raise an error.
 
 This may be a useful function to call prior to e.g. \code{\link{Classifications_GetTemplate}}, to get valid
 \emph{element} values.

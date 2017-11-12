@@ -20,9 +20,9 @@ Defaults to \code{10L}}
 \item{iters}{Internal iteration accumulator}
 }
 \value{
-A message denoting the current iteration and processing stautus. 
 See \code{\link{Classifications_GetStatus}} for the return upon a 
-non-error termination.
+non-error termination. Furthermore, a message denoting the current status
+for each attempt.
 }
 \description{
 Periodically check the status of a job_id from a call to Classifications.CreateExport
@@ -33,8 +33,9 @@ continue to check the status of a job export request until the job is ready, or 
 number of iterations reaches \code{max_iters}, whichever happens first.
 }
 \note{
-This function does not handle zero-page returns that are technically
-complete, but invalid. This will be addresed in the near future.
+Currently, this function does not distinguish between zero-page returns that are technically
+complete, but invalid, and valid requests that are still processing. 
+This may be addresed in the near future.
 }
 \examples{
 # Same as \\code{\\link{Classifications_GetStatus}}, 

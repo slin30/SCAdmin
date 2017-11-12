@@ -18,13 +18,14 @@
 #' number of iterations reaches \code{max_iters}, whichever happens first. 
 #' 
 #' @note 
-#' This function does not handle zero-page returns that are technically
-#' complete, but invalid. This will be addresed in the near future.
+#' Currently, this function does not distinguish between zero-page returns that are technically
+#' complete, but invalid, and valid requests that are still processing. 
+#' This may be addresed in the near future.
 #' 
 #' @return
-#' A message denoting the current iteration and processing stautus. 
 #' See \code{\link{Classifications_GetStatus}} for the return upon a 
-#' non-error termination.
+#' non-error termination. Furthermore, a message denoting the current status
+#' for each attempt. 
 #' 
 #' @export
 #'

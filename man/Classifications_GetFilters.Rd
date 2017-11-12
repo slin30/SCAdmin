@@ -19,6 +19,8 @@ This holds even when more than one report suite is requested.
 Figure out valid date and classification column filters for an element and report suite
 }
 \details{
+\href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-getfilters-1}{Adobe 1.4 documentation}:  
+
 This is a useful ancillary function to obtain filter parameters for use with 
 e.g. \code{\link{Classifications_CreateExport}}.
 }
