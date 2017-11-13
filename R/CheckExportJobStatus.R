@@ -1,4 +1,4 @@
-#' Custom recursive status checker for Classifications export job requests
+#' Custom status checker for Classifications export job requests
 #' 
 #' Periodically check the status of a job_id from a call to Classifications.CreateExport
 #'
@@ -13,7 +13,7 @@
 #' @param iters Internal iteration accumulator
 #'
 #' @details 
-#' This is a recursive version of \code{\link{Classifications_GetStatus}}, and will
+#' This builds upon \code{\link{Classifications_GetStatus}}, and will
 #' continue to check the status of a job export request until the job is ready, or the
 #' number of iterations reaches \code{max_iters}, whichever happens first. 
 #' 

@@ -30,16 +30,18 @@
 #' \item If length == 1, the requested page
 #' }
 #' 
-#' Furthermore, if the (any) value of \emph{page}, the maximum value of the provided \code{page} is automatically
-#' set to the return page value specified by \code{status_return}.
+#' Furthermore, if the (any) value of \emph{page} is greater than the maximum value of the value specified within the,
+#' \code{status_return}, the latter is used as the upper limit automatically, with a message.
+#' 
+#' In all cases, \code{page} values are de-duplicated and requested in the order provided, i.e. if the total number of 
+#' pages is 5, and you request pages as \code{c(2,1,5)}, the returned page order will be \code{2,1,5}. 
+#' 
+#' \code{NA} values are not allowed for page, and will raise an error, even if this occurs during coercion (if needed) 
+#' via \code{as.integer}.
 #' 
 #' @note 
 #' The returned value is nested one additional level to ensure a consistent structure for single or multi-page
 #' returns. 
-#' 
-#' Currently, there is no way to specify a single specific page. This will be addressed in the near future to 
-#' make the behavior more flexible and consistent with user expectations/
-#' 
 #' 
 #' @return
 #' A named, nested \code{list} with as many elements as the number of pages

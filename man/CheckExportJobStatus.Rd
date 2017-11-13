@@ -2,7 +2,7 @@
 % Please edit documentation in R/CheckExportJobStatus.R
 \name{CheckExportJobStatus}
 \alias{CheckExportJobStatus}
-\title{Custom recursive status checker for Classifications export job requests}
+\title{Custom status checker for Classifications export job requests}
 \usage{
 CheckExportJobStatus(id_or_ret, max_iters = 10L, iter.wait = 10,
   iters = 0L)
@@ -28,7 +28,7 @@ for each attempt.
 Periodically check the status of a job_id from a call to Classifications.CreateExport
 }
 \details{
-This is a recursive version of \code{\link{Classifications_GetStatus}}, and will
+This builds upon \code{\link{Classifications_GetStatus}}, and will
 continue to check the status of a job export request until the job is ready, or the
 number of iterations reaches \code{max_iters}, whichever happens first.
 }
