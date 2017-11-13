@@ -64,7 +64,11 @@ via \code{as.integer}.
 }
 \note{
 The returned value is nested one additional level to ensure a consistent structure for single or multi-page
-returns.
+returns. 
+
+Passing in returns that contain more than one \emph{file_id} will fail. If you encounter such cases, try
+splitting your return using \code{\link{split_multi_jobfile}} and then passing in the splitted \code{data.frame}s
+via \code{lapply} or, if necessary, \code{Map}.
 }
 \section{Access Privileges}{
  
@@ -97,5 +101,6 @@ Other Classifications methods: \code{\link{CheckExportJobStatus}},
   \code{\link{Classifications_GetFilters}},
   \code{\link{Classifications_GetStatus}},
   \code{\link{Classifications_GetTemplate}},
-  \code{\link{WriteTemplate}}
+  \code{\link{WriteTemplate}},
+  \code{\link{split_multi_jobfile}}
 }

@@ -34,8 +34,11 @@ number of iterations reaches \code{max_iters}, whichever happens first.
 }
 \note{
 Currently, this function does not distinguish between zero-page returns that are technically
-complete, but invalid, and valid requests that are still processing. 
-This may be addresed in the near future.
+complete, but invalid, and valid requests that are still processing. This means that it is 
+possible to have zero-page returns, so long as the \code{file_id} status is \code{Ready}. 
+
+This scenario is most likely when you request multiple report suites, and one or more report
+suites is incompatible with the supplied export request parameters, or simply has no data.
 }
 \examples{
 # Same as \\code{\\link{Classifications_GetStatus}}, 
@@ -48,5 +51,6 @@ Other Classifications methods: \code{\link{Classifications_CreateExport}},
   \code{\link{Classifications_GetFilters}},
   \code{\link{Classifications_GetStatus}},
   \code{\link{Classifications_GetTemplate}},
-  \code{\link{WriteTemplate}}
+  \code{\link{WriteTemplate}},
+  \code{\link{split_multi_jobfile}}
 }

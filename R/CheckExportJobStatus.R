@@ -19,8 +19,11 @@
 #' 
 #' @note 
 #' Currently, this function does not distinguish between zero-page returns that are technically
-#' complete, but invalid, and valid requests that are still processing. 
-#' This may be addresed in the near future.
+#' complete, but invalid, and valid requests that are still processing. This means that it is 
+#' possible to have zero-page returns, so long as the \code{file_id} status is \code{Ready}. 
+#' 
+#' This scenario is most likely when you request multiple report suites, and one or more report
+#' suites is incompatible with the supplied export request parameters, or simply has no data.
 #' 
 #' @return
 #' See \code{\link{Classifications_GetStatus}} for the return upon a 
@@ -47,7 +50,7 @@ CheckExportJobStatus <- function(id_or_ret, max_iters = 10L, iter.wait = 10,
   
   status_ret <- Classifications_GetStatus(id_or_ret)
   check <- .check_status_ret(status_ret)
-  if(all(unlist(check))) {
+  if(all(unlist(check$report_done))) {
     message("Export job completed in ", 
             iters, " iteration(s)")
     return(status_ret)

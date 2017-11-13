@@ -51,5 +51,6 @@ Other Classifications methods: \code{\link{CheckExportJobStatus}},
   \code{\link{Classifications_GetExport}},
   \code{\link{Classifications_GetStatus}},
   \code{\link{Classifications_GetTemplate}},
-  \code{\link{WriteTemplate}}
+  \code{\link{WriteTemplate}},
+  \code{\link{split_multi_jobfile}}
 }

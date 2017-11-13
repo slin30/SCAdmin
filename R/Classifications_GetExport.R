@@ -43,6 +43,10 @@
 #' The returned value is nested one additional level to ensure a consistent structure for single or multi-page
 #' returns. 
 #' 
+#' Passing in returns that contain more than one \emph{file_id} will fail. If you encounter such cases, try
+#' splitting your return using \code{\link{split_multi_jobfile}} and then passing in the splitted \code{data.frame}s
+#' via \code{lapply} or, if necessary, \code{Map}.
+#' 
 #' @return
 #' A named, nested \code{list} with as many elements as the number of pages
 #' returned, for each \emph{file_id}. The (Each) first-level element will
@@ -88,6 +92,12 @@ Classifications_GetExport <- function(status_return = NULL, all_pages = TRUE, pa
     stop("Only vectors of length 1 allowed as arguments to file_id and page")
   }
   
+  # early return on zero-length page
+  if(arglist$page == 0L) {
+    message("In job ", arglist$job_id, ": zero-length page; returning NULL")
+    return(NULL)
+  }
+  
   # page value validation
   if(!is.null(page) && !all_pages) {
     
@@ -96,8 +106,8 @@ Classifications_GetExport <- function(status_return = NULL, all_pages = TRUE, pa
     if(anyNA(page)) {
       stop("page must be integer or all non-NA when coerced to integer")
     }
-    if(min(page) < 1L) {
-      stop("min 'page' must be greater than or equal to 1L")
+    if(min(page) < 0L) {
+      stop("min 'page' must be greater than or equal to 0L")
     }
     if(max(page) > arglist$page) {
       message("'page' max > returned page; using returned value of ", 
@@ -112,8 +122,9 @@ Classifications_GetExport <- function(status_return = NULL, all_pages = TRUE, pa
     arglist$page <- 1L
   }
   # all_pages of TRUE (default) overrides pages, though
+  # not sure if we should even request on page == 0?
   if(all_pages) {
-    arglist$page <- seq_len(arglist$page)
+      arglist$page <- seq_len(arglist$page)
   }
   
   # note that order of calls will be as stated in page arg if provided
@@ -146,7 +157,7 @@ Classifications_GetExport <- function(status_return = NULL, all_pages = TRUE, pa
 NULL
 .parse_job_return <- function(x) {
   
-  if(! all(unlist(.check_status_ret(x)))) {
+  if(! all(unlist(.check_status_ret(x)[["report_done"]]))) {
     stop("Input inconsistent with a completed export")
   }
   

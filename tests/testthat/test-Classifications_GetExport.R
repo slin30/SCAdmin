@@ -14,7 +14,7 @@ df_pos <- data.frame(
 df_neg <- data.frame(
   id = c(1L, 2L),
   type = c("job_id", "file_id"),
-  viewable_pages = c(0L, 0L),
+  viewable_pages = c(0L, -1L),
   status = c("Completed", "Ready"),
   stringsAsFactors = FALSE
 )
@@ -22,7 +22,7 @@ df_neg <- data.frame(
 df_neg_jobid <- data.frame(
   id = c(1L, 2L),
   type = c("job_id", "file_id"),
-  viewable_pages = c(1L, 0L),
+  viewable_pages = c(1L, -1L),
   status = c("Completed", "Ready"),
   stringsAsFactors = FALSE
 )
@@ -30,10 +30,10 @@ df_neg_jobid <- data.frame(
 
 # tests -------------------------------------------------------------------
 
-test_that("a zero-value viewable pages for type file_id returns an error", {
+test_that("a negative-value viewable pages for type file_id returns an error", {
   expect_error(Classifications_GetExport(df_neg, dontrun = TRUE))
 })
-test_that("a zero-value viewable pages for type file_id returns an error, 
+test_that("a negative-value viewable pages for type file_id returns an error, 
           even if job_id pages is > 0", {
   expect_error(Classifications_GetExport(df_neg_jobid, dontrun = TRUE))
 })
