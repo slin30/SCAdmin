@@ -10,7 +10,8 @@
 #' 
 #' @param status_return (required) The return from a complete export job
 #' @param all_pages (optional) Should all available pages be returned? Defaults to \code{TRUE}
-#' @param page (optional) If provided, will only return this specific page. Ignored if \code{all_pages} is \code{TRUE}
+#' @param page (optional) If provided, will only return up to this page (inclusive).
+#'        Ignored if \code{all_pages} is \code{TRUE}
 #'
 #' @details 
 #' \href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-getexport}{Adobe 1.4 documentation}
@@ -22,6 +23,9 @@
 #' @note 
 #' The returned value is nested one additional value to ensure a consistent structure for single or multi-page
 #' returns. 
+#' 
+#' Currently, there is no way to specify a single specific page. This will be addressed in the near future to 
+#' make the behavior more flexible and consistent with user expectations/
 #' 
 #' 
 #' @return
