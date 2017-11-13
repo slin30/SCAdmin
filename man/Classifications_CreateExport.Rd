@@ -142,6 +142,7 @@ Classifications_CreateExport(
 \seealso{
 Other Classifications methods: \code{\link{CheckExportJobStatus}},
   \code{\link{Classifications_GetElements}},
+  \code{\link{Classifications_GetExport}},
   \code{\link{Classifications_GetFilters}},
   \code{\link{Classifications_GetStatus}},
   \code{\link{Classifications_GetTemplate}},

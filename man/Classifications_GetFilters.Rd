@@ -48,6 +48,7 @@ Classifications_GetFilters("evar16", "my_rsid")
 Other Classifications methods: \code{\link{CheckExportJobStatus}},
   \code{\link{Classifications_CreateExport}},
   \code{\link{Classifications_GetElements}},
+  \code{\link{Classifications_GetExport}},
   \code{\link{Classifications_GetStatus}},
   \code{\link{Classifications_GetTemplate}},
   \code{\link{WriteTemplate}}

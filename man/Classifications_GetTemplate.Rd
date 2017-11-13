@@ -62,6 +62,7 @@ Classifications_GetTemplate(c("my_suite_prod", "my_suite_dev"), element = "produ
 Other Classifications methods: \code{\link{CheckExportJobStatus}},
   \code{\link{Classifications_CreateExport}},
   \code{\link{Classifications_GetElements}},
+  \code{\link{Classifications_GetExport}},
   \code{\link{Classifications_GetFilters}},
   \code{\link{Classifications_GetStatus}},
   \code{\link{WriteTemplate}}

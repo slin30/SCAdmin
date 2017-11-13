@@ -67,6 +67,7 @@ Classifications_GetStatus(my_export_request)
 Other Classifications methods: \code{\link{CheckExportJobStatus}},
   \code{\link{Classifications_CreateExport}},
   \code{\link{Classifications_GetElements}},
+  \code{\link{Classifications_GetExport}},
   \code{\link{Classifications_GetFilters}},
   \code{\link{Classifications_GetTemplate}},
   \code{\link{WriteTemplate}}

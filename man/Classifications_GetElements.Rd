@@ -52,6 +52,7 @@ Classifications_GetElements(c("my_report_suite_1", "my_report_suite_2"))
 \seealso{
 Other Classifications methods: \code{\link{CheckExportJobStatus}},
   \code{\link{Classifications_CreateExport}},
+  \code{\link{Classifications_GetExport}},
   \code{\link{Classifications_GetFilters}},
   \code{\link{Classifications_GetStatus}},
   \code{\link{Classifications_GetTemplate}},
