@@ -5,14 +5,18 @@
 \title{Get one or all pages from a complete export job}
 \usage{
 Classifications_GetExport(status_return = NULL, all_pages = TRUE,
-  page = NULL)
+  page = NULL, dontrun = FALSE)
 }
 \arguments{
 \item{status_return}{(required) The return from a complete export job}
 
 \item{all_pages}{(optional) Should all available pages be returned? Defaults to \code{TRUE}}
 
-\item{page}{(optional) If provided, will only return this specific page. Ignored if \code{all_pages} is \code{TRUE}}
+\item{page}{(optional) If provided, an integer vector denoting either a specific page
+or a set of pages. Ignored if \code{all_pages} is \code{TRUE}}
+
+\item{dontrun}{(optional) Mainly for testing purposes; only return the call body (bodies) -- 
+do not make any requests to API endpoint.}
 }
 \value{
 A named, nested \code{list} with as many elements as the number of pages
@@ -38,12 +42,26 @@ Get one or all pages from completed classification job export
 \href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-getexport}{Adobe 1.4 documentation}
 
 The extends the basic functionality of the baseline method by allowing all possible \code{file_id} pages to be 
-returned (default). Set the value of \emph{all_pages} to \code{FALSE} to reproduce the behavior of the 
-default method.
+returned (default). Set the value of \emph{all_pages} to \code{FALSE} and leave the \emph{page} 
+argument as \code{NULL} to reproduce the behavior of the default method (i.e. pull only the first page). 
+
+If \code{all_pages=FALSE} AND a page value is supplied, the behavior of \code{page} is as follows:
+
+\itemize{
+\item If \code{<=0}, an error
+\item If length > 1, all requested pages
+\item If length == 1, the requested page
+}
+
+Furthermore, if the (any) value of \emph{page}, the maximum value of the provided \code{page} is automatically
+set to the return page value specified by \code{status_return}.
 }
 \note{
-The returned value is nested one additional value to ensure a consistent structure for single or multi-page
-returns.
+The returned value is nested one additional level to ensure a consistent structure for single or multi-page
+returns. 
+
+Currently, there is no way to specify a single specific page. This will be addressed in the near future to 
+make the behavior more flexible and consistent with user expectations/
 }
 \section{Access Privileges}{
  
@@ -52,7 +70,22 @@ some or all functionality.
 }
 
 \examples{
-# TBD
+\dontrun{
+# Create a dummy complete status_return
+## Note that we have a max page length of 5
+dummy_return <- data.frame(
+ id = c(1L, 2L),
+ type = c("job_id", "file_id"),
+ viewable_pages = c(0L, 5L),
+ status = c("Completed", "Ready"),
+ stringsAsFactors = FALSE
+)
+# don't run live-- just view the calls that will be generated
+Classifications_GetExport(dummy_return, dontrun = TRUE) # basic
+Classifications_GetExport(dummy_return, dontrun = FALSE, page = 3) # single page
+Classifications_GetExport(dummy_return, dontrun = FALSE, page = c(1,3,5)) # multiple pages
+Classifications_GetExport(dummy_return, dontrun = FALSE, page = 1:10) # truncates to max of 5
+}
 }
 \seealso{
 Other Classifications methods: \code{\link{CheckExportJobStatus}},
