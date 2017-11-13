@@ -30,7 +30,7 @@ returns during initial processing stages.
 Get the status of a submitted request to Classifications_CreateExport
 }
 \details{
-\href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-getstatus-1}{Adobe 1.4 documentation}:  
+\href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-getstatus-1}{Adobe 1.4 documentation}    
 
 This function is required to obtain the \code{file_id} and number of pages, for a 
 return from Classifications.CreateExport. The expected input can be either an 

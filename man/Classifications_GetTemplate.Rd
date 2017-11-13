@@ -35,7 +35,7 @@ quickly viewed via \code{cat}.
 Get a template for a single element for one or more report suites
 }
 \details{
-\href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-gettemplate-3}{Adobe 1.4 documentation}:  
+\href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-gettemplate-3}{Adobe 1.4 documentation}  
 
 This method supports multiple report suites in a single call, with the condition that the 
 specified \emph{element} is available for classification for all requested 

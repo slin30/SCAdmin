@@ -53,7 +53,7 @@ A \code{list} of length 1, containing the \emph{job_id} \code{integer}.
 Instantiate an export request to pull classified values from one or more report suites
 }
 \details{
-\href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-createexport}{Adobe 1.4 documentation}:  
+\href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-createexport}{Adobe 1.4 documentation}  
 
 This function is the first step when you wish to download classified data, 
 provided you know the element (id) and one or more valid report suites. The

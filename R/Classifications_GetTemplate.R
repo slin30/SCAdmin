@@ -6,7 +6,6 @@
 #' @importFrom jsonlite unbox toJSON
 #' 
 #' @family Classifications methods
-#' 
 #' @inheritSection call.Get_base Access Privileges
 #' 
 #' @param rsid_list (Required) A character vector of report suite IDs to get templates for.
@@ -28,7 +27,7 @@
 #' quickly viewed via \code{cat}.
 #' 
 #' @details 
-#' \href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-gettemplate-3}{Adobe 1.4 documentation}:  
+#' \href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-gettemplate-3}{Adobe 1.4 documentation}  
 #' 
 #' This method supports multiple report suites in a single call, with the condition that the 
 #' specified \emph{element} is available for classification for all requested 

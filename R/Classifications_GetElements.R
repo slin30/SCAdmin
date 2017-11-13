@@ -19,7 +19,7 @@
 #' to flatten this field or \code{flatten_nested_df} in \code{wzAAHelper}.
 #'  
 #' @details 
-#' \href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-getcompatibilityelements}{Adobe 1.4 documentation}:  
+#' \href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-getcompatibilityelements}{Adobe 1.4 documentation}  
 #' 
 #' This method supports multiple report suites in a single call, with the condition that
 #'  every \emph{rsid_list} value has at least one classification-enabled element. 
