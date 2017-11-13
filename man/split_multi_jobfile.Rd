@@ -15,7 +15,10 @@ split_multi_jobfile(x, dropzero = TRUE)
 If more than one file_id detected, a \code{list} of \code{data.frame}s, each 
 containing the \code{job_id, type, viewable_pages}. 
 
-If a single file_id is detected, the input is returned as-is
+If a single file_id is detected, the input is still processed, to ensure that the
+output of this function has a consistent structure. That is, even if the input contains
+a single \code{file_id} return, and therefore does not need to be splitted, it will still
+have an additional level of nesting applied upon return.
 }
 \description{
 Handle multiple file_id returns as individual data.frames while preserving job_id
