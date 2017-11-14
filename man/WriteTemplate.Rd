@@ -53,5 +53,6 @@ Other Classifications methods: \code{\link{CheckExportJobStatus}},
   \code{\link{Classifications_GetFilters}},
   \code{\link{Classifications_GetStatus}},
   \code{\link{Classifications_GetTemplate}},
+  \code{\link{parse_job_return}},
   \code{\link{split_multi_jobfile}}
 }
