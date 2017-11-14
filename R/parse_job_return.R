@@ -46,11 +46,11 @@
 #' }
 parse_job_return <- function(xs, also_bind = TRUE, ...) {
   
-  if(is.null(is_nested_return(xs))) {
+  if(is.null(.is_nested_return(xs))) {
     stop("Incompatible structure detected")
   }
   
-  is_nested <- is_nested_return(xs)
+  is_nested <- .is_nested_return(xs)
   
   if(is_nested) {
     out <- lapply(xs, function(f)
@@ -98,7 +98,7 @@ NULL
 NULL
 .is_nested_return <- function(x) {
   
-  is_straight_valid <- suppressMessages(is_valid_jobreturn(x))
+  is_straight_valid <- suppressMessages(.is_valid_jobreturn(x))
   
   if(is_straight_valid) {
     return(invisible(FALSE))
@@ -106,7 +106,7 @@ NULL
   if(!is_straight_valid) {
     x_1 <- x[[1]]
   }
-  is_nested_valid <- is_valid_jobreturn(x_1)
+  is_nested_valid <- .is_valid_jobreturn(x_1)
   if(is_nested_valid) {
     return(invisible(TRUE))
   }
