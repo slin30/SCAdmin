@@ -9,7 +9,7 @@ split_multi_jobfile(x, dropzero = TRUE)
 \arguments{
 \item{x}{(required) The return from a complete export job}
 
-\item{dropzero}{(optional) Should zero-row records be dropped? Defaults to \code{TRUE}}
+\item{dropzero}{(optional) Should zero-page (row) records be dropped? Defaults to \code{TRUE}}
 }
 \value{
 If more than one file_id detected, a \code{list} of \code{data.frame}s, each 

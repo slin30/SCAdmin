@@ -1,6 +1,6 @@
-#' Get one or all pages from a complete export job
+#' Get one or all pages from a completed export job
 #' 
-#' Get one or all pages from completed classification job export
+#' Get one or all pages from a completed classification job export, for a single file_id
 #' 
 #' @importFrom RSiteCatalyst ApiRequest
 #' @importFrom jsonlite unbox toJSON
@@ -8,7 +8,8 @@
 #' @inheritSection call.Get_base Access Privileges
 #' @family Classifications methods
 #' 
-#' @param status_return (required) The return from a complete export job
+#' @param status_return (required) The return from a complete export job. Expected input is a two-row \code{data.frame}
+#'        containing a single \code{job_id} and a single \code{file_id}. 
 #' @param all_pages (optional) Should all available pages be returned? Defaults to \code{TRUE}
 #' @param page (optional) If provided, an integer vector denoting either a specific page
 #'        or a set of pages. Ignored if \code{all_pages} is \code{TRUE}
@@ -25,9 +26,10 @@
 #' If \code{all_pages=FALSE} AND a page value is supplied, the behavior of \code{page} is as follows:
 #' 
 #' \itemize{
-#' \item If \code{<=0}, an error
-#' \item If length > 1, all requested pages
-#' \item If length == 1, the requested page
+#' \item If \code{< 0}, an error
+#' \item If \code{0}, \code{NULL}
+#' \item If \code{length == 1}, the requested page
+#' \item If \code{length > 1}, all requested pages
 #' }
 #' 
 #' Furthermore, if the (any) value of \emph{page} is greater than the maximum value of the value specified within the,

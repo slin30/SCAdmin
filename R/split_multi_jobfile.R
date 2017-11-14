@@ -5,7 +5,7 @@
 #' @family Classifications methods
 #'
 #' @param x (required) The return from a complete export job
-#' @param dropzero (optional) Should zero-row records be dropped? Defaults to \code{TRUE}
+#' @param dropzero (optional) Should zero-page (row) records be dropped? Defaults to \code{TRUE}
 #'
 #' @details 
 #' This is a helper function to handle \code{Classifications.CreateExport} requests that

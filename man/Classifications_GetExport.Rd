@@ -2,13 +2,14 @@
 % Please edit documentation in R/Classifications_GetExport.R
 \name{Classifications_GetExport}
 \alias{Classifications_GetExport}
-\title{Get one or all pages from a complete export job}
+\title{Get one or all pages from a completed export job}
 \usage{
 Classifications_GetExport(status_return = NULL, all_pages = TRUE,
   page = NULL, dontrun = FALSE)
 }
 \arguments{
-\item{status_return}{(required) The return from a complete export job}
+\item{status_return}{(required) The return from a complete export job. Expected input is a two-row \code{data.frame}
+containing a single \code{job_id} and a single \code{file_id}.}
 
 \item{all_pages}{(optional) Should all available pages be returned? Defaults to \code{TRUE}}
 
@@ -36,7 +37,7 @@ Each element is named using the \code{job_id}, \code{file_id}, and page number o
 \emph{status_return}.
 }
 \description{
-Get one or all pages from completed classification job export
+Get one or all pages from a completed classification job export, for a single file_id
 }
 \details{
 \href{https://marketing.adobe.com/developer/documentation/classifications-1-4-saint/r-getexport}{Adobe 1.4 documentation}
@@ -48,9 +49,10 @@ argument as \code{NULL} to reproduce the behavior of the default method (i.e. pu
 If \code{all_pages=FALSE} AND a page value is supplied, the behavior of \code{page} is as follows:
 
 \itemize{
-\item If \code{<=0}, an error
-\item If length > 1, all requested pages
-\item If length == 1, the requested page
+\item If \code{< 0}, an error
+\item If \code{0}, \code{NULL}
+\item If \code{length == 1}, the requested page
+\item If \code{length > 1}, all requested pages
 }
 
 Furthermore, if the (any) value of \emph{page} is greater than the maximum value of the value specified within the,

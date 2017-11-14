@@ -10,7 +10,7 @@
 #'
 #'
 #' @param id_or_ret (required) An integer job_id of length 1, or the return from a 
-#'        call to Classifications.CreateExport
+#'        call to \code{Classifications.CreateExport}
 #'
 #'
 #' @details 
@@ -19,7 +19,7 @@
 #' This function is required to obtain the \code{file_id} and number of pages, for a 
 #' return from Classifications.CreateExport. The expected input can be either an 
 #' \code{integer} id of length 1, or the direct return from 
-#' code{\link{Classifications_CreateExport}}. 
+#' \code{\link{Classifications_CreateExport}}. 
 #' 
 #' @return
 #' A \code{data.frame} containing four fields:
