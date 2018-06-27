@@ -5,7 +5,7 @@ Authors@R: person("Wen", "Zhang", email = "w.zhang.1@elsevier.com", role = c("au
 Description: Internal (Elsevier) package for Adobe Analytics administration. Builds upon the foundation set by
  RSiteCatalyst and tries to balance Elsevier-specific and general requirements. 
 Depends:
-    R (>= 3.3.1),
+    R (>= 3.3),
     data.table (>= 1.9.8)
 Imports:
     RSiteCatalyst (>= 1.4.9),
