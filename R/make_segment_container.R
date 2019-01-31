@@ -1,6 +1,6 @@
 #' Make a segment container, including rules
 #' 
-#' Construct a segment container (not definition) with one or more rules. Does not yet support sequential segments.
+#' Construct a segment container (not definition) with one or more rules. Can be used for nested containers as well.
 #' 
 #' @importFrom jsonlite unbox toJSON
 #' @importFrom magrittr "%>%"
@@ -14,15 +14,22 @@
 #' @param operator (Optional) How should rules within the container be evaluated? One of \code{and,or,then}. A
 #' character vector of length 1. Note that restrictions apply for \code{then}. If not provided, defaults to \code{and}. 
 #' Not meaningful for single-rule containers.
-#' @param rules (Required) A list of rules, with required names. Helper: \code{\link{make_element_rules}}.
+#' @param rules (Required) A list of rules, with required names, usually made using \code{\link{make_element_rules}}.
+#' Alternatively, you can pass a \code{list} of container(s) if creating a nested segment.
 #' @param exclude (Optional) Should the container exclude, rather than include, data that matches the 
 #' rule(s)? A logical vector of length 1. Defaults to \code{FALSE}
 #' 
 #' @details 
-#' A complete segment body comprises two basic parts: the metadata and one or more containers. This function
-#' helps construct valid rule-based containers, which means you have rules nested within a container, and not
-#' the other way around. The latter is also valid, but a less common use case; this function is designed to 
-#' faciliate the former. 
+#' A complete segment body comprises two basic parts: the metadata and one or more containers; this is a helper to create
+#' the latter. This function constructs rule-based containers, which means you have rules nested within a container. The most
+#' common use case is to pass the output of \code{make_element_rules} into the \code{rules} parameter; this 
+#' creates a flat container with one or more rules. 
+#' 
+#' You can also use this function to (recursively, if desired) create nested segment containers. This is useful e.g. when
+#' you have one set of rules that comprise inclusion criteria, and another set of rules that comprise exclusion criteria.
+#' You would combine the two sets of criteria (as containers) within a top-level container with an \code{and} operator
+#' This requires a nested container, because the container operator for each individual container would be \code{or}, 
+#' but the two containers should be evaluated with \code{and}. See examples.
 #' 
 #' 
 #' @note 
@@ -31,11 +38,43 @@
 #' 
 #'
 #' @return
-#' A nested list, which may be passed to the appropriate argment of \code{\link{make_segment_body}}.
+#' A nested list, which may be passed to the appropriate parameter of \code{\link{make_segment_body}}.
 #' @export
 #'
 #' @examples
-#' # Forthcoming
+#' # simple flat container
+#' ruleset_1 <- make_element_rules(
+#'   element = "page", 
+#'   operator = "equals",
+#'   rules = c("home", "cart")
+#' )
+#' container_1 <- make_segment_container(
+#'   name = "ruleset1", 
+#'   type = "hits", 
+#'   operator = "or", 
+#'   rules = ruleset_1
+#' )
+#' # making a nested container
+#' # only makes sense if we have more than one container to start with, 
+#' #  and therefore, more than one set of rules
+#' ruleset_2 <- make_element_rules(
+#'   element = "page", 
+#'   operator = "not_equals", 
+#'   rules = c("contact", "exit")
+#' )
+#' container_2 <- make_segment_container(
+#'   name = "ruleset2",
+#'   type = "hits", 
+#'   operator = "or", 
+#'   rules = ruleset_2
+#' )
+#' # now call the function again, but pass the two containers in as a list of rules
+#' nested_container <- make_segment_container(
+#'   name = "nested", 
+#'   type = "visits", 
+#'   operator = "and", 
+#'   rules = list(container_1, container_2)
+#' )
 make_segment_container <- function(name = NULL, type = NULL, operator = NULL, 
                                    rules = NULL,
                                    exclude = NULL) {

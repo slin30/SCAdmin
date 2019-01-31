@@ -4,8 +4,9 @@
 \alias{make_segment_meta}
 \title{Make segment-level metadata for creating (NOT editing) a segment}
 \usage{
-make_segment_meta(name = NULL, reportSuiteID = NULL, description = NULL,
-  favorite = NULL, owner = NULL, shares = NULL, tags = NULL)
+make_segment_meta(name = NULL, reportSuiteID = NULL,
+  description = NULL, favorite = NULL, owner = NULL, shares = NULL,
+  tags = NULL)
 }
 \arguments{
 \item{name}{(Required) A character vector of length 1. This is the name (title) of the segment}
@@ -64,3 +65,4 @@ Other make_segment functions: \code{\link{make_element_rules}},
   \code{\link{make_segment_container}},
   \code{\link{make_sharelist}}
 }
+\concept{make_segment functions}

@@ -112,3 +112,4 @@ data_no_err.P <- restr.Get_Group(call_no_err.P)
 Other get group functions: \code{\link{call.Get_Group}},
   \code{\link{restr_permissions}}
 }
+\concept{get group functions}

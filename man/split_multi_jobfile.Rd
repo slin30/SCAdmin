@@ -57,3 +57,4 @@ Other Classifications methods: \code{\link{CheckExportJobStatus}},
   \code{\link{WriteTemplate}},
   \code{\link{parse_job_return}}
 }
+\concept{Classifications methods}

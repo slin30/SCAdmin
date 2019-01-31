@@ -62,3 +62,4 @@ Other Classifications methods: \code{\link{CheckExportJobStatus}},
   \code{\link{WriteTemplate}},
   \code{\link{split_multi_jobfile}}
 }
+\concept{Classifications methods}

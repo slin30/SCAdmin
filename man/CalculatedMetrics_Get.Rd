@@ -4,8 +4,9 @@
 \alias{CalculatedMetrics_Get}
 \title{Get Calculated Metrics via the 1.4 API CalculatedMetrics.Get method}
 \usage{
-CalculatedMetrics_Get(accessLevel = NULL, fields = NULL, selected = NULL,
-  sort = NULL, filters = NULL, collapse_simple = TRUE)
+CalculatedMetrics_Get(accessLevel = NULL, fields = NULL,
+  selected = NULL, sort = NULL, filters = NULL,
+  collapse_simple = TRUE)
 }
 \arguments{
 \item{accessLevel}{(optional) A character vector of length 1. Must be one of \code{all, shared, owned}. 

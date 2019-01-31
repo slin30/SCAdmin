@@ -102,3 +102,4 @@ Other internal: \code{\link{chk_shares}},
   \code{\link{collapse_simple_target}},
   \code{\link{split_segment_ret}}
 }
+\concept{internal}

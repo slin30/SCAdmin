@@ -55,3 +55,4 @@ Other Classifications methods: \code{\link{Classifications_CreateExport}},
   \code{\link{parse_job_return}},
   \code{\link{split_multi_jobfile}}
 }
+\concept{Classifications methods}

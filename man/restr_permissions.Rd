@@ -25,3 +25,4 @@ Normally used in the context of restr.Get_Group. Exported for flexibility.
 Other get group functions: \code{\link{call.Get_Group}},
   \code{\link{restr.Get_Group}}
 }
+\concept{get group functions}

@@ -21,3 +21,4 @@ Other internal: \code{\link{call.Get_base}},
   \code{\link{collapse_simple_listcol}},
   \code{\link{collapse_simple_target}}
 }
+\concept{internal}
